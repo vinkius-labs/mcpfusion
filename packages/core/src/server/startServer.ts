@@ -581,9 +581,19 @@ export async function startServer<TContext>(
     }
 
     // 2. MCP Server Instance
+    //    Capabilities are declared based on what features are enabled.
+    //    The SDK validates that setRequestHandler() is only called for
+    //    capabilities that were declared here — missing declarations
+    //    cause "Server does not support X" runtime errors.
+    const needsResources = !!(attach as Record<string, unknown>)?.['introspection']
+        || !!(attach as Record<string, unknown>)?.['resources'];
     const server = new Server(
         { name, version },
-        { capabilities: { tools: {}, ...(prompts ? { prompts: {} } : {}) } },
+        { capabilities: {
+            tools: {},
+            ...(prompts ? { prompts: {} } : {}),
+            ...(needsResources ? { resources: {} } : {}),
+        } },
     );
 
     // 3. Attach Registry

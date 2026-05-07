@@ -535,7 +535,7 @@ export class FluentToolBuilder<
         name: K,
         description?: string,
     ): FluentToolBuilder<TContext, TInput & Record<K, Record<string, unknown>>, TCtx> {
-        this._addParam(name, withDesc(z.record(z.unknown()), description));
+        this._addParam(name, withDesc(z.record(z.string(), z.any()), description));
         return this as unknown as FluentToolBuilder<TContext, TInput & Record<K, Record<string, unknown>>, TCtx>;
     }
 
@@ -550,7 +550,7 @@ export class FluentToolBuilder<
         name: K,
         description?: string,
     ): FluentToolBuilder<TContext, TInput & Partial<Record<K, Record<string, unknown>>>, TCtx> {
-        this._addParam(name, withDesc(z.record(z.unknown()), description).optional());
+        this._addParam(name, withDesc(z.record(z.string(), z.any()), description).optional());
         return this as unknown as FluentToolBuilder<TContext, TInput & Partial<Record<K, Record<string, unknown>>>, TCtx>;
     }
 

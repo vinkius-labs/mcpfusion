@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.4] - 2026-05-07
+
+### Added
+
+- **`README.md` Overhaul** — Positioned Vurb.ts as "The TypeScript framework for MCP Servers", prominently featuring `@vurb/yaml` and `@vurb/a2a` ecosystems, emphasizing the value proposition of Presenters for data governance.
+
+### Fixed
+
+#### `@vurb/core` — Server Introspection & Resources Capability
+
+- **`Server does not support resources` runtime error** — Fixed an issue where the SDK threw a capability error when attaching `resources` or `introspection` handlers. The server initialization now dynamically includes `resources: {}` in the `capabilities` block if these handlers are attached.
+
+#### `@vurb/core` — FluentToolBuilder JSON Parameters
+
+- **`.addDictionary()` schema** — Changed the input schema definition from `z.record(z.unknown())` to `z.record(z.string(), z.any())` to align with expected schema types.
+
 ## [3.19.3] - 2026-05-01
 
 ### Fixed
