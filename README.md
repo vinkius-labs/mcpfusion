@@ -21,11 +21,11 @@ A typed layer between your data and the AI agent — strips undeclared fields, r
 
 [Documentation](https://vurb.vinkius.com/) · [Quick Start](https://vurb.vinkius.com/quickstart-lightspeed) · [API Reference](https://vurb.vinkius.com/api/) · [llms.txt](https://vurb.vinkius.com/llms.txt)
 
+
+
+<img width="920" height="580" alt="demo" src="https://github.com/user-attachments/assets/32a93236-f52d-4b17-b73f-ddeacbc7deb3" />
+
 </div>
-
-<!-- TODO: Replace with GIF/SVG demo of `vurb create → vurb deploy` flow -->
-
----
 
 ## Why Vurb.ts?
 
