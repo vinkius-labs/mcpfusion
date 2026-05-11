@@ -12,6 +12,9 @@ The TypeScript framework for MCP Servers.
 **Presenters shape perception.**<br>
 A typed layer between your data and the AI agent — strips undeclared fields, redacts PII, gates tools by workflow state, and deploys to any edge.
 
+> **Building with Vurb.ts?** Come talk to us — [**Join the Discord →**](https://discord.gg/pKEdyxAYD)
+> Questions, war stories, and what you're shipping. The founder is in there.
+
 [![npm version](https://img.shields.io/npm/v/@vurb/core.svg?color=0ea5e9)](https://www.npmjs.com/package/@vurb/core)
 [![Downloads](https://img.shields.io/npm/dw/@vurb/core)](https://www.npmjs.com/package/@vurb/core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -19,7 +22,7 @@ A typed layer between your data and the AI agent — strips undeclared fields, r
 [![License](https://img.shields.io/badge/License-Apache_2.0-green)](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
 [![llms.txt](https://img.shields.io/badge/llms.txt-AI_Ready-8b5cf6)](https://vurb.vinkius.com/llms.txt)
 
-[Documentation](https://vurb.vinkius.com/) · [Quick Start](https://vurb.vinkius.com/quickstart-lightspeed) · [API Reference](https://vurb.vinkius.com/api/) · [llms.txt](https://vurb.vinkius.com/llms.txt)
+[Documentation](https://vurb.vinkius.com/) · [Quick Start](https://vurb.vinkius.com/quickstart-lightspeed) · [API Reference](https://vurb.vinkius.com/api/) · [llms.txt](https://vurb.vinkius.com/llms.txt) · [Discord](https://discord.gg/pKEdyxAYD)
 
 
 
@@ -262,20 +265,6 @@ const n8n = await createN8nConnector({ url, apiKey, includeTags: ['ai-enabled'] 
 Full guides, API reference, and cookbook recipes:
 
 **[vurb.vinkius.com](https://vurb.vinkius.com/)** · **[llms.txt](https://vurb.vinkius.com/llms.txt)** *(AI-optimized spec)*
-
----
-
-## 💬 Community
-
-Built something with Vurb.ts? Hit a weird edge case? Want to see what others are shipping?
-
-[![Discord](https://img.shields.io/badge/Discord-Join%20the%20builders-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/pKEdyxAYD)
-
-**[Join the Vinkius Discord →](https://discord.gg/pKEdyxAYD)**
-
-This is where MCP builders share what they're working on, ask questions about Presenters and FSM gating, and get direct access to the team. If you're building something serious with Vurb.ts, you'll want to be here.
-
----
 
 ## Contributing
 
