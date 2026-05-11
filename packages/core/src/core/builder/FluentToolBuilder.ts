@@ -76,7 +76,7 @@ function withDesc<T extends ZodType>(schema: T, description?: string): T {
  */
 export class FluentToolBuilder<
     TContext,
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- sentinel for "no params defined yet"
+     
     TInput = Record<string, never>,
     TCtx = TContext,
 > {

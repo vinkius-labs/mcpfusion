@@ -799,11 +799,13 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
         }
 
         // ── Telemetry: execute event ─────────────────────────
-        emit?.({  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
+        // Single Date.now() capture ensures durationMs and timestamp are coherent.
+        const t1 = Date.now();
+        emit?.({   
             type: 'execute', tool: toolGroup, action,
-            durationMs: Date.now() - t0,
+            durationMs: t1 - t0,
             isError: !!result.isError,
-            timestamp: Date.now(),
+            timestamp: t1,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
         } as any);
 
@@ -816,7 +818,7 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
                 if (transition.changed) {
                     // Emit fsm.transition telemetry event
                     if (hCtx.telemetry) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
+                         
                     hCtx.telemetry({
                             type: 'fsm.transition',
                             tool: name,

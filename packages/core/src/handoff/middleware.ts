@@ -71,7 +71,7 @@ export interface GatewayClearanceContext {
 export function requireGatewayClearance(
     secret: string,
     store?: HandoffStateStore,
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+ 
 ) {
     return async (ctx: unknown): Promise<GatewayClearanceContext> => {
         const raw = extractDelegationHeader(ctx);

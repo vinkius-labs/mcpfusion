@@ -157,7 +157,7 @@ export function createHmacSigner(secret: string): AttestationSigner {
         if (process.env['NODE_ENV'] === 'production') {
             throw new Error(msg);
         }
-        // eslint-disable-next-line no-console
+         
         console.warn(`⚠️  ${msg}`);
     }
     return {

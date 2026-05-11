@@ -186,7 +186,7 @@ function compileSchema(schema: unknown): StringifyFn | undefined {
 
     try {
         // Step 1: Zod → JSON Schema
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const rawJsonSchema = zodToJsonWithOptions(schema, {
             $refStrategy: 'none',
         });

@@ -97,7 +97,7 @@ async function main(): Promise<void> {
         case 'yaml': {
             try {
                 const pkg = '@vurb/yaml';
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                 
                 const { commandYaml } = await import(pkg);
                 await commandYaml();
             } catch {

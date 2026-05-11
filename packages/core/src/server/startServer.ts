@@ -635,24 +635,30 @@ export async function startServer<TContext>(
         // ── Streamable HTTP Transport ────────────────────────
         const sessions = new Map<string, StreamableHTTPServerTransport>();
         const sessionActivity = new Map<string, number>();
+        // Reverse lookup: transport → sessionId in O(1) for onclose handler.
+        // WeakMap ensures entries are GC'd when the transport is disposed.
+        const transportToSession = new WeakMap<StreamableHTTPServerTransport, string>();
         const sessionTtlMs = options.sessionTtlMs ?? 1_800_000;   // 30 min
         const reapIntervalMs = options.sessionReapIntervalMs ?? 300_000; // 5 min
         const maxSessions = options.maxSessions ?? 1_000;
         const rateLimiter = new RateLimitBucket(options.rateLimitPerMinute ?? 600);
 
         // Periodic reaper for abandoned sessions (TCP kill -9, network drops)
+        // Also prunes stale rate-limit buckets inline to avoid a redundant Set allocation.
         const reapInterval = setInterval(() => {
             const now = Date.now();
+            const activeSessions = new Set<string>();
             for (const [id, lastActive] of sessionActivity) {
                 if (now - lastActive > sessionTtlMs) {
                     const t = sessions.get(id);
                     if (t) { void t.close().catch(() => { /* best effort */ }); }
                     sessions.delete(id);
                     sessionActivity.delete(id);
+                } else {
+                    activeSessions.add(id);
                 }
             }
-            // Prune stale rate-limit buckets
-            rateLimiter.prune(new Set(sessions.keys()));
+            rateLimiter.prune(activeSessions);
         }, reapIntervalMs);
         if (typeof reapInterval === 'object' && 'unref' in reapInterval) {
             reapInterval.unref();
@@ -661,12 +667,17 @@ export async function startServer<TContext>(
         // eslint-disable-next-line @typescript-eslint/no-misused-promises -- async HTTP handler is standard Node.js pattern
         const httpServer = createHttpServer(async (req, res) => {
             try {
-                const url = new URL(req.url ?? '/', `http://localhost:${port}`);
+                // Extract pathname without constructing a full URL object.
+                // `new URL()` incurs regex parsing + hostname normalization on every
+                // request — unnecessary when we only need the path prefix.
+                const rawUrl = req.url ?? '/';
+                const qIdx = rawUrl.indexOf('?');
+                const pathname = qIdx === -1 ? rawUrl : rawUrl.slice(0, qIdx);
 
                 // ── Server Card: /.well-known/mcp/server-card.json ──────────
                 // Serves the auto-discovery endpoint BEFORE the /mcp check.
                 // GET-only, publicly cacheable, with security headers.
-                if (url.pathname === SERVER_CARD_PATH && serverCardJson) {
+                if (pathname === SERVER_CARD_PATH && serverCardJson) {
                     if (req.method === 'OPTIONS') {
                         // CORS preflight for server card
                         res.writeHead(204, {
@@ -689,7 +700,7 @@ export async function startServer<TContext>(
                     return;
                 }
 
-                if (url.pathname !== '/mcp') {
+                if (pathname !== '/mcp') {
                     res.writeHead(404).end();
                     return;
                 }
@@ -756,10 +767,12 @@ export async function startServer<TContext>(
                         onsessioninitialized: (id) => {
                             sessions.set(id, t);
                             sessionActivity.set(id, Date.now());
+                            transportToSession.set(t, id);
                         },
                     });
                     t.onclose = () => {
-                        const id = [...sessions.entries()].find(([, s]) => s === t)?.[0];
+                        // O(1) reverse lookup via WeakMap instead of O(n) linear scan
+                        const id = transportToSession.get(t);
                         if (id) {
                             sessions.delete(id);
                             sessionActivity.delete(id);

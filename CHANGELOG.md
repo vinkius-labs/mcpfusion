@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.6] - 2026-05-12
+
+### Fixed
+
+#### `@vurb/core` — HTTP Transport Performance Optimizations
+
+- **Session close O(n) → O(1) reverse-lookup** — The `onclose` handler for `StreamableHTTPServerTransport` used `[...sessions.entries()].find()` to locate the session ID for a closing transport — O(n) linear scan plus full array materialization on every session close. Replaced with a `WeakMap<Transport, string>` reverse index for O(1) lookup. At `maxSessions: 1000`, this eliminates 1,000 array copies per close event. The `WeakMap` entries are automatically released when the transport is garbage collected.
+
+- **Hot-path URL constructor removed** — Every HTTP request constructed `new URL(req.url, ...)` (regex parsing, hostname normalization, protocol validation) but only used `.pathname`. Replaced with `String.indexOf('?') + slice()` — ~10× faster on V8, eliminating unnecessary allocations on the hottest path in the framework.
+
+- **Reaper-integrated rate limiter pruning** — The session reaper allocated a fresh `new Set(sessions.keys())` on every tick (default: every 5 minutes) solely for `rateLimiter.prune()`. Now builds the active-session set incrementally during the reaper's own iteration loop — zero additional allocation.
+
+#### `@vurb/core` — Telemetry Timestamp Coherence
+
+- **Single `Date.now()` capture in telemetry emit** — The `execute` telemetry event in `ServerAttachment` called `Date.now()` twice — once for `durationMs` and once for `timestamp` — which could drift under load. Both values are now derived from a single captured timestamp, ensuring `timestamp - durationMs === t0` is always exact.
+
+#### `@vurb/core` — ESLint Hygiene
+
+- **24 auto-fixable lint problems resolved** — Removed stale `eslint-disable` directives and unnecessary optional chains across 7 files: `FluentToolBuilder.ts`, `DevServer.ts`, `CryptoAttestation.ts`, `autoDiscover.ts`, `CursorCodec.ts`, `ServerAttachment.ts`, `registry.ts`. Reduced total lint surface from 103 → 79 problems.
+
+### Added
+
+#### `@vurb/core` — SandboxEngine Native Memory Tracking
+
+- **`FinalizationRegistry`-based V8 Isolate leak detector** — `initVurb()` now tracks `SandboxEngine` instances via `FinalizationRegistry`. If a sandbox is garbage collected without calling `.dispose()`, a warning is emitted with the allocation label, alerting developers to native `isolated-vm` memory that is invisible to Node.js GC. Critical for long-running edge server processes where un-disposed Isolates silently accumulate native heap pressure.
+
+### Test Suite
+
+- **22 new regression tests** in `http-performance-optimizations.test.ts` covering:
+  - Session reverse-lookup: O(1) correctness, unknown transports, cleanup via onclose, concurrent isolation, double-close idempotency (5 tests)
+  - Pathname extraction: simple path, query strings, deep paths, edge cases (hash, empty query, nested `?`), equivalence with `new URL()` (12 tests)
+  - Reaper-integrated pruning: incremental set building, empty/full prune scenarios (3 tests)
+  - Telemetry coherence: `timestamp - durationMs === t0` invariant, monotonicity (2 tests)
+- **Total: 331 test files, 6,827 tests passing**
+
+### Changed
+
+- **All `@vurb/*` cross-dependencies updated to `^3.19.6`** — Ensures consistent resolution across the monorepo.
+
 ## [3.19.5] - 2026-05-07
 
 ### Added

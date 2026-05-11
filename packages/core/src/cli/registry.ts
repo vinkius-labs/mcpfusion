@@ -48,7 +48,7 @@ export async function resolveRegistry(serverPath: string): Promise<{ registry: R
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+     
     const mod = await import(fileUrl);
 
     /** Extract prompt registry from a module-like object */
@@ -84,7 +84,7 @@ export async function resolveRegistry(serverPath: string): Promise<{ registry: R
 
     // Strategy 3: Default export with registry
     if (mod.default != null) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+         
         const def = mod.default;
         if (def.registry != null && typeof def.registry.getBuilders === 'function') {
             const pr = extractPrompts(def as Record<string, unknown>);

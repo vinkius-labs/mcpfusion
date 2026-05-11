@@ -215,7 +215,7 @@ export async function autoDiscover(
 
     for (const filePath of files) {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             let mod: Record<string, unknown>;
 
             if (loader === 'cjs') {

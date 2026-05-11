@@ -329,7 +329,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
             await setup(ctxWithDuck);
         } catch (err) {
             const message = toErrorMessage(err);
-            // eslint-disable-next-line no-console
+             
             console.error(`[vurb dev] Reload failed: ${message}`);
             return;
         }
@@ -340,7 +340,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
                            changedFile.endsWith('.mjs') || changedFile.endsWith('.mts') ||
                            extensions.includes('.ts') || extensions.includes('.js');
             if (isEsm) {
-                // eslint-disable-next-line no-console
+                 
                 console.warn(
                     '[vurb dev] ESM hot-reload requires cache-busted imports. ' +
                     'Use the `cacheBustUrl` from the setup context or `cacheBustUrl()` from \'@vurb/core\' ' +
@@ -388,7 +388,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
 
             // warn on Linux with Node.js < 20 where recursive watch is unsupported
             if (process.platform === 'linux' && parseInt(process.versions.node, 10) < 20) {
-                // eslint-disable-next-line no-console
+                 
                 console.warn(
                     '[vurb dev] Warning: recursive fs.watch() is not fully supported on Linux with Node.js < 20. ' +
                     'File changes in subdirectories may not be detected. Consider upgrading to Node.js 20+.',
@@ -414,11 +414,11 @@ export function createDevServer(config: DevServerConfig): DevServer {
             });
 
             watcher.on('error', (err) => {
-                // eslint-disable-next-line no-console
+                 
                 console.error(`[vurb dev] Watcher error: ${toErrorMessage(err)}`);
             });
 
-            // eslint-disable-next-line no-console
+             
             console.log(`[vurb dev] Watching ${relative(process.cwd(), absoluteDir)} for changes...`);
         },
 
@@ -426,7 +426,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
             if (debounceTimer) clearTimeout(debounceTimer);
             watcher?.close();
             watcher = undefined;
-            // eslint-disable-next-line no-console
+             
             console.log(`[vurb dev] Stopped. ${reloadCount} reload(s) performed.`);
         },
 

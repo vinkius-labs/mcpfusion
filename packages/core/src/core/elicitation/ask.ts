@@ -220,7 +220,7 @@ function getSink(): ElicitSink {
  * const auth = await ask.redirect('Authenticate:', oauthUrl);
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export const ask: AskFunction = Object.assign(
     // ── Callable: await ask('message', { fields }) ──────
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -36,7 +36,7 @@ async function getCrypto(): Promise<Crypto> {
     // Variable indirection prevents TypeScript from resolving the module statically (no @types/node)
     try {
         const mod = 'node:' + 'crypto';
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+         
         const nodeCrypto = ((await import(mod)) as unknown as { webcrypto?: Crypto }).webcrypto;
         if (nodeCrypto != null) {
             _resolvedCrypto = nodeCrypto as Crypto;
