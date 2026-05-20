@@ -68,22 +68,22 @@ describe('isToolResponse()', () => {
 // =====================================================================
 
 describe('postProcessResult() — Priority 1: ToolResponse', () => {
-    it('should pass through a branded ToolResponse unchanged', () => {
+    it('should pass through a branded ToolResponse unchanged', async () => {
         const toolResponse = success('hello');
-        const result = postProcessResult(toolResponse, undefined);
+        const result = await postProcessResult(toolResponse, undefined);
         expect(result).toBe(toolResponse); // Exact same reference
     });
 
-    it('should pass through even if a Presenter is provided', () => {
+    it('should pass through even if a Presenter is provided', async () => {
         const presenter = createPresenter('Ignored').systemRules(['Rule']);
         const toolResponse = success('data');
-        const result = postProcessResult(toolResponse, presenter);
+        const result = await postProcessResult(toolResponse, presenter);
         expect(result).toBe(toolResponse); // ToolResponse takes priority
     });
 
-    it('should pass through ToolResponse with isError via error()', () => {
+    it('should pass through ToolResponse with isError via error()', async () => {
         const errorResponse = error('error!');
-        const result = postProcessResult(errorResponse, undefined);
+        const result = await postProcessResult(errorResponse, undefined);
         expect(result).toBe(errorResponse);
     });
 });
@@ -93,28 +93,28 @@ describe('postProcessResult() — Priority 1: ToolResponse', () => {
 // =====================================================================
 
 describe('postProcessResult() — Priority 2: ResponseBuilder', () => {
-    it('should auto-call .build() on a ResponseBuilder', () => {
+    it('should auto-call .build() on a ResponseBuilder', async () => {
         const builder = response('hello from builder');
-        const result = postProcessResult(builder, undefined);
+        const result = await postProcessResult(builder, undefined);
         expect(result.content).toHaveLength(1);
         expect(result.content[0]!.text).toBe('hello from builder');
     });
 
-    it('should auto-build even if a Presenter is provided', () => {
+    it('should auto-build even if a Presenter is provided', async () => {
         const presenter = createPresenter('Ignored');
         const builder = response('builder wins').systemRules(['rule']);
-        const result = postProcessResult(builder, presenter);
+        const result = await postProcessResult(builder, presenter);
         expect(result.content[0]!.text).toBe('builder wins');
         expect(result.content[1]!.text).toContain('domain_rules');
     });
 
-    it('should auto-build with all layers (UI, hints, rules)', () => {
+    it('should auto-build with all layers (UI, hints, rules)', async () => {
         const builder = response('data')
             .uiBlock('markdown', '**bold**')
             .llmHint('Pay attention')
             .systemRules(['Rule 1']);
 
-        const result = postProcessResult(builder, undefined);
+        const result = await postProcessResult(builder, undefined);
         expect(result.content).toHaveLength(4);
     });
 });
@@ -124,13 +124,13 @@ describe('postProcessResult() — Priority 2: ResponseBuilder', () => {
 // =====================================================================
 
 describe('postProcessResult() — Priority 3: Raw Data + Presenter', () => {
-    it('should pipe raw object through Presenter.make().build()', () => {
+    it('should pipe raw object through Presenter.make().build()', async () => {
         const schema = z.object({ id: z.string(), name: z.string() });
         const presenter = createPresenter('User')
             .schema(schema)
             .systemRules(['Format name in bold']);
 
-        const result = postProcessResult(
+        const result = await postProcessResult(
             { id: 'U1', name: 'Alice', extra: 'stripped' },
             presenter,
         );
@@ -142,7 +142,7 @@ describe('postProcessResult() — Priority 3: Raw Data + Presenter', () => {
         expect(result.content[1]!.text).toContain('Format name in bold');
     });
 
-    it('should pipe raw array through Presenter with collectionUiBlocks', () => {
+    it('should pipe raw array through Presenter with collectionUiBlocks', async () => {
         const schema = z.object({ id: z.string() });
         const presenter = createPresenter('Item')
             .schema(schema)
@@ -150,7 +150,7 @@ describe('postProcessResult() — Priority 3: Raw Data + Presenter', () => {
                 ui.summary(`Found ${items.length} items`),
             ]);
 
-        const result = postProcessResult(
+        const result = await postProcessResult(
             [{ id: 'A' }, { id: 'B' }, { id: 'C' }],
             presenter,
         );
@@ -160,22 +160,22 @@ describe('postProcessResult() — Priority 3: Raw Data + Presenter', () => {
         expect(result.content.some(c => c.text.includes('Found 3 items'))).toBe(true);
     });
 
-    it('should pass context to Presenter when provided', () => {
+    it('should pass context to Presenter when provided', async () => {
         const presenter = createPresenter('CtxTest')
             .systemRules((_data: unknown, ctx?: unknown) => {
                 const c = ctx as { locale: string } | undefined;
                 return [`Locale: ${c?.locale ?? 'default'}`];
             });
 
-        const result = postProcessResult('data', presenter, { locale: 'pt-BR' });
+        const result = await postProcessResult('data', presenter, { locale: 'pt-BR' });
         expect(result.content.some(c => c.text.includes('Locale: pt-BR'))).toBe(true);
     });
 
-    it('should work without context (backward compat)', () => {
+    it('should work without context (backward compat)', async () => {
         const presenter = createPresenter('NoCtx')
             .systemRules(['Static rule']);
 
-        const result = postProcessResult('data', presenter);
+        const result = await postProcessResult('data', presenter);
         expect(result.content.some(c => c.text.includes('Static rule'))).toBe(true);
     });
 });
@@ -185,42 +185,42 @@ describe('postProcessResult() — Priority 3: Raw Data + Presenter', () => {
 // =====================================================================
 
 describe('postProcessResult() — Priority 4: Raw Data Fallback', () => {
-    it('should wrap a string in a ToolResponse', () => {
-        const result = postProcessResult('hello world', undefined);
+    it('should wrap a string in a ToolResponse', async () => {
+        const result = await postProcessResult('hello world', undefined);
         expect(result.content).toHaveLength(1);
         expect(result.content[0]!.text).toBe('hello world');
     });
 
-    it('should default to "OK" for empty string', () => {
-        const result = postProcessResult('', undefined);
+    it('should default to "OK" for empty string', async () => {
+        const result = await postProcessResult('', undefined);
         expect(result.content[0]!.text).toBe('OK');
     });
 
-    it('should JSON-serialize objects', () => {
-        const result = postProcessResult({ key: 'value', num: 42 }, undefined);
+    it('should JSON-serialize objects', async () => {
+        const result = await postProcessResult({ key: 'value', num: 42 }, undefined);
         const parsed = JSON.parse(result.content[0]!.text);
         expect(parsed.key).toBe('value');
         expect(parsed.num).toBe(42);
     });
 
-    it('should JSON-serialize arrays', () => {
-        const result = postProcessResult([1, 2, 3], undefined);
+    it('should JSON-serialize arrays', async () => {
+        const result = await postProcessResult([1, 2, 3], undefined);
         const parsed = JSON.parse(result.content[0]!.text);
         expect(parsed).toEqual([1, 2, 3]);
     });
 
-    it('should JSON-serialize null', () => {
-        const result = postProcessResult(null, undefined);
+    it('should JSON-serialize null', async () => {
+        const result = await postProcessResult(null, undefined);
         expect(result.content[0]!.text).toBe('null');
     });
 
-    it('should handle numbers', () => {
-        const result = postProcessResult(42, undefined);
+    it('should handle numbers', async () => {
+        const result = await postProcessResult(42, undefined);
         expect(result.content[0]!.text).toBe('42');
     });
 
-    it('should handle booleans', () => {
-        const result = postProcessResult(true, undefined);
+    it('should handle booleans', async () => {
+        const result = await postProcessResult(true, undefined);
         expect(result.content[0]!.text).toBe('true');
     });
 });

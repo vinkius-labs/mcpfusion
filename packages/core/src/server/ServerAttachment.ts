@@ -669,9 +669,9 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
         // split('_') — avoids misattributing tools with underscores
         // in their names (e.g. 'user_accounts_list' → group='user_accounts', action='list').
         //
-        // Bug fix: recompile() was called unconditionally in flat mode, even when
-        // neither telemetry nor FSM were active. We now lazily compute it once
-        // and reuse the same ExpositionResult for telemetry, FSM gate, and routing.
+        // Lazy evaluation: recompile() is deferred until the first consumer
+        // needs it (telemetry, FSM gate, or routing). Zero overhead when
+        // none of these features are active.
         let _cachedExposition: ReturnType<typeof hCtx.recompile> | undefined;
         const getExposition = (): ReturnType<typeof hCtx.recompile> | undefined => {
             if (!hCtx.isFlat) return undefined;
@@ -689,9 +689,16 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
         // Per-request FSM clone for serverless isolation ( +  fix).
         const fsm = await cloneAndRestoreFsm(hCtx, extra);
 
+        // Resolve the canonical FSM tool name:
+        // - Flat mode: `name` is already the action-qualified key
+        // - Grouped mode: compose `group.action` to match FSM bindings
+        //   (grouped `name` is the builder name, e.g. 'billing', not the
+        //    action-qualified key 'billing.get_invoice')
+        const fsmToolName = flatRoute ? name : `${toolGroup}.${action}`;
+
         // enforce FSM gate on tools/call — not just tools/list.
         // Without this, a client that knows a tool's name can bypass the gate.
-        if (fsm && fsm.hasBindings && !fsm.isToolAllowed(name)) {
+        if (fsm && fsm.hasBindings && !fsm.isToolAllowed(fsmToolName)) {
             return toolError('FORBIDDEN', {
                 message: `Tool "${name}" is not available in the current FSM state ("${fsm.currentState}").`,
                 suggestion: 'This tool is gated by the FSM State Gate. Call an allowed tool to advance the state first.',
@@ -811,7 +818,7 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
 
         // FSM State Gate: auto-transition on successful execution
         if (fsm && !result.isError) {
-            const transitionEvent = fsm.getTransitionEvent(name);
+            const transitionEvent = fsm.getTransitionEvent(fsmToolName);
             if (transitionEvent) {
                 const fromState = fsm.currentState;
                 const transition = await fsm.transition(transitionEvent);

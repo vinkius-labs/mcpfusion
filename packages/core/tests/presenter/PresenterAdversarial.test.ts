@@ -364,49 +364,49 @@ describe('suggestActions adversarial', () => {
 // =====================================================================
 
 describe('PostProcessor adversarial', () => {
-    it('should handle postProcessResult with ToolResponse-like but wrong shape', () => {
+    it('should handle postProcessResult with ToolResponse-like but wrong shape', async () => {
         // Has content but items don't have type/text — isToolResponse now rejects this (Bug #58 fix)
         const weird = { content: [{ foo: 'bar' }] };
-        const result = postProcessResult(weird, undefined);
+        const result = await postProcessResult(weird, undefined);
         // Falls through to priority 4 (raw data), gets serialized as JSON
         expect(result.content[0]!.text).toContain('foo');
     });
 
-    it('should handle postProcessResult with Symbol', () => {
+    it('should handle postProcessResult with Symbol', async () => {
         const sym = Symbol('test');
-        const result = postProcessResult(sym, undefined);
+        const result = await postProcessResult(sym, undefined);
         // JSON.stringify(Symbol) → undefined, but typeof !== 'string'
         expect(result.content).toHaveLength(1);
     });
 
-    it('should handle postProcessResult with function', () => {
+    it('should handle postProcessResult with function', async () => {
         const fn = () => 'hello';
-        const result = postProcessResult(fn, undefined);
+        const result = await postProcessResult(fn, undefined);
         expect(result.content).toHaveLength(1);
     });
 
-    it('should handle postProcessResult with BigInt', () => {
+    it('should handle postProcessResult with BigInt', async () => {
         // BigInt is not a string or object, so it goes through String(result)
         // which produces "42" — graceful handling instead of crash
-        const result = postProcessResult(BigInt(42), undefined);
+        const result = await postProcessResult(BigInt(42), undefined);
         expect(result.content[0]!.text).toBe('42');
     });
 
-    it('should handle postProcessResult with nested ToolResponse in ResponseBuilder', () => {
+    it('should handle postProcessResult with nested ToolResponse in ResponseBuilder', async () => {
         // ResponsBuilder wins over Presenter (priority 2 > priority 3)
         const builder = response({ nested: true });
         const presenter = createPresenter('Ignored');
 
-        const result = postProcessResult(builder, presenter);
+        const result = await postProcessResult(builder, presenter);
         expect(JSON.parse(result.content[0]!.text)).toEqual({ nested: true });
     });
 
-    it('should handle Presenter that throws during make()', () => {
+    it('should handle Presenter that throws during make()', async () => {
         const schema = z.object({ id: z.string() });
         const presenter = createPresenter('Strict').schema(schema);
 
         // Invalid data + Presenter = should throw PresenterValidationError
-        expect(() => postProcessResult(42, presenter)).toThrow(PresenterValidationError);
+        await expect(postProcessResult(42, presenter)).rejects.toThrow(PresenterValidationError);
     });
 });
 

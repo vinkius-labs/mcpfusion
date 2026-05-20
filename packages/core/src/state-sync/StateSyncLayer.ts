@@ -149,17 +149,27 @@ export class StateSyncLayer {
     /**
      * Return a cached decorated tool, or compute and cache it.
      *
-     * Cache invalidation: tool definitions are immutable after registration
-     * in MCP Fusion's ToolRegistry (builders produce new objects each time,
-     * but the content is stable). For safety, we use the tool name as
-     * the cache key — if the same tool name produces different descriptions
-     * across calls (which shouldn't happen), the first decoration wins.
+     * Cache invalidation: the cache validates that the incoming tool's
+     * description matches the cached version. If the description changed
+     * (e.g., dynamic tool registration or hot-reload), the stale entry
+     * is evicted and recomputed. For the normal case (stable tools),
+     * description comparison is a single string pointer check — O(1).
      */
     private _decorateToolCached(tool: McpTool): McpTool {
         const cached = this._decoratedToolCache.get(tool.name);
-        if (cached) return cached;
+        // Validate cache: evict if the tool's description changed since last decoration
+        if (cached && (cached as { _srcDesc?: string })._srcDesc === tool.description) {
+            return cached;
+        }
 
         const decorated = decorateDescription(tool, this._engine.resolve(tool.name));
+        // Tag the decorated object with the source description for staleness detection.
+        // Non-enumerable to avoid polluting JSON serialization or MCP wire format.
+        Object.defineProperty(decorated, '_srcDesc', {
+            value: tool.description,
+            enumerable: false,
+            configurable: true,
+        });
         this._decoratedToolCache.set(tool.name, decorated);
         return decorated;
     }

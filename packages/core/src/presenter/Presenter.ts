@@ -59,9 +59,7 @@ import { extractZodKeys } from './SelectUtils.js';
 import { defaultSerializer, type StringifyFn } from '../core/serialization/JsonSerializer.js';
 import { compileRedactor, type RedactConfig, type RedactFn } from './RedactEngine.js';
 import {
-    executePipeline,
-    stepTruncate,
-    stepValidate,
+    executePipelineWithData,
     type PresenterSnapshot,
     type RulesConfig,
     type CollectionRulesFn,
@@ -908,7 +906,7 @@ export class Presenter<T> {
         this._sealed = true;
 
         // Delegate entirely to the decomposed pipeline
-        return executePipeline(data, this._toSnapshot(), ctx, selectFields);
+        return executePipelineWithData(data, this._toSnapshot(), ctx, selectFields).builder;
     }
 
     // ── Async Make ───────────────────────────────────────
@@ -958,17 +956,15 @@ export class Presenter<T> {
         // Step 1: Run all sync steps (via pipeline)
         // Bypass the make() guard for firewall-enabled presenters
         this._sealed = true;
-        const isArray = Array.isArray(data);
         const snapshot = this._toSnapshot();
 
-        // executePipeline handles truncation, validation, redaction, UI blocks normally
-        const builder = executePipeline(data, snapshot, ctx, selectFields);
+        // executePipelineWithData returns both the builder AND the validated data,
+        // so async callbacks receive the same truncated+validated dataset
+        // without re-running stepTruncate()+stepValidate().
+        const { builder, validated, isArray } = executePipelineWithData(data, snapshot, ctx, selectFields);
 
-        // Step 2: Async enrichment — append after sync blocks
-        // Compute the same truncated+validated data the pipeline used,
-        // so async callbacks operate on the truncated dataset (Bug fix)
-        const truncated = stepTruncate(data, isArray, snapshot);
-        const validated = stepValidate(truncated.data, isArray, snapshot);
+        // Step 2: Async enrichment — append after sync blocks.
+        // Reuses the pipeline's validated data for all async callbacks.
 
         // Async UI blocks
         if (isArray && this._asyncCollectionUiBlocks) {

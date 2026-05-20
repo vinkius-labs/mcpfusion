@@ -332,6 +332,21 @@ export function stepEmbeds<T>(
 // ── Pipeline Orchestrator ───────────────────────────────
 
 /**
+ * Result of the extended pipeline that returns validated data alongside
+ * the builder. Used by `Presenter.makeAsync()` to avoid double
+ * truncation/validation.
+ *
+ * @internal
+ */
+export interface PipelineResult<T> {
+    readonly builder: ResponseBuilder;
+    /** The truncated + validated data (FULL, before _select filter). */
+    readonly validated: T | T[];
+    /** Whether the original input was an array. */
+    readonly isArray: boolean;
+}
+
+/**
  * Execute the full Presenter pipeline.
  *
  * Orchestrates: truncate → validate → embed → render UI → attach rules
@@ -350,6 +365,30 @@ export function executePipeline<T>(
     ctx?: unknown,
     selectFields?: string[],
 ): ResponseBuilder {
+    return executePipelineWithData(data, snapshot, ctx, selectFields).builder;
+}
+
+/**
+ * Execute the full Presenter pipeline and return the validated data.
+ *
+ * Extended version of `executePipeline()` that also returns the
+ * truncated+validated data for reuse by `makeAsync()`, ensuring
+ * each Zod schema runs exactly once per call — critical for
+ * `.transform()` schemas with non-idempotent logic.
+ *
+ * @param data - Raw data from handler
+ * @param snapshot - Read-only configuration snapshot
+ * @param ctx - Optional request context
+ * @param selectFields - Optional field names for context window optimization
+ * @returns A {@link PipelineResult} with both builder and validated data
+ * @internal
+ */
+export function executePipelineWithData<T>(
+    data: T | T[],
+    snapshot: PresenterSnapshot<T>,
+    ctx?: unknown,
+    selectFields?: string[],
+): PipelineResult<T> {
     const isArray = Array.isArray(data);
 
     // Step 0: Cognitive Guardrails — truncate if needed
@@ -394,5 +433,6 @@ export function executePipeline<T>(
     // Step 7: Attach action suggestions (using FULL validated data)
     stepSuggestions(builder, validated, isArray, snapshot, ctx);
 
-    return builder;
+    return { builder, validated, isArray };
 }
+

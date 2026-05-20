@@ -676,9 +676,9 @@ describe('makeAsync() — agentLimit truncation consistency', () => {
 
         await presenter.makeAsync({ id: 'INV-1', amount_cents: 100, status: 'paid' });
 
-        // Schema should be called exactly 2 times:
-        // once in executePipeline, once for async callbacks.
-        // Before the fix it was also 2, but with different data if agentLimit was set.
-        expect(callCount).toBe(2);
+        // Schema runs exactly once: executePipelineWithData validates
+        // and returns the data to makeAsync(), which reuses it for
+        // all async callbacks without re-running the pipeline.
+        expect(callCount).toBe(1);
     });
 });

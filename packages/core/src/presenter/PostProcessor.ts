@@ -8,7 +8,7 @@
  * @internal
  * @module
  */
-import { type ToolResponse, success as successResponse, TOOL_RESPONSE_BRAND } from '../core/response.js';
+import { type ToolResponse, success as successResponse, TOOL_RESPONSE_BRAND, isHandoffResponse } from '../core/response.js';
 import { isResponseBuilder, type ResponseBuilder } from './ResponseBuilder.js';
 import { type Presenter } from './Presenter.js';
 import { type TelemetrySink } from '../observability/TelemetryEvent.js';
@@ -31,10 +31,12 @@ export interface PostProcessTelemetry {
  * Post-process a handler's return value through the MVA priority hierarchy.
  *
  * Priority:
+ * 0. **HandoffResponse** → pass-through untouched (FHP tunnel activation)
  * 1. **ToolResponse** → use directly (backward compatibility)
  * 2. **ResponseBuilder** → call `.build()` (auto-build)
- * 3. **Raw data + Presenter** → pipe through `Presenter.make(data).build()`
- * 4. **Raw data without Presenter** → wrap via canonical `success()` helper
+ * 3. **Raw data + async Presenter** → pipe through `Presenter.makeAsync()` (PromptFirewall, async UI blocks)
+ * 4. **Raw data + sync Presenter** → pipe through `Presenter.make(data).build()`
+ * 5. **Raw data without Presenter** → wrap via canonical `success()` helper
  *
  * @param result - The handler's return value
  * @param presenter - The action's Presenter (from `returns` field), if any
@@ -45,13 +47,21 @@ export interface PostProcessTelemetry {
  *
  * @internal
  */
-export function postProcessResult(
+export async function postProcessResult(
     result: unknown,
     presenter: Presenter<unknown> | undefined,
     ctx?: unknown,
     selectFields?: string[],
     telemetry?: PostProcessTelemetry,
-): ToolResponse {
+): Promise<ToolResponse> {
+    // Priority 0: HandoffResponse → pass-through untouched.
+    // HandoffResponse carries the TOOL_RESPONSE_BRAND but lacks a `content`
+    // array. Must be intercepted before isToolResponse() to prevent
+    // downstream content-block access from crashing.
+    if (isHandoffResponse(result)) {
+        return result as unknown as ToolResponse;
+    }
+
     // Priority 1: Already a ToolResponse (has content array)
     if (isToolResponse(result)) {
         return result;
@@ -62,13 +72,19 @@ export function postProcessResult(
         return (result as ResponseBuilder).build();
     }
 
-    // Priority 3: Raw data + Presenter → pipe through MVA
+    // Priority 3/4: Raw data + Presenter → pipe through MVA
     if (presenter) {
         // Pre-serialize for telemetry (skip if no sink)
         const rawJson = telemetry ? JSON.stringify(result) : '';
         const rawRows = Array.isArray(result) ? result.length : 1;
 
-        const response = presenter.make(result, ctx, selectFields).build();
+        // Async-aware Presenter dispatch: Presenters with async callbacks
+        // (asyncUiBlocks, asyncRules, asyncSuggestActions, PromptFirewall)
+        // require `makeAsync()` to execute the full enrichment pipeline.
+        // Sync Presenters use `make()` for zero-overhead passthrough.
+        const response = presenter.hasAsyncCallbacks()
+            ? (await presenter.makeAsync(result, ctx, selectFields)).build()
+            : presenter.make(result, ctx, selectFields).build();
 
         // Delegate all telemetry emission to TelemetryCollector
         if (telemetry) {
@@ -87,7 +103,7 @@ export function postProcessResult(
         return response;
     }
 
-    // Priority 4: Raw data without Presenter → canonical success() helper
+    // Priority 5: Raw data without Presenter → canonical success() helper
     return successResponse(
         typeof result === 'string' || typeof result === 'object'
             ? (result as string | object)

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2026-05-20
+
+### Fixed
+
+#### `@mcpfusion/core` — Engine Stability & Pipeline Hardening
+
+- **Async PostProcessor Migration** — Converted `postProcessResult()` to support fully asynchronous Presenter callback execution (`asyncUiBlocks`, `asyncRules`, `asyncSuggestActions`, `PromptFirewall`) without losing context or dropping UI/rule blocks in downstream pipelines.
+- **Presenter Performance Optimization** — Implemented a single-pass `executePipelineWithData` pipeline execution loop. This avoids redundant Zod validation and ensures deterministic execution of non-idempotent Zod transforms (`z.transform()`), reducing serialization overhead.
+- **Priority 0 Handoff Guard** — Enforced an explicit `HandoffResponse` priority guard inside `PostProcessor` to intercept swarm handoff events and prevent serialization crashes on the content-block extraction layer.
+- **O(1) Cache Staleness Detection** — Integrated description-based cache invalidation inside `StateSyncLayer` via non-enumerable descriptor tagging (`_srcDesc`). Ensures dynamic registrations and hot-reloads invalidate caches cleanly.
+- **Grouped-mode FSM Gates** — Hardened tool routing inside `ServerAttachment` to enforce action-qualified canonical names (`group.action`) when matching tool calls against FSM rules, fixing potential transition bypasses.
+- **EgressGuard Boundary Remediation** — Refined byte-limit truncation logic to reliably append truncation suffixes when the payload exactly matches block boundary budgets.
+- **Code Cleanliness & Test Sanitization** — Replaced all legacy regression test files with standardized, behavior-oriented unit tests (`PostProcessorAsync.test.ts`, `StateSyncStaleness.test.ts`), completely removing technical debt comments and bug tracking references.
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.0.1`** — All monorepo packages now synchronize on version `4.0.1`.
+
 ## [4.0.0] - 2026-05-20
 
 ### Welcome to MCP Fusion
