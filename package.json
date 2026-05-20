@@ -1,5 +1,5 @@
 {
-  "name": "@vurb/dev",
+  "name": "@mcpfusion/dev",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -38,8 +38,8 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git"
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git"
   },
   "license": "Apache-2.0",
-  "version": "3.19.5"
+  "version": "4.0.0"
 }

@@ -1,14 +1,14 @@
 # Migration Guide
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
-Convert an existing raw-SDK MCP server to Vurb.ts incrementally — one domain at a time, without breaking your running server. Typical migration: 15-30 minutes per tool domain.
+Convert an existing raw-SDK MCP server to MCP Fusion incrementally — one domain at a time, without breaking your running server. Typical migration: 15-30 minutes per tool domain.
 
 - [Checklist](#checklist)
 - [Step 1 — Identify Tool Clusters](#step-1)
-- [Step 2 — Initialize Vurb.ts](#step-2)
+- [Step 2 — Initialize MCP Fusion](#step-2)
 - [Step 3 — Convert Tools](#step-3)
 - [Step 4 — Register and Attach](#step-4)
 - [Step 5 — Verify](#step-5)
@@ -17,7 +17,7 @@ Convert an existing raw-SDK MCP server to Vurb.ts incrementally — one domain a
 ## Checklist {#checklist}
 
 - [ ] Identify tool clusters by domain
-- [ ] Initialize `const f = initVurb<AppContext>()`
+- [ ] Initialize `const f = initMCPFusion<AppContext>()`
 - [ ] Convert `server.tool()` calls to `f.query()`, `f.mutation()`, or `f.action()`
 - [ ] Register in `ToolRegistry` and attach to server
 - [ ] Verify tools are visible and callable
@@ -44,10 +44,10 @@ projects → list, create, delete
 users    → list, invite, remove
 ```
 
-## Step 2: Initialize Vurb.ts {#step-2}
+## Step 2: Initialize MCP Fusion {#step-2}
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   userId: string;
@@ -55,7 +55,7 @@ interface AppContext {
   session: Session;
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 ```
 
 ## Step 3: Convert Tools {#step-3}
@@ -134,12 +134,12 @@ console.log(result);
 
 Runs the full pipeline (validation → middleware → handler) without an MCP server.
 
-**Integration test — `createVurbTester`:**
+**Integration test — `createMCPFusionTester`:**
 
 ```typescript
-import { createVurbTester } from 'Vurb.ts/testing';
+import { createMCPFusionTester } from '@mcpfusion/core/testing';
 
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
   contextFactory: () => ({
     userId: 'test-user',
     db: prisma,
@@ -157,15 +157,15 @@ Runs the full pipeline — Zod validation, middleware, handler, Presenter — wi
 
 ## Key Differences {#key-differences}
 
-| Concept | Raw MCP SDK | Vurb.ts |
+| Concept | Raw MCP SDK | MCP Fusion |
 |---|---|---|
 | Tool count | 1 per action | 1 per domain, or individual `f.query()` / `f.mutation()` |
-| Context | Manual / global | `initVurb<T>()` — type once |
+| Context | Manual / global | `initMCPFusion<T>()` — type once |
 | Validation | Manual JSON Schema | Auto from Zod, JSON descriptors, or Standard Schema |
 | Description | Hand-written | Auto-generated 3-layer |
 | Annotations | Manual per-tool | `f.query()` = readOnly, `f.mutation()` = destructive |
 | Error handling | Ad-hoc | `f.error()`, `Result<T>` |
 | Middleware | None | `.use()` + pre-compiled chains |
-| Testing | Requires MCP server | Direct `.execute()` or `createVurbTester` |
+| Testing | Requires MCP server | Direct `.execute()` or `createMCPFusionTester` |
 | File routing | None | `autoDiscover()` |
 | Hot-reload | Restart entire server | `createDevServer()` HMR |

@@ -46,7 +46,7 @@ import {
     buildTrustCapability,
     AttestationError,
 } from '../../src/introspection/CryptoAttestation.js';
-import type { ZeroTrustConfig, AttestationSigner, AttestationResult, VurbTrustCapability } from '../../src/introspection/CryptoAttestation.js';
+import type { ZeroTrustConfig, AttestationSigner, AttestationResult, MCPFusionTrustCapability } from '../../src/introspection/CryptoAttestation.js';
 import {
     scanSource,
     buildEntitlements,
@@ -1234,7 +1234,7 @@ describe('Lockfile structure — documentation parity', () => {
 
         expect(lockfile).toHaveProperty('lockfileVersion', 1);
         expect(lockfile).toHaveProperty('serverName', 'doc-test');
-        expect(lockfile).toHaveProperty('vurbVersion', '2.7.0');
+        expect(lockfile).toHaveProperty('mcpfusionVersion', '2.7.0');
         expect(lockfile).toHaveProperty('generatedAt');
         expect(lockfile).toHaveProperty('integrityDigest');
         expect(lockfile).toHaveProperty('capabilities');

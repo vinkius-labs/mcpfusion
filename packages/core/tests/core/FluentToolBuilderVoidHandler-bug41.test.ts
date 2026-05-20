@@ -19,7 +19,7 @@
  * @module
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success } from '../../src/core/response.js';
 
 // ── Test Context ──
@@ -29,7 +29,7 @@ const ctx: TestCtx = { userId: 'u-1' };
 describe('Bug #41 Regression: void/null handler result → valid ToolResponse', () => {
 
     it('handler returning void → text is "OK" (not undefined)', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('fire.forget')
             .describe('Fire and forget')
@@ -49,7 +49,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('handler explicitly returning undefined → text is "OK"', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('explicit.undef')
             .handle(async () => {
@@ -63,7 +63,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('handler explicitly returning null → text is "OK"', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('explicit.null')
             .handle(async () => {
@@ -77,7 +77,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('handler returning empty string → text is "OK" (empty string fallback in success())', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('empty.string')
             .handle(async () => '');
@@ -89,7 +89,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('handler returning valid object → normal JSON serialization (unchanged behavior)', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('valid.obj')
             .handle(async () => ({ id: 1, name: 'Alice' }));
@@ -101,7 +101,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('handler returning explicit success() → passthrough (unchanged behavior)', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('explicit.success')
             .handle(async () => success('manual'));
@@ -112,7 +112,7 @@ describe('Bug #41 Regression: void/null handler result → valid ToolResponse', 
     });
 
     it('MCP contract: text field is ALWAYS a string in every scenario', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         // Test multiple return types that could produce undefined text
         const scenarios: Array<{ name: string; handler: () => Promise<unknown> }> = [

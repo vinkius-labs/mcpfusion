@@ -35,7 +35,7 @@ import type { TokenManagerConfig } from '../src/TokenManager.js';
 
 function createManager(overrides?: Partial<TokenManagerConfig>): InstanceType<typeof TokenManager> {
     return new TokenManager({
-        configDir: overrides?.configDir ?? '.vurb-test',
+        configDir: overrides?.configDir ?? '.mcpfusion-test',
         tokenFile: overrides?.tokenFile,
         pendingAuthFile: overrides?.pendingAuthFile,
         envVar: overrides?.envVar,
@@ -215,7 +215,7 @@ describe('TokenManager', () => {
         it('stores token with savedAt timestamp', () => {
             const manager = createManager();
             manager.saveToken('timestamped-token');
-            const filePath = path.join(tmpDir, '.vurb-test', 'token.json');
+            const filePath = path.join(tmpDir, '.mcpfusion-test', 'token.json');
             const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
             expect(content).toHaveProperty('token', 'timestamped-token');
             expect(content).toHaveProperty('savedAt');
@@ -276,7 +276,7 @@ describe('TokenManager', () => {
 
         it('returns null for corrupted file', () => {
             const manager = createManager();
-            const dirPath = path.join(tmpDir, '.vurb-test');
+            const dirPath = path.join(tmpDir, '.mcpfusion-test');
             fs.mkdirSync(dirPath, { recursive: true });
             fs.writeFileSync(path.join(dirPath, 'pending-auth.json'), 'not-json{{{');
             expect(manager.getPendingDeviceCode()).toBeNull();

@@ -105,7 +105,7 @@ export class Group extends BaseModel {
         while (ancestor !== null) {
             if (ancestor === childGroup) {
                 throw new Error(
-                    `[Vurb] Cycle detected: adding '${childGroup.name}' as a child of '${this.name}' would create a circular reference.`,
+                    `[mcpfusion] Cycle detected: adding '${childGroup.name}' as a child of '${this.name}' would create a circular reference.`,
                 );
             }
             ancestor = ancestor.parent;

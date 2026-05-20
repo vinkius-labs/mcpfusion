@@ -1,22 +1,22 @@
 <p align="center">
-  <h1 align="center">@vurb/swarm</h1>
+  <h1 align="center">@mcpfusion/swarm</h1>
   <p align="center">
-    <strong>MCP Multi-Agent Orchestration for Vurb.ts</strong> — A framework for creating multi-agent MCP server networks<br/>
+    <strong>MCP Multi-Agent Orchestration for MCP Fusion</strong> — A framework for creating multi-agent MCP server networks<br/>
     Federated Handoff Protocol · Zero-trust HMAC delegation · Namespace isolation · B2BUA gateway · Claude · Cursor · Copilot
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/swarm"><img src="https://img.shields.io/npm/v/@vurb/swarm?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/swarm"><img src="https://img.shields.io/npm/v/@mcpfusion/swarm?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Multi-Agent Orchestration for Vurb.ts** — the Model Context Protocol framework for building production MCP server networks. `@vurb/swarm` lets a single gateway MCP server dynamically hand off an LLM session to a specialist upstream MCP micro-server — and bring it back — without the LLM ever losing context or the conversation thread.
+> **MCP Multi-Agent Orchestration for MCP Fusion** — the Model Context Protocol framework for building production MCP server networks. `@mcpfusion/swarm` lets a single gateway MCP server dynamically hand off an LLM session to a specialist upstream MCP micro-server — and bring it back — without the LLM ever losing context or the conversation thread.
 
 The gateway acts as a **Back-to-Back User Agent (B2BUA)**:
 
@@ -28,7 +28,7 @@ LLM (Claude / Cursor / Copilot)
 │  SwarmGateway    │  ← you run this (the "triage" server)
 │  (B2BUA / UAS)   │
 └────────┬─────────┘
-         │  FHP tunnel  (x-vurb-delegation + traceparent)
+         │  FHP tunnel  (x-fusion-delegation + traceparent)
          ▼
 ┌──────────────────┐
 │  Upstream server │  ← specialist micro-server (finance, devops, hr…)
@@ -50,7 +50,7 @@ The LLM sees one coherent conversation. Internally, the gateway:
 ## Installation
 
 ```bash
-npm install @vurb/swarm @vurb/core
+npm install @mcpfusion/swarm @mcpfusion/core
 ```
 
 ---
@@ -60,15 +60,15 @@ npm install @vurb/swarm @vurb/core
 ### 1. Gateway server
 
 ```typescript
-import { ToolRegistry } from '@vurb/core';
-import { SwarmGateway } from '@vurb/swarm';
+import { ToolRegistry } from '@mcpfusion/core';
+import { SwarmGateway } from '@mcpfusion/swarm';
 
 const gateway = new SwarmGateway({
     registry: {
         finance: 'http://finance-agent:8081',
         devops:  'http://devops-agent:8082',
     },
-    delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+    delegationSecret: process.env.FUSION_DELEGATION_SECRET!,
 });
 
 const registry = new ToolRegistry<AppContext>();
@@ -92,15 +92,15 @@ registry.attachToServer(server, {
 
 ### 2. Upstream specialist server
 
-The upstream is a regular Vurb server that uses `requireGatewayClearance` middleware:
+The upstream is a regular MCP mcpfusion server that uses `requireGatewayClearance` middleware:
 
 ```typescript
-import { ToolRegistry } from '@vurb/core';
-import { requireGatewayClearance } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
+import { requireGatewayClearance } from '@mcpfusion/core';
 
 // Attach the zero-trust middleware — rejects any request without a valid token
 app.use('/mcp', requireGatewayClearance({
-    secret: process.env.VURB_DELEGATION_SECRET!,
+    secret: process.env.FUSION_DELEGATION_SECRET!,
 }));
 
 const registry = new ToolRegistry<FinanceContext>();
@@ -176,7 +176,7 @@ const gateway = new SwarmGateway({
         finance: 'http://finance-agent:8081',
         devops:  'http://devops-agent:8082',
     },
-    delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+    delegationSecret: process.env.FUSION_DELEGATION_SECRET!,
 
     // Optional
     stateStore:        myRedisStore,      // custom HandoffStateStore (default: in-memory)
@@ -202,22 +202,22 @@ const gateway = new SwarmGateway({
 For Claim-Check tokens (carry-over state > 2 KB) the in-memory default is not suitable for distributed deployments. Implement `HandoffStateStore`:
 
 ```typescript
-import type { HandoffStateStore } from '@vurb/core';
+import type { HandoffStateStore } from '@mcpfusion/core';
 
 const redisStore: HandoffStateStore = {
     async set(id, state, ttlSeconds) {
-        await redis.set(`vurb:state:${id}`, JSON.stringify(state), { EX: ttlSeconds });
+        await redis.set(`MCP Fusion:state:${id}`, JSON.stringify(state), { EX: ttlSeconds });
     },
     // Atomic: read + delete in one operation — prevents replay under concurrency
     async getAndDelete(id) {
-        const raw = await redis.getdel(`vurb:state:${id}`);
+        const raw = await redis.getdel(`MCP Fusion:state:${id}`);
         return raw ? JSON.parse(raw) : undefined;
     },
 };
 
 const gateway = new SwarmGateway({
     registry: { finance: '...' },
-    delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+    delegationSecret: process.env.FUSION_DELEGATION_SECRET!,
     stateStore: redisStore,
 });
 ```

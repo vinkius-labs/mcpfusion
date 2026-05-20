@@ -8,7 +8,7 @@
  * - Auto-collection of hints for SyncPolicy generation
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { createTool } from '../../src/core/builder/GroupedToolBuilder.js';
 import { success } from '../../src/core/response.js';
 
@@ -162,7 +162,7 @@ describe('GroupedToolBuilder — State Sync', () => {
 
 describe('FluentToolBuilder — State Sync Propagation', () => {
     it('.invalidates() should propagate to underlying GroupedToolBuilder', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('tasks.update')
             .invalidates('tasks.*', 'sprints.*')
@@ -178,7 +178,7 @@ describe('FluentToolBuilder — State Sync Propagation', () => {
     });
 
     it('.cached() should propagate to underlying GroupedToolBuilder', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('countries.list')
             .cached()
@@ -192,7 +192,7 @@ describe('FluentToolBuilder — State Sync Propagation', () => {
     });
 
     it('.stale() should propagate to underlying GroupedToolBuilder', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('live.stats')
             .stale()
@@ -204,7 +204,7 @@ describe('FluentToolBuilder — State Sync Propagation', () => {
     });
 
     it('.invalidates() + .cached() should both propagate together', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('tasks.bulk_update')
             .invalidates('tasks.*')
@@ -218,7 +218,7 @@ describe('FluentToolBuilder — State Sync Propagation', () => {
     });
 
     it('no state sync methods = no hints propagated', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('tasks.list')
             .handle(async () => success([]));
@@ -234,7 +234,7 @@ describe('FluentToolBuilder — State Sync Propagation', () => {
 
 describe('FluentToolBuilder — toonDescription & annotations', () => {
     it('.toonDescription() should propagate to tool definition', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('tasks.list')
             .describe('List all tasks in the workspace')
@@ -250,7 +250,7 @@ describe('FluentToolBuilder — toonDescription & annotations', () => {
     });
 
     it('.annotations() should propagate to tool definition', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('admin.stats')
             .describe('Get admin statistics')
@@ -264,7 +264,7 @@ describe('FluentToolBuilder — toonDescription & annotations', () => {
     });
 
     it('.annotations() + .toonDescription() should coexist', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('users.list')
             .describe('List all users')
@@ -285,7 +285,7 @@ describe('FluentToolBuilder — toonDescription & annotations', () => {
 
 describe('Integration — Fluent State Sync + Execution', () => {
     it('tool with .invalidates() should still execute correctly', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('tasks.update')
             .describe('Update a task')
@@ -305,7 +305,7 @@ describe('Integration — Fluent State Sync + Execution', () => {
     });
 
     it('tool with .cached() should still execute correctly', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('countries.list')
             .describe('List all countries')
@@ -319,7 +319,7 @@ describe('Integration — Fluent State Sync + Execution', () => {
     });
 
     it('full chain: .invalidates() + .cached() + .toonDescription() + .annotations() + execution', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('tasks.sync')
             .describe('Synchronize tasks with external system')

@@ -1,7 +1,7 @@
 # Self-Healing Context
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -20,7 +20,7 @@ Self-Healing Context combines [structured errors](/cookbook/error-handling) with
 When the AI's **intent** is correct but its **method** is wrong, guide it to the right tool:
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const searchUsers = f.query('users.search')
   .describe('Search users by name, email, or department')
@@ -84,7 +84,7 @@ The `llmHint` tells the AI that its mental model of this project is outdated —
 The most powerful pattern combines structured errors, affordances, and context injection. Here's a complete billing workflow:
 
 ```typescript
-import { createPresenter, t, suggest, toolError, success } from '@vurb/core';
+import { createPresenter, t, suggest, toolError, success } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
   .schema({

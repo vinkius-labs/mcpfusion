@@ -3,7 +3,7 @@
  *
  * `HandoffStateStore` vive aqui (interface de domínio pura).
  * `HandoffPayload` e `HandoffResponse` vivem em `../core/response.ts`
- * para permitir que o `ServerAttachment` as use sem dep em `@vurb/swarm`.
+ * para permitir que o `ServerAttachment` as use sem dep em `@mcpfusion/swarm`.
  */
 
 /**
@@ -14,7 +14,7 @@
  * keeping HTTP headers within safe limits (< 8 KB nginx/ALB limit).
  *
  * Default implementation: {@link InMemoryHandoffStateStore} (same package).
- * Platform adapters: implement this interface (e.g. `@vurb/cloudflare`).
+ * Platform adapters: implement this interface (e.g. `@mcpfusion/cloudflare`).
  */
 export interface HandoffStateStore {
     /**

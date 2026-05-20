@@ -9,7 +9,7 @@
  *
  * @module
  */
-import type { YamlConnectionDef } from '../schema/VurbYamlSpec.js';
+import type { YamlConnectionDef } from '../schema/MCPFusionYamlSpec.js';
 import { interpolateSecrets } from '../schema/SecretInterpolator.js';
 
 /** Resolved connection ready for HTTP calls. */

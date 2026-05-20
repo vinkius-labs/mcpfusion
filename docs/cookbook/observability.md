@@ -1,7 +1,7 @@
 # Observability
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -11,7 +11,7 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-Production MCP servers need observability: how many tool calls per minute, which tools are slowest, which tenants are most active. Vurb.ts doesn't ship a built-in observability layer — instead, the middleware system gives you full control to integrate with any stack: structured logging, Prometheus, Datadog, StatsD, or Sentry.
+Production MCP servers need observability: how many tool calls per minute, which tools are slowest, which tenants are most active. MCP Fusion doesn't ship a built-in observability layer — instead, the middleware system gives you full control to integrate with any stack: structured logging, Prometheus, Datadog, StatsD, or Sentry.
 
 The pattern is simple: create a shared middleware that captures timing and context, then apply it to all your tools via a [functional group](/cookbook/functional-groups). These patterns work identically on Stdio, [Vercel Edge Functions](/vercel-adapter) (pass `debug` via `attachOptions`), and [Cloudflare Workers](/cloudflare-adapter) (use `executionCtx.waitUntil()` to flush metrics without blocking the response).
 
@@ -20,9 +20,9 @@ The pattern is simple: create a shared middleware that captures timing and conte
 A single middleware that logs every tool call:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const withLogging = f.middleware(async (ctx) => {
   const start = Date.now();

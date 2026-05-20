@@ -1,7 +1,7 @@
 # TOON — Token-Optimized Responses
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -20,9 +20,9 @@ TOON (Token-Oriented Object Notation) replaces JSON structure with pipe-delimite
 Replace `success(data)` with `toonSuccess(data)` to encode the response as TOON:
 
 ```typescript
-import { initVurb, toonSuccess } from '@vurb/core';
+import { initMCPFusion, toonSuccess } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const listUsers = f.query('users.list')
   .describe('List all users')
@@ -58,7 +58,7 @@ Same data. Half the tokens. The LLM reads it perfectly.
 When your tool has many actions and the description consumes too many tokens in `tools/list`, use `.toonDescription()` to TOON-encode the metadata itself:
 
 ```typescript
-import { createTool, success } from '@vurb/core';
+import { createTool, success } from '@mcpfusion/core';
 import { z } from 'zod';
 
 const api = createTool<AppContext>('api')

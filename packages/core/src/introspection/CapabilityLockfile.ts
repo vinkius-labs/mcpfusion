@@ -2,12 +2,12 @@
  * CapabilityLockfile — Behavioral Surface Snapshot
  *
  * Generates a deterministic, human-readable, git-diffable lockfile
- * that captures the complete behavioral surface of an Vurb
+ * that captures the complete behavioral surface of an MCP Fusion
  * server at a point in time.
  *
  * **Inspired by**: `yarn.lock`, `package-lock.json`, `Cargo.lock`.
  * Those files snapshot the dependency resolution graph so that every
- * `install` produces the same tree. `vurb.lock` does the same
+ * `install` produces the same tree. `mcpfusion.lock` does the same
  * for the **behavioral surface** — ensuring that every deployment
  * exposes the same tool contracts, cognitive guardrails, entitlements,
  * and token economics that were reviewed and approved.
@@ -24,10 +24,10 @@
  *
  * ```bash
  * # Generate or update the lockfile
- * vurb lock
+ * mcpfusion lock
  *
  * # CI gate: fail if the lockfile is stale
- * vurb lock --check
+ * mcpfusion lock --check
  * ```
  *
  * The lockfile is committed alongside the code. Pull request diffs
@@ -54,10 +54,10 @@ import { sha256, canonicalize } from './canonicalize.js';
 const LOCKFILE_VERSION = 1 as const;
 
 /** Default lockfile name. */
-export const LOCKFILE_NAME = 'vurb.lock' as const;
+export const LOCKFILE_NAME = 'mcpfusion.lock' as const;
 
 /**
- * Root structure of `vurb.lock`.
+ * Root structure of `mcpfusion.lock`.
  *
  * Designed for human reviewability in pull request diffs.
  * Keys are sorted, values are deterministic.
@@ -67,8 +67,8 @@ export interface CapabilityLockfile {
     readonly lockfileVersion: typeof LOCKFILE_VERSION;
     /** MCP server name */
     readonly serverName: string;
-    /** Vurb framework version */
-    readonly vurbVersion: string;
+    /** MCP Fusion framework version */
+    readonly mcpfusionVersion: string;
     /** ISO-8601 generation timestamp */
     readonly generatedAt: string;
     /** SHA-256 over all tool digests — the server's behavioral identity */
@@ -249,14 +249,14 @@ export interface GenerateLockfileOptions {
  *
  * @param serverName    - MCP server name
  * @param contracts     - Record of tool name → materialized contract
- * @param vurbVersion - Vurb version string
+ * @param mcpfusionVersion - fusion version string
  * @param options       - Optional: prompt builders to include
  * @returns A fully materialized lockfile
  */
 export async function generateLockfile(
     serverName: string,
     contracts: Readonly<Record<string, ToolContract>>,
-    vurbVersion: string,
+    mcpfusionVersion: string,
     options?: GenerateLockfileOptions,
 ): Promise<CapabilityLockfile> {
     const serverDigest = await computeServerDigest(contracts);
@@ -305,7 +305,7 @@ export async function generateLockfile(
     return {
         lockfileVersion: LOCKFILE_VERSION,
         serverName,
-        vurbVersion,
+        mcpfusionVersion,
         generatedAt: new Date().toISOString(),
         integrityDigest: `sha256:${integrityDigest}`,
         capabilities,
@@ -368,7 +368,7 @@ export interface LockfileCheckResult {
 /**
  * Verify that a lockfile matches the current server contracts and prompts.
  *
- * This is the **CI gate**: `vurb lock --check` calls this function
+ * This is the **CI gate**: `mcpfusion lock --check` calls this function
  * and exits non-zero if the lockfile is stale.
  *
  * @param lockfile  - Previously generated lockfile (from disk)
@@ -382,7 +382,7 @@ export async function checkLockfile(
     options?: GenerateLockfileOptions,
 ): Promise<LockfileCheckResult> {
     // Regenerate a fresh lockfile to compare digests
-    const fresh = await generateLockfile(lockfile.serverName, contracts, lockfile.vurbVersion, options);
+    const fresh = await generateLockfile(lockfile.serverName, contracts, lockfile.mcpfusionVersion, options);
 
     // Fast path: integrity digest matches → everything is identical
     if (lockfile.integrityDigest === fresh.integrityDigest) {
@@ -471,7 +471,7 @@ export async function checkLockfile(
 
     return {
         ok: false,
-        message: `Lockfile is stale. ${driftParts.join('; ')}. Run \`vurb lock\` to update.`,
+        message: `Lockfile is stale. ${driftParts.join('; ')}. Run \`mcpfusion lock\` to update.`,
         added,
         removed,
         changed,
@@ -486,7 +486,7 @@ export async function checkLockfile(
 /**
  * Parse and validate a lockfile JSON string.
  *
- * @param content - Raw JSON string from `vurb.lock`
+ * @param content - Raw JSON string from `mcpfusion.lock`
  * @returns Parsed lockfile, or null if invalid
  */
 export function parseLockfile(content: string): CapabilityLockfile | null {
@@ -496,7 +496,7 @@ export function parseLockfile(content: string): CapabilityLockfile | null {
         if (typeof parsed['serverName'] !== 'string') return null;
         if (typeof parsed['integrityDigest'] !== 'string') return null;
         if (typeof parsed['generatedAt'] !== 'string') return null;
-        if (typeof parsed['vurbVersion'] !== 'string') return null;
+        if (typeof parsed['mcpfusionVersion'] !== 'string') return null;
         if (parsed['capabilities'] == null || typeof parsed['capabilities'] !== 'object') return null;
         const caps = parsed['capabilities'] as Record<string, unknown>;
         if (caps['tools'] == null || typeof caps['tools'] !== 'object') return null;

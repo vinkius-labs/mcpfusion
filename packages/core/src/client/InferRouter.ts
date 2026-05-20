@@ -3,7 +3,7 @@
  *
  * Extracts a fully typed `RouterMap` from a `TypedToolRegistry` or
  * an array of `GroupedToolBuilder` instances. This is the key piece
- * that makes the VurbClient tRPC-style experience real.
+ * that makes the MCPFusionClient tRPC-style experience real.
  *
  * **Zero runtime cost** — this module contains only type declarations.
  *
@@ -18,7 +18,7 @@
  *
  * // ── CLIENT SIDE ──
  * import type { AppRouter } from './server';
- * const client = createVurbClient<AppRouter>(transport);
+ * const client = createMCPFusionClient<AppRouter>(transport);
  * await client.execute('projects.list', { workspace_id: 'ws_1' });
  * //                    ^^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^^^^^^
  * //                    autocomplete!     typed args!

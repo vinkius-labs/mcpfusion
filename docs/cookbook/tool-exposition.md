@@ -1,7 +1,7 @@
 # Tool Exposition Strategies
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -19,9 +19,9 @@ You define three actions — `list`, `create`, `delete` — inside one `projects
 The default. Every action becomes an independent MCP tool with its own name, schema, and annotations:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const listProjects = f.query('projects.list')
   .withString('workspace_id', 'Workspace ID')

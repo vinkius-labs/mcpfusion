@@ -1,22 +1,22 @@
 /**
  * EDGE-COMPATIBLE SERVER — Vinkius Edge Deployment
  *
- * This example shows how to structure a server.ts for `vurb deploy`.
+ * This example shows how to structure a server.ts for `mcpfusion deploy`.
  * Key difference: NO autoDiscover() — all tools registered explicitly.
  *
  * V8 Isolate constraints:
  *   ✅ Explicit imports + registry.register()
- *   ✅ All @vurb/core APIs (defineModel, definePresenter, initVurb, etc.)
+ *   ✅ All @mcpfusion/core APIs (defineModel, definePresenter, initMCPFusion, etc.)
  *   ✅ Zod schemas, middleware, prompts
  *   ❌ autoDiscover() (uses fs.readdir — unavailable in isolates)
  *   ❌ SandboxEngine (uses child_process + fs)
- *   ❌ Inspector / @vurb/inspector (uses Node.js IPC)
+ *   ❌ Inspector / @mcpfusion/inspector (uses Node.js IPC)
  *   ❌ Direct filesystem access (fs, path at runtime)
  *   ❌ Native addons (isolated-vm, etc.)
  */
 
 import {
-    initVurb,
+    initMCPFusion,
     defineModel,
     definePresenter,
     definePrompt,
@@ -24,7 +24,7 @@ import {
     PromptRegistry,
     startServer,
     ui,
-} from '@vurb/core';
+} from '@mcpfusion/core';
 
 // ═══════════════════════════════════════════════════════════════
 // CONTEXT
@@ -34,7 +34,7 @@ interface AppContext {
     role: 'admin' | 'member' | 'guest';
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 // ═══════════════════════════════════════════════════════════════
 // MODEL

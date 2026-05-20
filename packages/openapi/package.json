@@ -1,6 +1,6 @@
 {
-  "name": "@vurb/openapi-gen",
-  "description": "OpenAPI-to-Vurb Server Generator. Parses OpenAPI 3.x and Swagger 2.0 specs and generates a complete, ready-to-run MCP Server with full MVA tool stacks (Presenters, Tools, Registry, Server) — all features configurable via YAML.",
+  "name": "@mcpfusion/openapi-gen",
+  "description": "OpenAPI-to-MCP mcpfusion Server Generator. Parses OpenAPI 3.x and Swagger 2.0 specs and generates a complete, ready-to-run MCP Server with full MVA tool stacks (Presenters, Tools, Registry, Server) — all features configurable via YAML.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "openapi",
     "swagger",
     "code-generator",
-    "vurb",
+    "mcpfusion",
     "zod",
     "mva",
     "presenter",
@@ -36,13 +36,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/openapi"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -54,7 +54,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6",
+    "@mcpfusion/core": "^4.0.0",
     "yaml": "^2.7.0"
   },
   "peerDependencies": {
@@ -64,5 +64,5 @@
   "devDependencies": {
     "@types/node": "^25.3.0"
   },
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

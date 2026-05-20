@@ -12,7 +12,7 @@
  *   4. Handler Isolation — One handler's failure must not corrupt another
  *   5. Context Pollution — Shared mutable context between calls
  *   6. Registry Enumeration — Error messages reveal tool inventory
- *   7. Type Convurb — JS coercion attacks via valueOf/toString
+ *   7. Type conversion — JS coercion attacks via valueOf/toString
  *   8. Schema Poisoning — Action schema polluting shared inputSchema
  *   9. Middleware Bypass Attempts — Manipulating args to skip validation
  *  10. Frozen Definition Tampering — Mutating cached tool definition
@@ -445,12 +445,12 @@ describe('Security: Registry Enumeration', () => {
 });
 
 // ============================================================================
-// 7. Type Convurb Attacks
+// 7. Type conversion Attacks
 // ============================================================================
 
-describe('Security: Type Convurb', () => {
+describe('Security: Type conversion', () => {
     it('object with valueOf returning string should be rejected by Zod string validation', async () => {
-        const builder = new GroupedToolBuilder('type_convurb')
+        const builder = new GroupedToolBuilder('type_conversion')
             .action({
                 name: 'process',
                 schema: z.object({ name: z.string() }),
@@ -789,7 +789,7 @@ describe('Security: Zod Coercion Edge Cases', () => {
     });
 
     it('Date object where string expected should fail', async () => {
-        const builder = new GroupedToolBuilder('date_convurb')
+        const builder = new GroupedToolBuilder('date_conversion')
             .action({
                 name: 'process',
                 schema: z.object({ timestamp: z.string() }),

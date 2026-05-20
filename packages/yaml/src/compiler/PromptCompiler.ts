@@ -6,7 +6,7 @@
  *
  * @module
  */
-import type { YamlPromptDef, YamlPromptMessage } from '../schema/VurbYamlSpec.js';
+import type { YamlPromptDef, YamlPromptMessage } from '../schema/MCPFusionYamlSpec.js';
 
 /** Compiled prompt argument for MCP `prompts/list`. */
 export interface CompiledPromptArg {

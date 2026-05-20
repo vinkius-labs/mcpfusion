@@ -3,28 +3,28 @@
 Manual setup for when you need full control over every file.
 
 ::: tip Looking for the fast path?
-[Quickstart — Lightspeed](/quickstart-lightspeed) scaffolds a complete project with one command: `vurb create my-server`
+[Quickstart — Lightspeed](/quickstart-lightspeed) scaffolds a complete project with one command: `mcpfusion create my-server`
 :::
 
 ::: info Or let your AI agent build it
-Vurb.ts ships a **[SKILL.md](https://agentskills.io)** — a machine-readable architectural contract. Point your AI coding agent (Cursor, Claude Code, Copilot, Windsurf, Cline) at the spec and describe what you need. The agent produces correct Vurb.ts code — Presenters, middleware, file-based routing — without you learning the API first.
+MCP Fusion ships a **[SKILL.md](https://agentskills.io)** — a machine-readable architectural contract. Point your AI coding agent (Cursor, Claude Code, Copilot, Windsurf, Cline) at the spec and describe what you need. The agent produces correct MCP Fusion code — Presenters, middleware, file-based routing — without you learning the API first.
 :::
 
 ## Install {#install}
 
 ```bash
-npm install @vurb/core @modelcontextprotocol/sdk zod
+npm install @mcpfusion/core @modelcontextprotocol/sdk
 ```
 
-## Create a Vurb.ts Instance {#init}
+## Create a MCP Fusion Instance {#init}
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb();
+const f = initMCPFusion();
 ```
 
-`initVurb()` without a generic creates a `void` context — no auth, no shared state. Add `initVurb<AppContext>()` later when you need dependency injection.
+`initMCPFusion()` without a generic creates a `void` context — no auth, no shared state. Add `initMCPFusion<AppContext>()` later when you need dependency injection.
 
 ## Define a Tool {#first-tool}
 
@@ -42,7 +42,7 @@ const getWeather = f.query('weather.get')
 ## Register and Start {#server}
 
 ```typescript
-import { ToolRegistry } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
@@ -69,11 +69,11 @@ main().catch(console.error);
 ## Complete File {#complete}
 
 ```typescript
-import { initVurb, ToolRegistry } from '@vurb/core';
+import { initMCPFusion, ToolRegistry } from '@mcpfusion/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-const f = initVurb();
+const f = initMCPFusion();
 
 const getWeather = f.query('weather.get')
   .describe('Get current weather for a city')
@@ -108,7 +108,7 @@ Connect to any MCP client:
 
 ### Cursor
 
-Add `.cursor/mcp.json` to your project root (or use [`vurb create`](/quickstart-lightspeed) which generates it automatically):
+Add `.cursor/mcp.json` to your project root (or use [`mcpfusion create`](/quickstart-lightspeed) which generates it automatically):
 
 ```json
 {
@@ -157,7 +157,7 @@ The registry you built above works with any transport — Stdio, SSE, HTTP, or s
 Deploy your MCP server to Vinkius Cloud's global edge with built-in DLP, kill switch, audit logging, and a managed MCP token:
 
 ```bash
-vurb deploy
+mcpfusion deploy
 ```
 
 The CLI packages your server, deploys it, and returns a connection token. Share it with any MCP client and they connect instantly — no infrastructure to manage.
@@ -174,14 +174,14 @@ To deploy as a global HTTP endpoint without Vinkius Cloud:
 #### Vercel — Serverless MCP Endpoint
 
 ```typescript
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 export const POST = vercelAdapter({ registry, contextFactory });
 ```
 
 #### Cloudflare Workers — Global Edge Distribution
 
 ```typescript
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 export default cloudflareWorkersAdapter({ registry, contextFactory });
 ```
 

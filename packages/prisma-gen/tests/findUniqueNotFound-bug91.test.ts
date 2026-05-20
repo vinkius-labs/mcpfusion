@@ -34,7 +34,7 @@ function makeTenantModel(): DMMFModel {
         fields: [
             field({ name: 'id', isId: true, hasDefaultValue: true }),
             field({ name: 'total', type: 'Float' }),
-            field({ name: 'tenantId', documentation: '@vurb.tenantKey' }),
+            field({ name: 'tenantId', documentation: '@mcpfusion.tenantKey' }),
         ],
     };
 }

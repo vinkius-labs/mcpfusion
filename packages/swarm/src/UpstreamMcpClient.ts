@@ -17,7 +17,7 @@ import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type { Tool as McpTool } from '@modelcontextprotocol/sdk/types.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
-import type { ToolResponse } from '@vurb/core';
+import type { ToolResponse } from '@mcpfusion/core';
 
 /** Progress notification forwarded from the upstream to the gateway client. */
 export interface ProgressNotification {
@@ -37,7 +37,7 @@ export interface UpstreamMcpClientConfig {
     connectTimeoutMs: number;
     /** Milliseconds of inactivity before the tunnel is closed (default: 300 000). */
     idleTimeoutMs: number;
-    /** Delegation token to send via `x-vurb-delegation` header. */
+    /** Delegation token to send via `x-mcpfusion-delegation` header. */
     delegationToken: string;
     /** W3C traceparent to propagate (optional). */
     traceparent?: string;
@@ -97,7 +97,7 @@ export class UpstreamMcpClient {
      */
     async connect(): Promise<void> {
         const headers: Record<string, string> = {
-            'x-vurb-delegation': this._config.delegationToken,
+            'x-mcpfusion-delegation': this._config.delegationToken,
         };
         if (this._config.traceparent) {
             headers['traceparent'] = this._config.traceparent;
@@ -126,13 +126,13 @@ export class UpstreamMcpClient {
 
         // do NOT set this._client before the promise settles.
         // We use a local variable during connect; only assign to this._client on success.
-        const client = new Client({ name: 'vurb-swarm-gateway', version: '0.1.0' });
+        const client = new Client({ name: 'mcpfusion-swarm-gateway', version: '0.1.0' });
 
         await new Promise<void>((resolve, reject) => {
             const timer = setTimeout(() => {
                 connectController.abort(); // cancel the in-flight request
                 reject(Object.assign(new Error(
-                    `[vurb/swarm] Upstream "${this._targetUri}" did not respond within ${this._config.connectTimeoutMs}ms.`,
+                    `[mcpfusion/swarm] Upstream "${this._targetUri}" did not respond within ${this._config.connectTimeoutMs}ms.`,
                 ), { code: 'UPSTREAM_CONNECT_TIMEOUT' }));
             }, this._config.connectTimeoutMs);
 
@@ -267,7 +267,7 @@ export class UpstreamMcpClient {
 
     private _assertConnected(): void {
         if (!this._client) {
-            throw new Error('[vurb/swarm] UpstreamMcpClient is not connected. Call connect() first.');
+            throw new Error('[mcpfusion/swarm] UpstreamMcpClient is not connected. Call connect() first.');
         }
     }
 

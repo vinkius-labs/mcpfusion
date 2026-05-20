@@ -92,7 +92,7 @@ export type {
     ZeroTrustConfig,
     AttestationSigner,
     AttestationResult,
-    VurbTrustCapability,
+    MCPFusionTrustCapability,
 } from './CryptoAttestation.js';
 
 // ── Token Economics ──────────────────────────────────────

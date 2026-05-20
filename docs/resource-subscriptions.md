@@ -1,7 +1,7 @@
 # Resource Subscriptions
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -22,7 +22,7 @@ MCP Resources expose data to AI agents. Tools execute actions — resources prov
 
 Resource Subscriptions extend this model with **real-time push notifications**. Instead of polling for changes, the server notifies the agent when data changes — stock prices, deploy pipeline status, live error logs. The agent subscribes once and receives `notifications/resources/updated` whenever the underlying data changes.
 
-Vurb.ts implements the full MCP resource subscription lifecycle: `resources/list`, `resources/read`, `resources/subscribe`, and `resources/unsubscribe`. Zero overhead when not configured — omit the `resources` option on `attachToServer()` and nothing runs.
+MCP Fusion implements the full MCP resource subscription lifecycle: `resources/list`, `resources/read`, `resources/subscribe`, and `resources/unsubscribe`. Zero overhead when not configured — omit the `resources` option on `attachToServer()` and nothing runs.
 
 ## The Polling Problem {#problem}
 
@@ -54,9 +54,9 @@ One subscription. Zero wasted polls. The server tells the agent exactly when to 
 Use `f.resource(name)` for a chainable builder. The handler receives the requested URI and your application context:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const stockPrice = f.resource('stock_price')
   .uri('stock://prices/{symbol}')
@@ -84,7 +84,7 @@ const stockPrice = f.resource('stock_price')
 For projects that prefer explicit factory functions:
 
 ```typescript
-import { defineResource } from '@vurb/core';
+import { defineResource } from '@mcpfusion/core';
 
 const stockPrice = defineResource<AppContext>('stock_price', {
   uri: 'stock://prices/{symbol}',
@@ -104,7 +104,7 @@ const stockPrice = defineResource<AppContext>('stock_price', {
 Create a `ResourceRegistry`, register your resources, and pass it to `attachToServer()`:
 
 ```typescript
-import { ToolRegistry, ResourceRegistry } from '@vurb/core';
+import { ToolRegistry, ResourceRegistry } from '@mcpfusion/core';
 
 const toolRegistry = new ToolRegistry<AppContext>();
 const resourceRegistry = new ResourceRegistry<AppContext>();

@@ -134,7 +134,7 @@ describe('SwarmGateway._resolveDomain — error message sanitization (BUG-AT)', 
 
         const msg = (caught as Error).message;
         // The error must exist and mention a sanitized version of the target
-        expect(msg).toContain('[vurb/swarm] Unknown handoff target');
+        expect(msg).toContain('[mcpfusion/swarm] Unknown handoff target');
         // Control characters must NOT appear in the message
         expect(msg).not.toContain('\x00');
         expect(msg).not.toContain('\x1b');

@@ -1,11 +1,11 @@
 {
-  "name": "@vurb/inspector",
-  "description": "Vurb Inspector — Real-time interactive terminal dashboard for Vurb servers. Shadow Socket out-of-band telemetry with zero stdio interference.",
+  "name": "@mcpfusion/inspector",
+  "description": "mcpfusion inspector — Real-time interactive terminal dashboard for MCP mcpfusion servers. Shadow Socket out-of-band telemetry with zero stdio interference.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "vurb-inspect": "./dist/cli/inspector.js"
+    "fusion-inspect": "./dist/cli/inspector.js"
   },
   "exports": {
     ".": {
@@ -22,7 +22,7 @@
     "mcp",
     "inspector",
     "mcp-inspector",
-    "vurb",
+    "mcpfusion",
     "tui",
     "terminal",
     "dashboard",
@@ -36,13 +36,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/inspector"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -54,8 +54,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6"
+    "@mcpfusion/core": "^4.0.0"
   },
   "license": "Apache-2.0",
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

@@ -251,7 +251,7 @@ export class CredentialMissingError extends Error {
     constructor(key: string, hint?: string) {
         const hintText = hint ? ` ${hint}` : '';
         super(
-            `[Vurb] Required credential "${key}" is not configured.${hintText}\n` +
+            `[mcpfusion] Required credential "${key}" is not configured.${hintText}\n` +
             `If running locally, set globalThis.__vinkius_secrets = { "${key}": "..." } ` +
             `before starting the server, or use a contextFactory to read from process.env.`,
         );

@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { StateSyncLayer } from '../../src/state-sync/StateSyncLayer.js';
 
 describe('StateSyncBuilder', () => {
-    const f = initVurb();
+    const f = initMCPFusion();
 
     it('should create a StateSyncLayer via f.stateSync()', () => {
         const builder = f.stateSync();

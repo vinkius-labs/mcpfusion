@@ -441,7 +441,7 @@ describe('Bug #37 — redactPII lazy recompilation', () => {
         // if fast-redact hasn't been loaded yet. The fix makes _applyRedaction
         // retry compilation lazily on first use.
 
-        // Ensure fast-redact IS loaded (simulates initVurb completing later)
+        // Ensure fast-redact IS loaded (simulates initMCPFusion completing later)
         await initRedactEngine();
 
         const presenter = createPresenter<{ name: string; ssn: string }>('LazyRedact')

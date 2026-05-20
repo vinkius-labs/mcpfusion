@@ -6,10 +6,10 @@ description: "The tests/ layer in the MVA convention — folder structure, file 
 # Convention
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
-The **MVA Convention** organizes code into three architectural layers: **Model**, **View**, **Agent**. The `@vurb/testing` package introduces a fourth layer: **Tests**.
+The **MVA Convention** organizes code into three architectural layers: **Model**, **View**, **Agent**. The `@mcpfusion/testing` package introduces a fourth layer: **Tests**.
 
 ## Structure
 
@@ -25,7 +25,7 @@ tests/
 ├── guards/         ← Middleware & OOM Guard tests
 ├── rules/          ← System Rules verification
 ├── blocks/         ← UI Blocks & truncation tests
-└── setup.ts        ← Shared VurbTester instance
+└── setup.ts        ← Shared MCPFusionTester instance
 ```
 
 ## Dependency Flow
@@ -36,7 +36,7 @@ models/  →  views/  →  agents/  →  index.ts  →  server.ts
                                     tests/
 ```
 
-Tests import **only** the registry barrel (`index.ts`). They never import individual handlers, Presenters, or schemas directly. The VurbTester exercises the entire pipeline through `ToolRegistry.routeCall()`.
+Tests import **only** the registry barrel (`index.ts`). They never import individual handlers, Presenters, or schemas directly. The MCPFusionTester exercises the entire pipeline through `ToolRegistry.routeCall()`.
 
 ## File Naming
 
@@ -49,14 +49,14 @@ Tests import **only** the registry barrel (`index.ts`). They never import indivi
 
 ## The `setup.ts` File
 
-Every test suite shares a single `VurbTester` instance:
+Every test suite shares a single `MCPFusionTester` instance:
 
 ```typescript
 // tests/setup.ts
-import { createVurbTester } from '@vurb/testing';
+import { createMCPFusionTester } from '@mcpfusion/testing';
 import { registry } from '../src/index.js';
 
-export const tester = createVurbTester(registry, {
+export const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_test',

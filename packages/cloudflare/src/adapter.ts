@@ -1,7 +1,7 @@
 /**
- * Vurb — Cloudflare Workers Adapter
+ * MCP Fusion — Cloudflare Workers Adapter
  *
- * Deploys an Vurb ToolRegistry to Cloudflare Workers edge
+ * Deploys an MCP Fusion ToolRegistry to Cloudflare Workers edge
  * with zero configuration. Uses the MCP SDK's native WinterCG
  * transport (`WebStandardStreamableHTTPServerTransport`).
  *
@@ -55,7 +55,7 @@ export interface ExecutionContext {
 // ============================================================================
 
 /**
- * Duck-typed interface for Vurb's ToolRegistry.
+ * Duck-typed interface for MCP Fusion's ToolRegistry.
  *
  * Accepts any object with `attachToServer()` — decoupled from the
  * concrete class to avoid importing the core package at type level.
@@ -71,7 +71,7 @@ export interface RegistryLike {
  * Configuration for the Cloudflare Workers adapter.
  *
  * @typeParam TEnv - Cloudflare environment bindings (D1, KV, R2, secrets)
- * @typeParam TContext - Application context type for Vurb handlers
+ * @typeParam TContext - Application context type for MCP Fusion handlers
  */
 export interface CloudflareAdapterOptions<TEnv, TContext> {
     /**
@@ -83,7 +83,7 @@ export interface CloudflareAdapterOptions<TEnv, TContext> {
      */
     readonly registry: RegistryLike;
 
-    /** MCP server name (visible in capabilities). Default: `'vurb-edge'` */
+    /** MCP server name (visible in capabilities). Default: `'mcpfusion-edge'` */
     readonly serverName?: string;
 
     /** MCP server version string. Default: `'1.0.0'` */
@@ -137,7 +137,7 @@ export interface CloudflareWorkerHandler<TEnv> {
 // ============================================================================
 
 /**
- * Create a Cloudflare Workers adapter for Vurb.
+ * Create a Cloudflare Workers adapter for MCP Fusion.
  *
  * Returns an object with a `fetch()` method matching the Workers
  * ES Modules export default interface. Each request creates an
@@ -145,13 +145,13 @@ export interface CloudflareWorkerHandler<TEnv> {
  * wires the pre-compiled registry, and returns the MCP JSON-RPC response.
  *
  * @typeParam TEnv - Cloudflare environment bindings (typed by the developer)
- * @typeParam TContext - Application context type for Vurb handlers
+ * @typeParam TContext - Application context type for MCP Fusion handlers
  *
  * @example
  * ```typescript
  * // worker.ts
- * import { ToolRegistry } from '@vurb/core';
- * import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+ * import { ToolRegistry } from '@mcpfusion/core';
+ * import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
  * import { billing, projects } from './tools.js';
  *
  * // COLD START: Zod reflection + compilation (once)
@@ -175,7 +175,7 @@ export function cloudflareWorkersAdapter<TEnv = unknown, TContext = void>(
 ): CloudflareWorkerHandler<TEnv> {
     const {
         registry,
-        serverName = 'vurb-edge',
+        serverName = 'mcpfusion-edge',
         serverVersion = '1.0.0',
         contextFactory,
         attachOptions = {},

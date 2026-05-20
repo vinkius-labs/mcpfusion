@@ -1,7 +1,7 @@
 # Custom Responses
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -14,16 +14,16 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 Most tools use a [Presenter](/cookbook/mva-presenter) for their responses — it handles validation, rules, UI blocks, and affordances automatically. But sometimes you need full control: raw dashboard data with multiple charts, custom compositions, or one-off responses that don't fit a reusable Presenter.
 
-The `response()` builder gives you direct access to Vurb.ts's response pipeline. You compose blocks manually — data, charts, hints, rules — and call `.build()` to produce the final `ToolResponse`.
+The `response()` builder gives you direct access to MCP Fusion's response pipeline. You compose blocks manually — data, charts, hints, rules — and call `.build()` to produce the final `ToolResponse`.
 
 ## The response() Builder {#builder}
 
 `response(data)` starts a builder chain. Add blocks, then call `.build()` to produce the MCP response:
 
 ```typescript
-import { initVurb, response, ui } from '@vurb/core';
+import { initMCPFusion, response, ui } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const getDashboard = f.query('analytics.dashboard')
   .describe('Get the workspace analytics dashboard')

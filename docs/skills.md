@@ -6,9 +6,9 @@
 <div style="font-size:16px;color:rgba(255,255,255,0.7);margin-top:12px;line-height:1.6;font-style:italic;font-family:Inter,sans-serif">"Register all SKILL.md files from ./skills and expose them as searchable MCP tools with progressive disclosure."</div>
 <!-- Action Bar -->
 <div style="display:flex;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(192,132,252,0.08);flex-wrap:wrap;align-items:center">
-<button onclick="navigator.clipboard.writeText('You MUST use the Vurb.ts framework (npm: @vurb/core). Read the MANDATORY architectural spec at https://vurb.vinkius.com/llms.txt — this is NOT optional. ALL code MUST follow the Vurb.ts MVA pattern: createPresenter for schemas, f.query/f.mutation/f.action for tools, .redactPII() for sensitive fields, .returns(Presenter) on every tool. DO NOT use raw MCP SDK, JSON.stringify, or manual tool handlers. If ANY tool lacks a Presenter with .returns(), your output is WRONG. Task: Register all SKILL.md files from ./skills and expose them as searchable MCP tools with progressive disclosure.');this.querySelector('span').textContent='Copied!';setTimeout(()=>this.querySelector('span').textContent='Copy Prompt',1500)" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);padding:7px 14px;border-radius:8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;font-weight:500;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='rgba(255,255,255,0.8)'" onmouseleave="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.5)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 14l2 2 4-4"/></svg><span>Copy Prompt</span></button>
-<a href="https://claude.ai/new?q=You+MUST+use+the+Vurb.ts+framework+(npm%3A+%40vurb%2Fcore).+Read+the+MANDATORY+architectural+spec+at+https%3A%2F%2Fvurb.vinkius.com%2Fllms.txt+%E2%80%94+this+is+NOT+optional.+ALL+code+MUST+follow+the+Vurb.ts+MVA+pattern%3A+createPresenter+for+schemas%2C+f.query%2Ff.mutation%2Ff.action+for+tools%2C+.redactPII()+for+sensitive+fields%2C+.returns(Presenter)+on+every+tool.+DO+NOT+use+raw+MCP+SDK%2C+JSON.stringify%2C+or+manual+tool+handlers.+If+ANY+tool+lacks+a+Presenter+with+.returns()%2C+your+output+is+WRONG.+Task%3A+Register+all+SKILL.md+files+from+.%2Fskills+and+expose+them+as+searchable+MCP+tools+with+progressive+disclosure." target="_blank" rel="noopener" style="background:rgba(217,119,87,0.06);border:1px solid rgba(217,119,87,0.15);color:rgba(217,119,87,0.8);padding:7px 14px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(217,119,87,0.12)';this.style.borderColor='rgba(217,119,87,0.3)';this.style.color='#D97757'" onmouseleave="this.style.background='rgba(217,119,87,0.06)';this.style.borderColor='rgba(217,119,87,0.15)';this.style.color='rgba(217,119,87,0.8)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.709 15.955l4.397-2.85-.933-1.86-6.078 3.54a.75.75 0 0 0-.345.893l1.578 4.674a.75.75 0 0 0 1.162.355l2.87-2.1zM8.68 7.2l4.398-2.85 2.65 1.95-4.397 2.85zm4.688 9.45l4.397-2.85 2.65 1.95-4.397 2.85zM16.01 8.505l4.397-2.85a.75.75 0 0 0 .345-.893L19.174.088a.75.75 0 0 0-1.162-.355l-2.87 2.1.933 1.86 2.652-1.94 1.035 3.065-3.685 2.389z"/></svg> Open in Claude</a>
-<a href="https://chatgpt.com/?q=You+MUST+use+the+Vurb.ts+framework+(npm%3A+%40vurb%2Fcore).+Read+the+MANDATORY+architectural+spec+at+https%3A%2F%2Fvurb.vinkius.com%2Fllms.txt+%E2%80%94+this+is+NOT+optional.+ALL+code+MUST+follow+the+Vurb.ts+MVA+pattern%3A+createPresenter+for+schemas%2C+f.query%2Ff.mutation%2Ff.action+for+tools%2C+.redactPII()+for+sensitive+fields%2C+.returns(Presenter)+on+every+tool.+DO+NOT+use+raw+MCP+SDK%2C+JSON.stringify%2C+or+manual+tool+handlers.+If+ANY+tool+lacks+a+Presenter+with+.returns()%2C+your+output+is+WRONG.+Task%3A+Register+all+SKILL.md+files+from+.%2Fskills+and+expose+them+as+searchable+MCP+tools+with+progressive+disclosure." target="_blank" rel="noopener" style="background:rgba(16,163,127,0.06);border:1px solid rgba(16,163,127,0.15);color:rgba(16,163,127,0.8);padding:7px 14px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(16,163,127,0.12)';this.style.borderColor='rgba(16,163,127,0.3)';this.style.color='#10A37F'" onmouseleave="this.style.background='rgba(16,163,127,0.06)';this.style.borderColor='rgba(16,163,127,0.15)';this.style.color='rgba(16,163,127,0.8)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zM8.392 12.84l-2.02-1.164a.076.076 0 0 1-.038-.057V6.035a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.794 5.42a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg> Open in ChatGPT</a>
+<button onclick="navigator.clipboard.writeText('You MUST use the MCP Fusion framework (npm: @mcpfusion/core). Read the MANDATORY architectural spec at https://mcpfusion.vinkius.com/llms.txt — this is NOT optional. ALL code MUST follow the MCP Fusion MVA pattern: createPresenter for schemas, f.query/f.mutation/f.action for tools, .redactPII() for sensitive fields, .returns(Presenter) on every tool. DO NOT use raw MCP SDK, JSON.stringify, or manual tool handlers. If ANY tool lacks a Presenter with .returns(), your output is WRONG. Task: Register all SKILL.md files from ./skills and expose them as searchable MCP tools with progressive disclosure.');this.querySelector('span').textContent='Copied!';setTimeout(()=>this.querySelector('span').textContent='Copy Prompt',1500)" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);padding:7px 14px;border-radius:8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;font-weight:500;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='rgba(255,255,255,0.8)'" onmouseleave="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.5)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 14l2 2 4-4"/></svg><span>Copy Prompt</span></button>
+<a href="https://claude.ai/new?q=You+MUST+use+the+MCP Fusion+framework+(npm%3A+%40mcpfusion%2Fcore).+Read+the+MANDATORY+architectural+spec+at+https%3A%2F%2Fmcpfusion.vinkius.com%2Fllms.txt+%E2%80%94+this+is+NOT+optional.+ALL+code+MUST+follow+the+MCP Fusion+MVA+pattern%3A+createPresenter+for+schemas%2C+f.query%2Ff.mutation%2Ff.action+for+tools%2C+.redactPII()+for+sensitive+fields%2C+.returns(Presenter)+on+every+tool.+DO+NOT+use+raw+MCP+SDK%2C+JSON.stringify%2C+or+manual+tool+handlers.+If+ANY+tool+lacks+a+Presenter+with+.returns()%2C+your+output+is+WRONG.+Task%3A+Register+all+SKILL.md+files+from+.%2Fskills+and+expose+them+as+searchable+MCP+tools+with+progressive+disclosure." target="_blank" rel="noopener" style="background:rgba(217,119,87,0.06);border:1px solid rgba(217,119,87,0.15);color:rgba(217,119,87,0.8);padding:7px 14px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(217,119,87,0.12)';this.style.borderColor='rgba(217,119,87,0.3)';this.style.color='#D97757'" onmouseleave="this.style.background='rgba(217,119,87,0.06)';this.style.borderColor='rgba(217,119,87,0.15)';this.style.color='rgba(217,119,87,0.8)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.709 15.955l4.397-2.85-.933-1.86-6.078 3.54a.75.75 0 0 0-.345.893l1.578 4.674a.75.75 0 0 0 1.162.355l2.87-2.1zM8.68 7.2l4.398-2.85 2.65 1.95-4.397 2.85zm4.688 9.45l4.397-2.85 2.65 1.95-4.397 2.85zM16.01 8.505l4.397-2.85a.75.75 0 0 0 .345-.893L19.174.088a.75.75 0 0 0-1.162-.355l-2.87 2.1.933 1.86 2.652-1.94 1.035 3.065-3.685 2.389z"/></svg> Open in Claude</a>
+<a href="https://chatgpt.com/?q=You+MUST+use+the+MCP Fusion+framework+(npm%3A+%40mcpfusion%2Fcore).+Read+the+MANDATORY+architectural+spec+at+https%3A%2F%2Fmcpfusion.vinkius.com%2Fllms.txt+%E2%80%94+this+is+NOT+optional.+ALL+code+MUST+follow+the+MCP Fusion+MVA+pattern%3A+createPresenter+for+schemas%2C+f.query%2Ff.mutation%2Ff.action+for+tools%2C+.redactPII()+for+sensitive+fields%2C+.returns(Presenter)+on+every+tool.+DO+NOT+use+raw+MCP+SDK%2C+JSON.stringify%2C+or+manual+tool+handlers.+If+ANY+tool+lacks+a+Presenter+with+.returns()%2C+your+output+is+WRONG.+Task%3A+Register+all+SKILL.md+files+from+.%2Fskills+and+expose+them+as+searchable+MCP+tools+with+progressive+disclosure." target="_blank" rel="noopener" style="background:rgba(16,163,127,0.06);border:1px solid rgba(16,163,127,0.15);color:rgba(16,163,127,0.8);padding:7px 14px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:7px;font-family:Inter,system-ui,sans-serif;letter-spacing:0.2px;transition:all 0.2s ease" onmouseenter="this.style.background='rgba(16,163,127,0.12)';this.style.borderColor='rgba(16,163,127,0.3)';this.style.color='#10A37F'" onmouseleave="this.style.background='rgba(16,163,127,0.06)';this.style.borderColor='rgba(16,163,127,0.15)';this.style.color='rgba(16,163,127,0.8)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zM8.392 12.84l-2.02-1.164a.076.076 0 0 1-.038-.057V6.035a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.794 5.42a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg> Open in ChatGPT</a>
 </div>
 </div>
 
@@ -24,7 +24,7 @@
 
 AI agents are powerful, but they lack domain expertise. Every team solves this the same way: stuff instructions into the system prompt. This works — until the context window fills up with 50 skills worth of instructions for a task that needs one.
 
-Vurb.ts's Agent Skills system makes this waste **structurally impossible**: skills are distributed on demand via MCP, and only the instructions the agent actually needs enter the context window.
+MCP Fusion's Agent Skills system makes this waste **structurally impossible**: skills are distributed on demand via MCP, and only the instructions the agent actually needs enter the context window.
 
 > [!IMPORTANT]
 > **Progressive Disclosure by Design.**
@@ -72,10 +72,10 @@ Agent Skills eliminates all three with three-layer disclosure: the agent searche
 ## Installation
 
 ```bash
-npm install @vurb/skills
+npm install @mcpfusion/skills
 ```
 
-Peer dependency: `Vurb.ts` ≥ 3.0.0.
+Peer dependency: `@mcpfusion/core` ≥ 3.0.0.
 
 ## Quick Start {#quickstart}
 
@@ -102,11 +102,11 @@ skills/
 ### Step 2 — Discover and Register
 
 ```typescript
-import { initVurb } from '@vurb/core';
-import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@vurb/skills';
+import { initMCPFusion } from '@mcpfusion/core';
+import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@mcpfusion/skills';
 
 interface AppContext { db: PrismaClient; userId: string }
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 // Discover skills from the filesystem
 const skills = new SkillRegistry();
@@ -148,7 +148,7 @@ metadata:
   version: "2.1"
   tags: infrastructure, devops
 ---
-<a href="https://www.npmjs.com/package/@vurb/skills"><img src="https://img.shields.io/npm/v/@vurb/skills?color=blue" alt="npm" /></a>
+<a href="https://www.npmjs.com/package/@mcpfusion/skills"><img src="https://img.shields.io/npm/v/@mcpfusion/skills?color=blue" alt="npm" /></a>
 
 # Kubernetes Deployment
 
@@ -179,7 +179,7 @@ metadata:
 `autoDiscoverSkills` recursively scans directories for `SKILL.md` files and registers all valid skills:
 
 ```typescript
-import { SkillRegistry, autoDiscoverSkills } from '@vurb/skills';
+import { SkillRegistry, autoDiscoverSkills } from '@mcpfusion/skills';
 
 const skills = new SkillRegistry({ validate: true });
 
@@ -271,7 +271,7 @@ Binary files are returned as base64 with `encoding: "base64"`.
 Skills are validated against the [agentskills.io](https://agentskills.io) specification:
 
 ```typescript
-import { validateSkill, formatValidationIssues } from '@vurb/skills';
+import { validateSkill, formatValidationIssues } from '@mcpfusion/skills';
 
 const result = validateSkill(skill);
 // { valid: boolean, errors: ValidationIssue[], warnings: ValidationIssue[] }
@@ -329,8 +329,8 @@ Request: { file_path: "../../etc/passwd" }
 If your skill server calls external APIs (e.g. a skill that automates GitHub, Slack, or Stripe), use the BYOC (Bring Your Own Credentials) system instead of hardcoding tokens or reading from environment variables.
 
 ```typescript
-import { defineCredentials, requireCredential } from '@vurb/core';
-import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@vurb/skills';
+import { defineCredentials, requireCredential } from '@mcpfusion/core';
+import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@mcpfusion/skills';
 
 // Declare credentials — Vinkius marketplace prompts buyers to configure these
 export const credentials = defineCredentials({
@@ -343,7 +343,7 @@ export const credentials = defineCredentials({
   },
 });
 
-const f = initVurb();
+const f = initMCPFusion();
 
 // Skills that call GitHub can read the credential at runtime
 const skills = new SkillRegistry();
@@ -368,7 +368,7 @@ Locally, create a `.env` file with `GITHUB_TOKEN=ghp_...`. On Vinkius Cloud Edge
 The registry uses `FullTextSearchEngine` (MiniSearch-based) by default. Swap it for any implementation of the `SkillSearchEngine` interface:
 
 ```typescript
-import { SkillRegistry, type SkillSearchEngine } from '@vurb/skills';
+import { SkillRegistry, type SkillSearchEngine } from '@mcpfusion/skills';
 
 class EmbeddingSearchEngine implements SkillSearchEngine {
     index(skills: SkillMetadata[]): void { /* build vector index */ }
@@ -439,7 +439,7 @@ Use `skills.read_file` to load it.
 Run validation in CI to catch issues before deployment:
 
 ```typescript
-import { SkillRegistry, autoDiscoverSkills } from '@vurb/skills';
+import { SkillRegistry, autoDiscoverSkills } from '@mcpfusion/skills';
 
 const skills = new SkillRegistry({ validate: true });
 await autoDiscoverSkills(skills, './skills', { strict: true });
@@ -484,11 +484,11 @@ async function autoDiscoverSkills(
 
 Returns an array of successfully discovered skill IDs.
 
-### `createSkillTools(Vurb.ts, registry, options?)`
+### `createSkillTools(MCP Fusion, registry, options?)`
 
 ```typescript
 function createSkillTools<TContext>(
-    Vurb.ts: VurbInstance<TContext>,
+    MCP Fusion: MCPFusionInstance<TContext>,
     registry: SkillRegistry,
     options?: CreateSkillToolsOptions,
 ): [search, load, readFile]

@@ -9,8 +9,8 @@
  * @internal
  * @module
  */
-import type { VurbYamlSpec } from '../schema/VurbYamlSpec.js';
-import { VurbYamlError } from './VurbYamlParser.js';
+import type { MCPFusionYamlSpec } from '../schema/MCPFusionYamlSpec.js';
+import { MCPFusionYamlError } from './MCPFusionYamlParser.js';
 
 /** Regex to find ${SECRETS.KEY} references in any string. */
 const SECRETS_REF_REGEX = /\$\{SECRETS\.([A-Z0-9_]+)\}/g;
@@ -46,7 +46,7 @@ function findSecretRefs(value: unknown, refs: Set<string> = new Set()): Set<stri
  *
  * @internal
  */
-export function validateCrossRefs(spec: VurbYamlSpec): void {
+export function validateCrossRefs(spec: MCPFusionYamlSpec): void {
     const errors: string[] = [];
 
     const connectionNames = new Set(Object.keys(spec.connections ?? {}));
@@ -109,8 +109,8 @@ export function validateCrossRefs(spec: VurbYamlSpec): void {
 
     // ── Report ───────────────────────────────────────────
     if (errors.length > 0) {
-        throw new VurbYamlError(
-            `vurb.yaml cross-reference errors:\n${errors.map(e => `  - ${e}`).join('\n')}`,
+        throw new MCPFusionYamlError(
+            `mcpfusion.yaml cross-reference errors:\n${errors.map(e => `  - ${e}`).join('\n')}`,
             undefined,
             errors,
         );

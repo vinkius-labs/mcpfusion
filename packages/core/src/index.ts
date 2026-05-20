@@ -1,5 +1,5 @@
 /**
- * Vurb — Root Barrel Export
+ * MCP Fusion — Root Barrel Export
  *
  * Public API entry point. Aggregates all bounded-context modules
  * into a single flat namespace for consumers.
@@ -7,7 +7,7 @@
  * Architecture:
  *   src/
  *   ├── core/          ← Builder, Registry, Execution, Middleware, Schema
- *   ├── client/        ← tRPC-style VurbClient
+ *   ├── client/        ← tRPC-style MCPFusionClient
  *   ├── observability/ ← Debug Observer, Tracing
  *   ├── presenter/     ← MVA View Layer
  *   ├── prompt/        ← Prompt Engine
@@ -71,7 +71,7 @@ export {
     succeed, fail,
     progress,
     defineMiddleware, resolveMiddleware,
-    initVurb,
+    initMCPFusion,
     createGroup,
     toStandardValidator, fromZodSchema, isStandardSchema, autoValidator,
     // Fluent API
@@ -89,10 +89,10 @@ export type {
     MiddlewareDefinition, MergeContext, InferContextOut,
     ConcurrencyConfig, EgressConfig,
     SandboxConfig, SandboxResult, SandboxErrorCode,
-    VurbInstance,
+    MCPFusionInstance,
     GroupConfig, GroupAction, CompiledGroup,
     StandardSchemaV1, StandardSchemaIssue, InferStandardOutput,
-    VurbValidator, ValidationResult,
+    MCPFusionValidator, ValidationResult,
     SemanticDefaults,
     StateSyncHint,
     // FHP
@@ -115,9 +115,9 @@ export type {
 
 // ── Client (tRPC-style type-safe) ────────────────────────
 /** @category Client */
-export { createVurbClient, createTypedRegistry, VurbClientError } from './client/index.js';
+export { createMCPFusionClient, createTypedRegistry, MCPFusionClientError } from './client/index.js';
 /** @category Client */
-export type { VurbClient, VurbTransport, RouterMap, InferRouter, TypedToolRegistry, ClientMiddleware, VurbClientOptions } from './client/index.js';
+export type { MCPFusionClient, MCPFusionTransport, RouterMap, InferRouter, TypedToolRegistry, ClientMiddleware, MCPFusionClientOptions } from './client/index.js';
 
 // ── Observability (Debug + Tracing) ──────────────────────
 /** @category Observability */
@@ -129,7 +129,7 @@ export type {
     DebugEvent, DebugObserverFn,
     RouteEvent, ValidateEvent, MiddlewareEvent, ExecuteEvent, ErrorEvent,
     GovernanceEvent, GovernanceOperation,
-    VurbSpan, VurbTracer, VurbAttributeValue,
+    MCPFusionSpan, MCPFusionTracer, MCPFusionAttributeValue,
     TelemetryEvent, TelemetrySink,
     TelemetryBusConfig, TelemetryBusInstance,
     DlpRedactEvent, PresenterSliceEvent, PresenterRulesEvent,
@@ -294,7 +294,7 @@ export type {
     ZeroTrustConfig,
     AttestationSigner,
     AttestationResult,
-    VurbTrustCapability,
+    MCPFusionTrustCapability,
 } from './introspection/CryptoAttestation.js';
 /** @category Governance */
 export {

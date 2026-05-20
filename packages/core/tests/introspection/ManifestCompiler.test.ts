@@ -70,10 +70,10 @@ describe('compileManifest', () => {
         expect(manifest.server).toBe('test-server');
     });
 
-    it('includes vurb_version', () => {
+    it('includes MCPFUSION_VERSION', () => {
         const manifest = compileManifest('srv', []);
-        expect(manifest.vurb_version).toBeTruthy();
-        expect(typeof manifest.vurb_version).toBe('string');
+        expect(manifest.MCPFUSION_VERSION).toBeTruthy();
+        expect(typeof manifest.MCPFUSION_VERSION).toBe('string');
     });
 
     it('includes architecture field', () => {
@@ -200,7 +200,7 @@ describe('cloneManifest', () => {
     it('produces a deep copy', () => {
         const original: ManifestPayload = {
             server: 'srv',
-            vurb_version: '1.0.0',
+            MCPFUSION_VERSION: '1.0.0',
             architecture: 'MVA',
             capabilities: {
                 tools: {

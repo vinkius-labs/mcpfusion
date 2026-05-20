@@ -14,7 +14,7 @@ export type {
 
 // ── Tracing (OpenTelemetry-compatible) ───────────────────
 export { SpanStatusCode } from './Tracing.js';
-export type { VurbSpan, VurbTracer, VurbAttributeValue } from './Tracing.js';
+export type { MCPFusionSpan, MCPFusionTracer, MCPFusionAttributeValue } from './Tracing.js';
 
 // ── Telemetry (Shadow Socket Out-of-Band Transport) ──────
 export { createTelemetryBus, getTelemetryPath, discoverSockets } from './TelemetryBus.js';

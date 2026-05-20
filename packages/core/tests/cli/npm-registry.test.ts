@@ -2,9 +2,9 @@
  * npm-registry — Unit Tests
  *
  * Covers:
- *   - scanDeclaredVurbPackages: happy path, empty, no file, corrupt JSON, mixed deps
+ *   - scanDeclaredFusionPackages: happy path, empty, no file, corrupt JSON, mixed deps
  *   - getInstalledVersion: installed, missing, corrupt package.json
- *   - scanInstalledVurbPackages: combines declared + node_modules discovery
+ *   - scanInstalledFusionPackages: combines declared + node_modules discovery
  *   - fetchLatestVersion: mock fetch success, 404, timeout, bad JSON
  *   - enrichWithLatest: parallel enrichment, partial failures
  *
@@ -15,84 +15,84 @@ import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import {
-    scanDeclaredVurbPackages,
+    scanDeclaredFusionPackages,
     getInstalledVersion,
-    scanInstalledVurbPackages,
+    scanInstalledFusionPackages,
     fetchLatestVersion,
     enrichWithLatest,
-    VURB_SCOPE,
+    MCPFUSION_SCOPE,
 } from '../../src/cli/npm-registry.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
 function makeTmp(): string {
-    const dir = join(tmpdir(), `vurb-npm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = join(tmpdir(), `mcpfusion-npm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(dir, { recursive: true });
     return dir;
 }
 
 // ============================================================================
-// scanDeclaredVurbPackages
+// scanDeclaredFusionPackages
 // ============================================================================
 
-describe('scanDeclaredVurbPackages', () => {
+describe('scanDeclaredFusionPackages', () => {
     let tmpDir: string;
     beforeEach(() => { tmpDir = makeTmp(); });
     afterEach(() => { try { rmSync(tmpDir, { recursive: true, force: true }); } catch { /* */ } });
 
-    it('extracts @vurb/* from dependencies only', () => {
+    it('extracts @mcpfusion/* from dependencies only', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            dependencies: { '@vurb/core': '^3.8.0', 'zod': '^3.0.0' },
+            dependencies: { '@mcpfusion/core': '^3.8.0', 'zod': '^3.0.0' },
         }));
-        const result = scanDeclaredVurbPackages(tmpDir);
-        expect(result).toEqual(['@vurb/core']);
+        const result = scanDeclaredFusionPackages(tmpDir);
+        expect(result).toEqual(['@mcpfusion/core']);
     });
 
     it('extracts from devDependencies and peerDependencies', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            devDependencies: { '@vurb/test': '^1.0.0' },
-            peerDependencies: { '@vurb/inspector': '>=2.0.0' },
+            devDependencies: { '@mcpfusion/test': '^1.0.0' },
+            peerDependencies: { '@mcpfusion/inspector': '>=2.0.0' },
         }));
-        const result = scanDeclaredVurbPackages(tmpDir);
-        expect(result).toEqual(['@vurb/inspector', '@vurb/test']);
+        const result = scanDeclaredFusionPackages(tmpDir);
+        expect(result).toEqual(['@mcpfusion/inspector', '@mcpfusion/test']);
     });
 
     it('deduplicates across dependency sections', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            dependencies: { '@vurb/core': '^3.0.0' },
-            devDependencies: { '@vurb/core': '^3.0.0' },
-            peerDependencies: { '@vurb/core': '>=3.0.0' },
+            dependencies: { '@mcpfusion/core': '^3.0.0' },
+            devDependencies: { '@mcpfusion/core': '^3.0.0' },
+            peerDependencies: { '@mcpfusion/core': '>=3.0.0' },
         }));
-        const result = scanDeclaredVurbPackages(tmpDir);
-        expect(result).toEqual(['@vurb/core']);
+        const result = scanDeclaredFusionPackages(tmpDir);
+        expect(result).toEqual(['@mcpfusion/core']);
     });
 
     it('returns sorted results', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
             dependencies: {
-                '@vurb/z-last': '^1.0.0',
-                '@vurb/a-first': '^1.0.0',
-                '@vurb/m-middle': '^1.0.0',
+                '@mcpfusion/z-last': '^1.0.0',
+                '@mcpfusion/a-first': '^1.0.0',
+                '@mcpfusion/m-middle': '^1.0.0',
             },
         }));
-        const result = scanDeclaredVurbPackages(tmpDir);
-        expect(result).toEqual(['@vurb/a-first', '@vurb/m-middle', '@vurb/z-last']);
+        const result = scanDeclaredFusionPackages(tmpDir);
+        expect(result).toEqual(['@mcpfusion/a-first', '@mcpfusion/m-middle', '@mcpfusion/z-last']);
     });
 
     it('returns empty when no package.json exists', () => {
-        expect(scanDeclaredVurbPackages(tmpDir)).toEqual([]);
+        expect(scanDeclaredFusionPackages(tmpDir)).toEqual([]);
     });
 
     it('returns empty when package.json is corrupt', () => {
         writeFileSync(join(tmpDir, 'package.json'), 'not-json{{');
-        expect(scanDeclaredVurbPackages(tmpDir)).toEqual([]);
+        expect(scanDeclaredFusionPackages(tmpDir)).toEqual([]);
     });
 
-    it('returns empty when no @vurb packages in deps', () => {
+    it('returns empty when no @mcpfusion packages in deps', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
             dependencies: { 'express': '^4.0.0', 'zod': '^3.0.0' },
         }));
-        expect(scanDeclaredVurbPackages(tmpDir)).toEqual([]);
+        expect(scanDeclaredFusionPackages(tmpDir)).toEqual([]);
     });
 
     it('handles package.json with no dependency sections', () => {
@@ -100,20 +100,20 @@ describe('scanDeclaredVurbPackages', () => {
             name: 'my-project',
             version: '1.0.0',
         }));
-        expect(scanDeclaredVurbPackages(tmpDir)).toEqual([]);
+        expect(scanDeclaredFusionPackages(tmpDir)).toEqual([]);
     });
 
-    it('ignores non-@vurb scoped packages', () => {
+    it('ignores non-@mcpfusion scoped packages', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
             dependencies: {
-                '@vurb/core': '^3.0.0',
+                '@mcpfusion/core': '^3.0.0',
                 '@modelcontextprotocol/sdk': '^1.0.0',
                 '@types/node': '^20.0.0',
-                'vurb-plugin': '^1.0.0',  // no scope — should be excluded
+                'mcpfusion-plugin': '^1.0.0',  // no scope — should be excluded
             },
         }));
-        const result = scanDeclaredVurbPackages(tmpDir);
-        expect(result).toEqual(['@vurb/core']);
+        const result = scanDeclaredFusionPackages(tmpDir);
+        expect(result).toEqual(['@mcpfusion/core']);
     });
 });
 
@@ -127,23 +127,23 @@ describe('getInstalledVersion', () => {
     afterEach(() => { try { rmSync(tmpDir, { recursive: true, force: true }); } catch { /* */ } });
 
     it('reads version from installed package', () => {
-        const pkgDir = join(tmpDir, 'node_modules', '@vurb', 'core');
+        const pkgDir = join(tmpDir, 'node_modules', '@mcpfusion', 'core');
         mkdirSync(pkgDir, { recursive: true });
         writeFileSync(join(pkgDir, 'package.json'), JSON.stringify({ version: '3.11.1' }));
 
-        expect(getInstalledVersion(tmpDir, '@vurb/core')).toBe('3.11.1');
+        expect(getInstalledVersion(tmpDir, '@mcpfusion/core')).toBe('3.11.1');
     });
 
     it('returns undefined when package is not installed', () => {
-        expect(getInstalledVersion(tmpDir, '@vurb/nonexistent')).toBeUndefined();
+        expect(getInstalledVersion(tmpDir, '@mcpfusion/nonexistent')).toBeUndefined();
     });
 
     it('returns undefined when package.json is corrupt', () => {
-        const pkgDir = join(tmpDir, 'node_modules', '@vurb', 'broken');
+        const pkgDir = join(tmpDir, 'node_modules', '@mcpfusion', 'broken');
         mkdirSync(pkgDir, { recursive: true });
         writeFileSync(join(pkgDir, 'package.json'), '{{{invalid');
 
-        expect(getInstalledVersion(tmpDir, '@vurb/broken')).toBeUndefined();
+        expect(getInstalledVersion(tmpDir, '@mcpfusion/broken')).toBeUndefined();
     });
 
     it('handles non-scoped package paths', () => {
@@ -156,52 +156,52 @@ describe('getInstalledVersion', () => {
 });
 
 // ============================================================================
-// scanInstalledVurbPackages
+// scanInstalledFusionPackages
 // ============================================================================
 
-describe('scanInstalledVurbPackages', () => {
+describe('scanInstalledFusionPackages', () => {
     let tmpDir: string;
     beforeEach(() => { tmpDir = makeTmp(); });
     afterEach(() => { try { rmSync(tmpDir, { recursive: true, force: true }); } catch { /* */ } });
 
     it('combines declared + node_modules discovery', () => {
-        // Declare @vurb/core in package.json
+        // Declare @mcpfusion/core in package.json
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            dependencies: { '@vurb/core': '^3.0.0' },
+            dependencies: { '@mcpfusion/core': '^3.0.0' },
         }));
 
-        // Install @vurb/core and @vurb/test (transitive, not in package.json)
+        // Install @mcpfusion/core and @mcpfusion/test (transitive, not in package.json)
         for (const pkg of ['core', 'test']) {
-            const dir = join(tmpDir, 'node_modules', '@vurb', pkg);
+            const dir = join(tmpDir, 'node_modules', '@mcpfusion', pkg);
             mkdirSync(dir, { recursive: true });
             writeFileSync(join(dir, 'package.json'), JSON.stringify({ version: '3.11.1' }));
         }
 
-        const result = scanInstalledVurbPackages(tmpDir);
+        const result = scanInstalledFusionPackages(tmpDir);
         expect(result).toHaveLength(2);
-        expect(result.map(p => p.name)).toEqual(['@vurb/core', '@vurb/test']);
+        expect(result.map(p => p.name)).toEqual(['@mcpfusion/core', '@mcpfusion/test']);
         expect(result.every(p => p.current === '3.11.1')).toBe(true);
     });
 
-    it('returns empty when no @vurb scope in node_modules', () => {
+    it('returns empty when no @mcpfusion scope in node_modules', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({}));
-        expect(scanInstalledVurbPackages(tmpDir)).toEqual([]);
+        expect(scanInstalledFusionPackages(tmpDir)).toEqual([]);
     });
 
     it('excludes declared but not installed packages', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            dependencies: { '@vurb/core': '^3.0.0' },
+            dependencies: { '@mcpfusion/core': '^3.0.0' },
         }));
         // No node_modules — package is declared but not installed
-        const result = scanInstalledVurbPackages(tmpDir);
+        const result = scanInstalledFusionPackages(tmpDir);
         expect(result).toEqual([]); // not installed → filtered out
     });
 
-    it('handles missing node_modules/@vurb directory gracefully', () => {
+    it('handles missing node_modules/@mcpfusion directory gracefully', () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({}));
         mkdirSync(join(tmpDir, 'node_modules'), { recursive: true });
-        // @vurb folder doesn't exist
-        expect(scanInstalledVurbPackages(tmpDir)).toEqual([]);
+        // @mcpfusion folder doesn't exist
+        expect(scanInstalledFusionPackages(tmpDir)).toEqual([]);
     });
 });
 
@@ -219,7 +219,7 @@ describe('fetchLatestVersion', () => {
             json: async () => ({ version: '4.0.0' }),
         }) as unknown as typeof fetch;
 
-        const result = await fetchLatestVersion('@vurb/core');
+        const result = await fetchLatestVersion('@mcpfusion/core');
         expect(result).toBe('4.0.0');
     });
 
@@ -229,7 +229,7 @@ describe('fetchLatestVersion', () => {
             status: 404,
         }) as unknown as typeof fetch;
 
-        const result = await fetchLatestVersion('@vurb/nonexistent');
+        const result = await fetchLatestVersion('@mcpfusion/nonexistent');
         expect(result).toBeUndefined();
     });
 
@@ -238,7 +238,7 @@ describe('fetchLatestVersion', () => {
             new Error('ENOTFOUND'),
         ) as unknown as typeof fetch;
 
-        const result = await fetchLatestVersion('@vurb/core');
+        const result = await fetchLatestVersion('@mcpfusion/core');
         expect(result).toBeUndefined();
     });
 
@@ -248,7 +248,7 @@ describe('fetchLatestVersion', () => {
             json: async () => ({}), // no version field
         }) as unknown as typeof fetch;
 
-        const result = await fetchLatestVersion('@vurb/core');
+        const result = await fetchLatestVersion('@mcpfusion/core');
         expect(result).toBeUndefined();
     });
 
@@ -257,7 +257,7 @@ describe('fetchLatestVersion', () => {
             new DOMException('The operation was aborted', 'AbortError'),
         ) as unknown as typeof fetch;
 
-        const result = await fetchLatestVersion('@vurb/core');
+        const result = await fetchLatestVersion('@mcpfusion/core');
         expect(result).toBeUndefined();
     });
 });
@@ -277,8 +277,8 @@ describe('enrichWithLatest', () => {
         }) as unknown as typeof fetch;
 
         const packages = [
-            { name: '@vurb/core', current: '3.11.1' },
-            { name: '@vurb/test', current: '3.11.1' },
+            { name: '@mcpfusion/core', current: '3.11.1' },
+            { name: '@mcpfusion/test', current: '3.11.1' },
         ];
 
         const result = await enrichWithLatest(packages);
@@ -296,8 +296,8 @@ describe('enrichWithLatest', () => {
         }) as unknown as typeof fetch;
 
         const packages = [
-            { name: '@vurb/core', current: '3.11.1' },
-            { name: '@vurb/failing', current: '1.0.0' },
+            { name: '@mcpfusion/core', current: '3.11.1' },
+            { name: '@mcpfusion/failing', current: '1.0.0' },
         ];
 
         const result = await enrichWithLatest(packages);
@@ -316,7 +316,7 @@ describe('enrichWithLatest', () => {
 // ============================================================================
 
 describe('npm-registry constants', () => {
-    it('VURB_SCOPE is correct', () => {
-        expect(VURB_SCOPE).toBe('@vurb');
+    it('MCPFUSION_SCOPE is correct', () => {
+        expect(MCPFUSION_SCOPE).toBe('@mcpfusion');
     });
 });

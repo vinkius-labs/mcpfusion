@@ -278,7 +278,7 @@ export function createAskResponse<T>(raw: { action?: string; content?: unknown }
 export class ElicitationUnsupportedError extends Error {
     constructor() {
         super(
-            '[Vurb] Elicitation requested but no transport context is available. ' +
+            '[mcpfusion] Elicitation requested but no transport context is available. ' +
             'Ensure the tool uses `.interactive()` and the MCP client declares ' +
             '`{ capabilities: { elicitation: {} } }` during initialization.',
         );
@@ -293,7 +293,7 @@ export class ElicitationUnsupportedError extends Error {
 export class ElicitationDeclinedError extends Error {
     constructor(action: string) {
         super(
-            `[Vurb] Cannot access .data — the user ${action === 'decline' ? 'declined' : 'cancelled'} the elicitation. ` +
+            `[mcpfusion] Cannot access .data — the user ${action === 'decline' ? 'declined' : 'cancelled'} the elicitation. ` +
             `Check .declined or .cancelled before accessing .data.`,
         );
         this.name = 'ElicitationDeclinedError';

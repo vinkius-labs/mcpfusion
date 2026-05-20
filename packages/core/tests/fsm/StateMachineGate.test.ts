@@ -10,7 +10,7 @@
  * - Edge Cases: final states, invalid events, unbounded tools, empty FSM
  */
 import { describe, it, expect, vi } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { createTool } from '../../src/core/builder/GroupedToolBuilder.js';
 import { success } from '../../src/core/response.js';
 import { StateMachineGate } from '../../src/fsm/StateMachineGate.js';
@@ -379,12 +379,12 @@ describe('StateMachineGate — dispose', () => {
 });
 
 // ============================================================================
-// initVurb — f.fsm() factory
+// initMCPFusion — f.fsm() factory
 // ============================================================================
 
-describe('initVurb — f.fsm()', () => {
+describe('initMCPFusion — f.fsm()', () => {
     it('should create a StateMachineGate instance', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const gate = f.fsm(checkoutConfig);
 
         expect(gate).toBeInstanceOf(StateMachineGate);
@@ -392,7 +392,7 @@ describe('initVurb — f.fsm()', () => {
     });
 
     it('should create independent instances', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const gate1 = f.fsm(checkoutConfig);
         const gate2 = f.fsm(checkoutConfig);
 
@@ -408,7 +408,7 @@ describe('initVurb — f.fsm()', () => {
 
 describe('FluentToolBuilder — .bindState()', () => {
     it('should propagate FSM states to GroupedToolBuilder', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('cart.add_item')
             .describe('Add item to cart')
@@ -422,7 +422,7 @@ describe('FluentToolBuilder — .bindState()', () => {
     });
 
     it('should propagate without transition event', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('cart.view')
             .describe('View cart contents')
@@ -436,7 +436,7 @@ describe('FluentToolBuilder — .bindState()', () => {
     });
 
     it('should return undefined when no bindState is called', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('users.list')
             .describe('List users')
@@ -447,7 +447,7 @@ describe('FluentToolBuilder — .bindState()', () => {
     });
 
     it('should support single state string', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('cart.pay')
             .describe('Process payment')
@@ -461,7 +461,7 @@ describe('FluentToolBuilder — .bindState()', () => {
     });
 
     it('should be chainable with other fluent methods', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('cart.add_item')
             .describe('Add item to cart')
@@ -479,7 +479,7 @@ describe('FluentToolBuilder — .bindState()', () => {
     });
 
     it('.bindState() should coexist with .invalidates() and .cached()', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('cart.add_item')
             .describe('Add item')
@@ -641,7 +641,7 @@ describe('Integration — FSM State Gate Workflow', () => {
     });
 
     it('tools with .bindState() should still execute normally', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('cart.add_item')
             .describe('Add item to cart')

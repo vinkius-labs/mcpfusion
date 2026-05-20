@@ -1,7 +1,7 @@
 /**
- * @vurb/vercel
+ * @mcpfusion/vercel
  *
- * Vercel adapter for Vurb.
+ * Vercel adapter for MCP Fusion.
  *
  * @module
  */

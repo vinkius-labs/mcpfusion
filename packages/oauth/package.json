@@ -1,6 +1,6 @@
 {
-  "name": "@vurb/oauth",
-  "description": "OAuth 2.0 Device Authorization Grant (RFC 8628) for MCP servers built with vurb. Provides secure token storage, device flow authentication, and middleware integration.",
+  "name": "@mcpfusion/oauth",
+  "description": "OAuth 2.0 Device Authorization Grant (RFC 8628) for MCP servers built with MCP Fusion. Provides secure token storage, device flow authentication, and middleware integration.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "keywords": [
     "mcp",
-    "vurb",
+    "mcpfusion",
     "oauth",
     "device-flow",
     "rfc-8628",
@@ -29,13 +29,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/oauth"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -47,9 +47,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6"
+    "@mcpfusion/core": "^4.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {},
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

@@ -7,11 +7,11 @@
  *
  * **Invisible to the MCP protocol**: `Symbol` keys are ignored by
  * `JSON.stringify`, so the transport layer never sees this property.
- * But the VurbTester reads it in RAM for zero-regex assertion.
+ * But the MCPFusionTester reads it in RAM for zero-regex assertion.
  *
  * @example
  * ```typescript
- * import { MVA_META_SYMBOL, type MvaMeta } from '@vurb/core';
+ * import { MVA_META_SYMBOL, type MvaMeta } from '@mcpfusion/core';
  *
  * const response = await registry.routeCall(ctx, 'users', { action: 'list' });
  * const meta = (response as any)[MVA_META_SYMBOL] as MvaMeta | undefined;
@@ -31,7 +31,7 @@
  * Uses `Symbol.for()` to ensure cross-package identity — the testing
  * package references the same Symbol without importing the core.
  */
-export const MVA_META_SYMBOL = Symbol.for('vurb.mva-meta');
+export const MVA_META_SYMBOL = Symbol.for('mcpfusion.mva-meta');
 
 /**
  * Structured MVA metadata attached to ToolResponse via Symbol.

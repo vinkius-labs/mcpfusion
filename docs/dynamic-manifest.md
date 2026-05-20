@@ -1,7 +1,7 @@
 # Dynamic Manifest
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -16,12 +16,12 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 When an AI agent connects to your MCP server, it discovers tools via `tools/list`. But there's no way for it to understand the relationships between tools, which Presenters power which response, or which actions are safe to call in sequence.
 
-The Dynamic Manifest is a live `Vurb.ts://manifest.json` MCP Resource that describes every tool, action, and presenter on the server — including semantic metadata, schema shapes, and capability flags. An optional RBAC filter strips capabilities per session so unauthorized agents never see hidden tools.
+The Dynamic Manifest is a live `MCP Fusion://manifest.json` MCP Resource that describes every tool, action, and presenter on the server — including semantic metadata, schema shapes, and capability flags. An optional RBAC filter strips capabilities per session so unauthorized agents never see hidden tools.
 
 ## Quick Start {#quickstart}
 
 ```typescript
-import { ToolRegistry } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
 
 const registry = new ToolRegistry<AppContext>();
 registry.registerAll(projectsTool, invoicesTool, adminTool);
@@ -38,7 +38,7 @@ registry.attachToServer(server, {
 Clients read the manifest through the standard MCP Resource protocol:
 
 ```typescript
-const manifest = await client.readResource({ uri: 'Vurb.ts://manifest.json' });
+const manifest = await client.readResource({ uri: 'MCP Fusion://manifest.json' });
 ```
 
 ## Manifest Payload {#payload}
@@ -46,7 +46,7 @@ const manifest = await client.readResource({ uri: 'Vurb.ts://manifest.json' });
 ```json
 {
   "server": "my-platform",
-  "Vurb.ts_version": "1.0.0",
+  "fusion_version": "1.0.0",
   "architecture": "MVA (Model-View-Agent)",
   "capabilities": {
     "tools": {
@@ -144,7 +144,7 @@ filter: (manifest, ctx) => {
 ```typescript
 introspection: {
   enabled: true,
-  uri: 'Vurb.ts://v2/capabilities.json',
+  uri: 'MCP Fusion://v2/capabilities.json',
 },
 ```
 
@@ -153,17 +153,17 @@ introspection: {
 ```typescript
 interface IntrospectionConfig<TContext> {
   enabled: boolean;
-  uri?: string;                        // default: 'Vurb.ts://manifest.json'
+  uri?: string;                        // default: 'MCP Fusion://manifest.json'
   filter?: (manifest: ManifestPayload, ctx: TContext) => ManifestPayload;
 }
 ```
 
-`introspection.enabled` registers the manifest resource. `introspection.uri` overrides the default `Vurb.ts://manifest.json`. `introspection.filter` applies RBAC per session. `serverName` appears as the `server` field in the payload (default: `'Vurb.ts-server'`).
+`introspection.enabled` registers the manifest resource. `introspection.uri` overrides the default `MCP Fusion://manifest.json`. `introspection.filter` applies RBAC per session. `serverName` appears as the `server` field in the payload (default: `'fusion-server'`).
 
 ## How It Works {#internals}
 
 ```text
-resources/read (uri = Vurb.ts://manifest.json)
+resources/read (uri = MCP Fusion://manifest.json)
     │
     ▼
 compileManifest(serverName, builders)

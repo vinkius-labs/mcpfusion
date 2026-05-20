@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { rateLimit } from '@vurb/core';
+ * import { rateLimit } from '@mcpfusion/core';
  *
  * const billing = createTool('billing')
  *     .use(rateLimit({

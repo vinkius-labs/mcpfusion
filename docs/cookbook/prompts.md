@@ -1,7 +1,7 @@
 # Prompts
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -22,9 +22,9 @@ Think of prompts as slash commands: `/code-review --language=typescript --focus=
 Use `f.prompt(name)` to start a chainable builder. Arguments use the same declarative syntax as tool parameters — no Zod needed for simple cases:
 
 ```typescript
-import { initVurb, PromptMessage } from '@vurb/core';
+import { initMCPFusion, PromptMessage } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const codeReview = f.prompt('code-review')
   .title('Code Review')
@@ -95,7 +95,7 @@ const debugUI = f.prompt('debug-ui')
 The real power of prompts comes when you connect them to your MVA Presenters. `PromptMessage.fromView()` decomposes a Presenter's output into prompt messages — the same schema, rules, and affordances that your tools use:
 
 ```typescript
-import { createPresenter, PromptMessage, t } from '@vurb/core';
+import { createPresenter, PromptMessage, t } from '@mcpfusion/core';
 
 const ProjectPresenter = createPresenter('Project')
   .schema({

@@ -1,12 +1,12 @@
 /**
- * @vurb/jwt — JWT Verification for MCP Servers
+ * @mcpfusion/jwt — JWT Verification for MCP Servers
  *
  * Standards-compliant JWT verification with jose integration,
- * native HS256 fallback, and vurb middleware.
+ * native HS256 fallback, and MCP Fusion middleware.
  *
  * @example
  * ```ts
- * import { JwtVerifier, requireJwt, createJwtAuthTool } from '@vurb/jwt';
+ * import { JwtVerifier, requireJwt, createJwtAuthTool } from '@mcpfusion/jwt';
  *
  * // Middleware
  * const projects = createTool('projects')
@@ -18,7 +18,7 @@
  * const payload = await verifier.verify(token);
  * ```
  *
- * @module @vurb/jwt
+ * @module @mcpfusion/jwt
  * @author Vinkius Labs
  * @license Apache-2.0
  */

@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { ui } from '@vurb/core';
+ * import { ui } from '@mcpfusion/core';
  *
  * ui.echarts({ title: { text: 'Burndown' }, series: [...] });
  * ui.mermaid('graph TD; A-->B');
@@ -250,7 +250,7 @@ function summary(text: string, meta?: UiBlockMeta): UiBlock {
  *
  * @example
  * ```typescript
- * import { ui } from '@vurb/core';
+ * import { ui } from '@mcpfusion/core';
  *
  * // Quick table from arrays
  * ui.table(['Name', 'Status'], [['Alice', 'Active'], ['Bob', 'Inactive']]);

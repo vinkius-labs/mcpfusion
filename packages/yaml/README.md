@@ -1,16 +1,16 @@
-# @vurb/yaml
+# @mcpfusion/yaml
 
-> **Declarative MCP Server Engine** — define tools, resources, and prompts in `vurb.yaml`. The docker-compose for MCP servers.
+> **Declarative MCP Server Engine** — define tools, resources, and prompts in `mcpfusion.yaml`. The docker-compose for MCP servers.
 
-[![npm](https://img.shields.io/npm/v/@vurb/yaml.svg)](https://www.npmjs.com/package/@vurb/yaml)
+[![npm](https://img.shields.io/npm/v/@mcpfusion/yaml.svg)](https://www.npmjs.com/package/@mcpfusion/yaml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 
 ## What is this?
 
-Write a single `vurb.yaml` file and get a fully compliant MCP server — with tools, resources, prompts — **zero TypeScript required**.
+Write a single `mcpfusion.yaml` file and get a fully compliant MCP server — with tools, resources, prompts — **zero TypeScript required**.
 
 ```yaml
-# vurb.yaml
+# mcpfusion.yaml
 version: "1.0"
 
 server:
@@ -49,39 +49,39 @@ tools:
 ```
 
 ```bash
-vurb yaml dev             # → MCP server running on stdio
-vurb yaml validate        # → validates your manifest
+mcpfusion yaml dev             # → MCP server running on stdio
+mcpfusion yaml validate        # → validates your manifest
 ```
 
 ## Installation
 
 ```bash
-npm install @vurb/yaml
+npm install @mcpfusion/yaml
 ```
 
 ## CLI
 
 ```bash
 # Validate a manifest
-vurb yaml validate
-vurb yaml validate ./path/to/vurb.yaml
+mcpfusion yaml validate
+mcpfusion yaml validate ./path/to/mcpfusion.yaml
 
 # Start a local dev server (stdio)
-vurb yaml dev
+mcpfusion yaml dev
 
 # Start with Streamable HTTP transport
-vurb yaml dev --transport http --port 3001
+mcpfusion yaml dev --transport http --port 3001
 ```
 
 ## Programmatic API
 
 ```typescript
-import { loadYamlServer, createYamlMcpServer } from '@vurb/yaml';
+import { loadYamlServer, createYamlMcpServer } from '@mcpfusion/yaml';
 import { readFileSync } from 'fs';
 
 // 1. Parse, validate, and compile the YAML
 const compiled = await loadYamlServer(
-    readFileSync('vurb.yaml', 'utf-8'),
+    readFileSync('mcpfusion.yaml', 'utf-8'),
 );
 
 // 2. Create a real MCP server
@@ -232,7 +232,7 @@ settings:
 ## Architecture
 
 ```
-vurb.yaml → Parser → Validator → Compiler → MCP Server
+mcpfusion.yaml → Parser → Validator → Compiler → MCP Server
                                      │
                                      ├── ToolCompiler      → tools/list, tools/call
                                      ├── ResourceCompiler   → resources/list, resources/read
@@ -240,7 +240,7 @@ vurb.yaml → Parser → Validator → Compiler → MCP Server
                                      └── ResponseTransformer → dot-path extraction
 ```
 
-**Open-source** (`@vurb/yaml`): Local execution via `BasicToolExecutor` — plain `fetch()`, no guards.
+**Open-source** (`@mcpfusion/yaml`): Local execution via `BasicToolExecutor` — plain `fetch()`, no guards.
 
 **[Vinkius Cloud](https://vinkius.com)**: Enterprise execution with DLP redaction, SSRF protection, circuit breakers, FinOps token economy, and encrypted secret vault.
 

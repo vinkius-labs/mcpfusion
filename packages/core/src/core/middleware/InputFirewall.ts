@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { inputFirewall, createJudgeChain } from '@vurb/core';
+ * import { inputFirewall, createJudgeChain } from '@mcpfusion/core';
  *
  * const billing = createTool('billing')
  *     .use(inputFirewall({
@@ -197,7 +197,7 @@ function resolveChain(config: InputFirewallConfig): JudgeChain {
 
     if (!config.adapter) {
         throw new Error(
-            '[vurb] InputFirewall requires either an `adapter` or a `chain`. ' +
+            '[mcpfusion] InputFirewall requires either an `adapter` or a `chain`. ' +
             'Provide at least one LLM judge for input evaluation.',
         );
     }

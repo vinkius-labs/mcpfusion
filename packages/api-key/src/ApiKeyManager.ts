@@ -10,7 +10,7 @@
  *
  * @example
  * ```ts
- * import { ApiKeyManager } from '@vurb/api-key';
+ * import { ApiKeyManager } from '@mcpfusion/api-key';
  *
  * // Static keys
  * const manager = new ApiKeyManager({

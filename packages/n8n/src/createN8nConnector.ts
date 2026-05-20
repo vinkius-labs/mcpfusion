@@ -9,7 +9,7 @@ import type { N8nConnectorConfig, WebhookConfig } from './types.js';
 
 /**
  * The n8n connector — auto-discovers webhook workflows and produces
- * tool definitions ready for Vurb's `defineTool()`.
+ * tool definitions ready for MCP Fusion's `defineTool()`.
  *
  * ```typescript
  * const n8n = await createN8nConnector({

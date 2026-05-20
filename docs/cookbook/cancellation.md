@@ -9,7 +9,7 @@
 
 ## Introduction {#introduction}
 
-When the user clicks "Stop" or the connection drops, your handlers should stop immediately — not keep running a 30-second database query or holding a connection pool slot. Vurb.ts propagates `AbortSignal` through middleware, handlers, and generators. If the request is cancelled before the handler starts, it never executes.
+When the user clicks "Stop" or the connection drops, your handlers should stop immediately — not keep running a 30-second database query or holding a connection pool slot. MCP Fusion propagates `AbortSignal` through middleware, handlers, and generators. If the request is cancelled before the handler starts, it never executes.
 
 ## Extracting the Signal {#extracting}
 
@@ -36,7 +36,7 @@ The framework also checks `signal.aborted` internally before running the middlew
 Forward `ctx.signal` to any async I/O — `fetch`, database drivers, file operations:
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const heavyQuery = f.query('analytics.heavy_query')
   .describe('Run a heavy analytics query')

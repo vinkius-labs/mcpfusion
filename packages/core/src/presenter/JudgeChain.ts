@@ -128,7 +128,7 @@ export interface JudgeChain {
  *
  * @example
  * ```typescript
- * import { createJudgeChain } from '@vurb/core';
+ * import { createJudgeChain } from '@mcpfusion/core';
  *
  * const chain = createJudgeChain({
  *     adapters: [
@@ -145,7 +145,7 @@ export interface JudgeChain {
  */
 export function createJudgeChain(config: JudgeChainConfig): JudgeChain {
     if (config.adapters.length === 0) {
-        throw new Error('[vurb] JudgeChain requires at least one adapter.');
+        throw new Error('[mcpfusion] JudgeChain requires at least one adapter.');
     }
 
     const resolved: Required<JudgeChainConfig> = {

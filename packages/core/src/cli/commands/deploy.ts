@@ -1,9 +1,9 @@
 /**
- * `vurb deploy` — bundle, compress & upload to Edge.
+ * `mcpfusion deploy` — bundle, compress & upload to Edge.
  *
  * Produces a Fat Bundle (IIFE, platform: browser) that is fully
  * self-contained for execution in a V8 Isolate. All dependencies
- * (zod, vurb, MCP SDK) are bundled inside. Node.js built-in
+ * (zod, MCP Fusion, MCP SDK) are bundled inside. Node.js built-in
  * modules are aliased to edge-stub.ts (AST-compatible stubs).
  *
  * @module
@@ -17,7 +17,7 @@ import type { CliArgs } from '../args.js';
 import { ProgressTracker } from '../progress.js';
 import { ansi, VINKIUS_CLOUD_URL } from '../constants.js';
 import { ask, inferServerEntry } from '../utils.js';
-import { loadEnv, readVurbRc } from '../rc.js';
+import { loadEnv, readMCPFusionrc } from '../rc.js';
 import { readMarketplaceManifest, normalizeMarketplacePayload } from '../MarketplaceManifest.js';
 import type * as EsbuildNS from 'esbuild';
 
@@ -71,7 +71,7 @@ function sanitizeBundleForEdge(code: string): string {
         .replace(/Reflect\.setPrototypeOf\s*\(/g, 'Reflect["setPrototypeOf"](')
         // .__proto__ = or .__proto__[ → ["__proto__"] = or ["__proto__"][
         .replace(/\.__proto__\s*([=[])/g, '["__proto__"]$1')
-        // ── @vurb/core internal patterns (legitimate framework code) ─────────
+        // ── @mcpfusion/core internal patterns (legitimate framework code) ─────────
         // __vinkius_secrets → \u005f_vinkius_secrets — Unicode escape breaks regex
         // while remaining a valid JS identifier (V8 treats \u005f as '_')
         .replace(/__vinkius_secrets/g, '\\u005f_vinkius_secrets')
@@ -85,18 +85,18 @@ function sanitizeBundleForEdge(code: string): string {
 
 function edgeStubPlugin(): EsbuildNS.Plugin {
     return {
-        name: 'vurb-edge-stub',
+        name: 'mcpfusion-edge-stub',
         setup(build) {
             // edge-stub.js lives at dist/edge-stub.js; this file is at dist/cli/commands/deploy.js
             const stubPath = fileURLToPath(new URL('../../edge-stub.js', import.meta.url));
             const stubPathEscaped = JSON.stringify(stubPath);
 
             // ── Deduplicate MCP SDK ──────────────────────────────────────────
-            // @vurb/core already bundles @modelcontextprotocol/sdk internally.
+            // @mcpfusion/core already bundles @modelcontextprotocol/sdk internally.
             // When users also list it as a direct dependency (very common),
             // esbuild bundles a second copy (~200KB). Intercepting these
             // imports and providing empty modules prevents the duplication —
-            // @vurb/core's bundled copy satisfies all type/runtime needs.
+            // @mcpfusion/core's bundled copy satisfies all type/runtime needs.
             build.onResolve({ filter: /^@modelcontextprotocol\/sdk(\/.*)?$/ }, (args) => ({
                 path: args.path,
                 namespace: 'mcp-sdk-dedup',
@@ -146,10 +146,10 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
     progress.start('read-config', 'Reading configuration');
     loadEnv(cwd);
 
-    const rc = readVurbRc(cwd);
+    const rc = readMCPFusionrc(cwd);
     const remote = rc.remote ?? VINKIUS_CLOUD_URL;
     const serverId = rc.serverId;
-    const token = args.token ?? process.env['VURB_DEPLOY_TOKEN'] ?? rc.token;
+    const token = args.token ?? process.env['MCPFUSION_DEPLOY_TOKEN'] ?? rc.token;
 
     // warn when token would be sent over plaintext HTTP
     if (token && remote && !args.allowInsecure) {
@@ -165,11 +165,11 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
     }
 
     if (!serverId) {
-        progress.fail('read-config', 'Reading configuration', 'run: vurb remote --server-id <uuid>');
+        progress.fail('read-config', 'Reading configuration', 'run: mcpfusion remote --server-id <uuid>');
         process.exit(1);
     }
     if (!token) {
-        progress.fail('read-config', 'Reading configuration', 'run: vurb token <token> or set VURB_DEPLOY_TOKEN in .env');
+        progress.fail('read-config', 'Reading configuration', 'run: mcpfusion token <token> or set MCPFUSION_DEPLOY_TOKEN in .env');
         process.exit(1);
     }
     progress.done('read-config', 'Reading configuration');
@@ -312,7 +312,7 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
     progress.done('compress', `Compressing (${rawKB}KB -> ${compressedKB}KB gzip, ${ratio}% smaller)`);
 
     // ── Step 5b: introspect tools via real registry ──
-    // Import the entrypoint with VURB_INTROSPECT=1 so startServer() returns
+    // Import the entrypoint with MCPFUSION_INTROSPECT=1 so startServer() returns
     // immediately without starting a transport. Then compile contracts and
     // generate the lockfile manifest — the deploy's cryptographic signature.
     progress.start('introspect', 'Introspecting tools');
@@ -336,8 +336,8 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
         const introspectReady = new Promise<IntrospectResult>(resolve => {
             resolveIntrospect = resolve;
         });
-        g.__vurb_introspect_resolve = resolveIntrospect;
-        process.env['VURB_INTROSPECT'] = '1';
+        g.__MCPFUSION_INTROSPECT_resolve = resolveIntrospect;
+        process.env['MCPFUSION_INTROSPECT'] = '1';
 
         // Build a separate Node-compatible ESM bundle for introspection.
         // The edge bundle uses platform:'browser' + edgeStubPlugin which stubs
@@ -355,7 +355,7 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
             write: false,
             logLevel: 'silent',
             // Native addons (.node binaries) cannot be bundled by esbuild.
-            // This surfaces when @vurb/core is npm-linked (development) and
+            // This surfaces when @mcpfusion/core is npm-linked (development) and
             // transitive native deps like isolated-vm are in the resolution tree.
             external: ['isolated-vm'],
         });
@@ -367,7 +367,7 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
 
         // Write adjacent to entrypoint (not tmpdir) — autoDiscover resolves
         // paths via import.meta.url; a temp-dir location breaks relative lookups.
-        const tmpBundle = join(dirname(absEntry), `.vurb-introspect-${Date.now()}.mjs`);
+        const tmpBundle = join(dirname(absEntry), `.mcpfusion-introspect-${Date.now()}.mjs`);
         writeFileSync(tmpBundle, introspectCode, 'utf-8');
 
         try {
@@ -385,18 +385,18 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
         ]);
 
         // Clean up
-        delete process.env['VURB_INTROSPECT'];
-        delete g.__vurb_introspect_resolve;
-        delete g.__vurb_introspect_result;
+        delete process.env['MCPFUSION_INTROSPECT'];
+        delete g.__MCPFUSION_INTROSPECT_resolve;
+        delete g.__MCPFUSION_INTROSPECT_result;
 
         // Compile contracts and generate lockfile using existing introspection
         const { compileContracts } = await import('../../introspection/ToolContract.js');
         const { generateLockfile } = await import('../../introspection/CapabilityLockfile.js');
-        const { VURB_VERSION } = await import('../constants.js');
+        const { MCPFUSION_VERSION } = await import('../constants.js');
 
         const builders = [...result.registry.getBuilders()];
         const contracts = await compileContracts(builders as Parameters<typeof compileContracts>[0]);
-        const lockfile = await generateLockfile(result.serverName, contracts, VURB_VERSION);
+        const lockfile = await generateLockfile(result.serverName, contracts, MCPFUSION_VERSION);
 
         manifest = lockfile as unknown as Record<string, unknown>;
 
@@ -436,7 +436,7 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
         progress.done('introspect', 'Introspecting tools', `${toolNames.length} tool${toolNames.length !== 1 ? 's' : ''}`);
     } catch (err) {
         // Introspection failure is non-fatal — deploy proceeds without manifest
-        delete process.env['VURB_INTROSPECT'];
+        delete process.env['MCPFUSION_INTROSPECT'];
         progress.done('introspect', 'Introspecting tools', 'skipped');
         process.stderr.write(`  ${ansi.dim(`⚠ Could not introspect: ${err instanceof Error ? err.message : String(err)}`)}\n`);
     }

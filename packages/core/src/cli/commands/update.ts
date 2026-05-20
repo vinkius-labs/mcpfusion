@@ -1,11 +1,11 @@
 /**
- * `vurb update` — update all @vurb/* packages to the latest version.
+ * `mcpfusion update` — update all @mcpfusion/* packages to the latest version.
  * @module
  */
 import type { CliArgs } from '../args.js';
 import { ansi } from '../constants.js';
 import {
-    scanDeclaredVurbPackages,
+    scanDeclaredFusionPackages,
     getInstalledVersion,
     fetchLatestVersion,
 } from '../npm-registry.js';
@@ -24,12 +24,12 @@ interface UpdateEntry {
 export async function commandUpdate(args: CliArgs): Promise<void> {
     const cwd = args.cwd;
 
-    process.stderr.write(`\n  ${ansi.bold('Vurb Update')}\n\n`);
+    process.stderr.write(`\n  ${ansi.bold('mcpfusion update')}\n\n`);
 
-    // 1. Scan declared @vurb/* packages
-    const declared = scanDeclaredVurbPackages(cwd);
+    // 1. Scan declared @mcpfusion/* packages
+    const declared = scanDeclaredFusionPackages(cwd);
     if (declared.length === 0) {
-        process.stderr.write(`  ${ansi.yellow('⚠')} No @vurb/* packages found in package.json\n\n`);
+        process.stderr.write(`  ${ansi.yellow('⚠')} No @mcpfusion/* packages found in package.json\n\n`);
         return;
     }
 

@@ -2,7 +2,7 @@
  * CapabilityLockfile Tests
  *
  * Verifies lockfile generation, serialization, verification,
- * and the `vurb lock --check` CI gate semantics.
+ * and the `mcpfusion lock --check` CI gate semantics.
  *
  * @module
  */
@@ -96,8 +96,8 @@ async function createContract(overrides: Partial<{
 // ============================================================================
 
 describe('LOCKFILE_NAME', () => {
-    it('is vurb.lock', async () => {
-        expect(LOCKFILE_NAME).toBe('vurb.lock');
+    it('is mcpfusion.lock', async () => {
+        expect(LOCKFILE_NAME).toBe('mcpfusion.lock');
     });
 });
 
@@ -116,7 +116,7 @@ describe('generateLockfile', () => {
 
         expect(lockfile.lockfileVersion).toBe(1);
         expect(lockfile.serverName).toBe('my-server');
-        expect(lockfile.vurbVersion).toBe('1.1.0');
+        expect(lockfile.mcpfusionVersion).toBe('1.1.0');
         expect(lockfile.integrityDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
         expect(lockfile.generatedAt).toBeTruthy();
     });
@@ -342,12 +342,12 @@ describe('parseLockfile', () => {
             lockfileVersion: 1,
             serverName: 'srv',
             integrityDigest: 'sha256:abc',
-            vurbVersion: '1.0.0',
+            mcpfusionVersion: '1.0.0',
             capabilities: { tools: {} },
         }))).toBeNull();
     });
 
-    it('returns null for missing vurbVersion', async () => {
+    it('returns null for missing mcpfusionVersion', async () => {
         expect(parseLockfile(JSON.stringify({
             lockfileVersion: 1,
             serverName: 'srv',
@@ -363,7 +363,7 @@ describe('parseLockfile', () => {
             serverName: 'srv',
             integrityDigest: 'sha256:abc',
             generatedAt: '2025-01-01T00:00:00Z',
-            vurbVersion: '1.0.0',
+            mcpfusionVersion: '1.0.0',
             capabilities: {},
         }))).toBeNull();
     });
@@ -426,7 +426,7 @@ describe('checkLockfile', () => {
         expect(result.ok).toBe(false);
         expect(result.added).toContain('tasks');
         expect(result.message).toContain('stale');
-        expect(result.message).toContain('vurb lock');
+        expect(result.message).toContain('mcpfusion lock');
     });
 
     it('detects removed tools', async () => {
@@ -516,7 +516,7 @@ describe('checkLockfile', () => {
         expect(result.changed).toContain('users');
     });
 
-    it('message suggests running vurb lock', async () => {
+    it('message suggests running mcpfusion lock', async () => {
         const lockfile = await generateLockfile('srv', {
             users: await createContract({ name: 'users' }),
         }, '1.1.0');
@@ -524,7 +524,7 @@ describe('checkLockfile', () => {
         const result = await checkLockfile(lockfile, {});
 
         expect(result.ok).toBe(false);
-        expect(result.message).toContain('vurb lock');
+        expect(result.message).toContain('mcpfusion lock');
     });
 });
 
@@ -567,7 +567,7 @@ describe('Lockfile workflow', () => {
             users: await createContract({ name: 'users', description: 'V1', filesystem: true }),
         };
 
-        // CI runs `vurb lock --check`
+        // CI runs `mcpfusion lock --check`
         const parsed = parseLockfile(json)!;
         const result = await checkLockfile(parsed, v2Contracts);
 
@@ -594,7 +594,7 @@ describe('Lockfile workflow', () => {
         // Verify structure matches the documented format
         expect(lockfile).toHaveProperty('lockfileVersion', 1);
         expect(lockfile).toHaveProperty('serverName', 'protocol-gap-demo');
-        expect(lockfile).toHaveProperty('vurbVersion', '1.1.0');
+        expect(lockfile).toHaveProperty('mcpfusionVersion', '1.1.0');
         expect(lockfile).toHaveProperty('generatedAt');
         expect(lockfile).toHaveProperty('integrityDigest');
         expect(lockfile).toHaveProperty('capabilities.tools.task');

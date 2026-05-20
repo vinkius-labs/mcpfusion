@@ -21,7 +21,7 @@ Every optimization documented here exists in the codebase. Features that are not
 
 ### Middleware Chain Compilation
 
-Traditional middleware frameworks resolve and compose middleware chains **on every request** — N function lookups per call. **Vurb.ts** avoids this by pre-compiling middleware chains at build time.
+Traditional middleware frameworks resolve and compose middleware chains **on every request** — N function lookups per call. **MCP Fusion** avoids this by pre-compiling middleware chains at build time.
 
 When `buildToolDefinition()` is called (or lazily on first `execute()`), the `MiddlewareCompiler` wraps middlewares right-to-left around each handler **once**, producing a single ready-to-call function per action:
 
@@ -125,7 +125,7 @@ buildToolDefinition(): McpTool {
 
 ## 3. Zero-Overhead Observability {#observability}
 
-The debug observer pattern in **Vurb.ts** is designed so that **when disabled, the hot path has zero conditionals**:
+The debug observer pattern in **MCP Fusion** is designed so that **when disabled, the hot path has zero conditionals**:
 
 ```typescript
 // From: packages/core/src/core/builder/GroupedToolBuilder.ts — execute()
@@ -444,7 +444,7 @@ Critical performance modules are implemented as pure functions with **no state a
 
 ## 13. Minimal Dependency Footprint {#dependencies}
 
-**Vurb.ts** ships with only **2 runtime dependencies**:
+**MCP Fusion** ships with only **2 runtime dependencies**:
 
 ```json
 {

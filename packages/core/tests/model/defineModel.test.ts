@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
 import { defineModel, ModelBuilder, FieldDef, compileFieldForInput } from '../../src/model/defineModel.js';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success } from '../../src/core/response.js';
 
 // ============================================================================
@@ -441,7 +441,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel(model, "create") should add fillable create fields', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('task.create')
             .fromModel(TaskModel, 'create')
             .handle(async (input) => success(input));
@@ -456,7 +456,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel(model, "filter") should add fillable filter fields as optional', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.query('task.filter')
             .fromModel(TaskModel, 'filter')
             .handle(async (input) => success(input));
@@ -467,7 +467,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel() should throw on invalid profile name', () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         expect(() => {
             f.query('task.delete')
                 .fromModel(TaskModel, 'delete')
@@ -480,7 +480,7 @@ describe('.fromModel() Integration', () => {
             m.casts({ title: m.string('Title') });
             m.fillable({ create: ['title', 'nonexistent'] });
         });
-        const f = initVurb();
+        const f = initMCPFusion();
         expect(() => {
             f.mutation('broken.create')
                 .fromModel(brokenModel, 'create')
@@ -489,7 +489,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel() can be combined with .withStrings() for extra params', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('task.create')
             .fromModel(TaskModel, 'create')
             .withStrings({
@@ -507,7 +507,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel("create") should make fields required by default', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('task.create')
             .fromModel(TaskModel, 'create')
             .handle(async (input) => success(input));
@@ -518,7 +518,7 @@ describe('.fromModel() Integration', () => {
     });
 
     it('.fromModel("update") should make all fields optional', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('task.update')
             .fromModel(TaskModel, 'update')
             .handle(async (input) => success(input));
@@ -739,7 +739,7 @@ describe('.fromModel() — Error Handling', () => {
             m.casts({ title: m.string('Title') });
             m.fillable({ create: ['title'], update: ['title'] });
         });
-        const f = initVurb();
+        const f = initMCPFusion();
         try {
             f.query('task.search').fromModel(model, 'search').handle(async () => success('ok'));
             expect.fail('Should have thrown');
@@ -757,7 +757,7 @@ describe('.fromModel() — Error Handling', () => {
             m.casts({ name: m.string('Name') });
             m.fillable({ create: ['name', 'ghost_field'] });
         });
-        const f = initVurb();
+        const f = initMCPFusion();
         try {
             f.mutation('widget.create').fromModel(model, 'create').handle(async () => success('ok'));
             expect.fail('Should have thrown');
@@ -773,7 +773,7 @@ describe('.fromModel() — Error Handling', () => {
         const model = defineModel('Empty', m => {
             m.casts({ title: m.string('Title') });
         });
-        const f = initVurb();
+        const f = initMCPFusion();
         expect(() => {
             f.query('empty.list').fromModel(model, 'list').handle(async () => success('ok'));
         }).toThrow(/no fillable profile/);
@@ -806,7 +806,7 @@ describe('Edge Cases — Empty & Minimal Models', () => {
             m.casts({ name: m.string('Name') });
             m.fillable({ create: ['name'] });
         });
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('single.create')
             .fromModel(model, 'create')
             .handle(async (input) => success(input));
@@ -920,7 +920,7 @@ describe('Adversarial Inputs — Runtime Validation', () => {
     });
 
     it('should reject extra unknown fields (strict validation)', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('strict.create')
             .fromModel(Model, 'create')
             .handle(async (input) => success(input));
@@ -938,7 +938,7 @@ describe('Adversarial Inputs — Runtime Validation', () => {
     });
 
     it('should reject entirely wrong input shape', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('strict.create')
             .fromModel(Model, 'create')
             .handle(async (input) => success(input));
@@ -955,7 +955,7 @@ describe('Adversarial Inputs — Runtime Validation', () => {
     });
 
     it('should reject SQL injection strings but accept valid strings', async () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const tool = f.mutation('strict.create')
             .fromModel(Model, 'create')
             .handle(async (input) => success(input));

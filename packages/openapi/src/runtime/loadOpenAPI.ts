@@ -8,7 +8,7 @@
  * @example
  * ```typescript
  * import { loadOpenAPI } from '@vinkius-core/openapi-gen';
- * import { ToolRegistry } from '@vurb/core';
+ * import { ToolRegistry } from '@mcpfusion/core';
  *
  * const tools = loadOpenAPI(specYaml, { baseUrl: 'https://api.example.com' });
  * const registry = new ToolRegistry();

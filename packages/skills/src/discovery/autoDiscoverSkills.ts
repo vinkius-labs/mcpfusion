@@ -4,7 +4,7 @@
  * Recursively walks a directory looking for SKILL.md files,
  * parses them, and registers them in a SkillRegistry.
  *
- * Follows the same pattern as `vurb`'s `autoDiscover()`.
+ * Follows the same pattern as `@mcpfusion/core`'s `autoDiscover()`.
  *
  * @module
  */
@@ -192,5 +192,5 @@ function defaultErrorHandler(skillPath: string, error: unknown): void {
     const msg = error instanceof Error ? error.message : String(error);
     // Avoid leaking full server paths — show only the directory name
     const safePath = skillPath.split(/[\\/]/).pop() ?? skillPath;
-    console.error(`[vurb/skills] Failed to parse ${safePath}: ${msg}`);
+    console.error(`[mcpfusion/skills] Failed to parse ${safePath}: ${msg}`);
 }

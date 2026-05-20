@@ -20,7 +20,7 @@ export function systemPresenterTs(): string {
         ' * - ui.markdown() server-rendered UI blocks',
         ' * - suggestActions() for HATEOAS-style affordances',
         ' */',
-        "import { definePresenter, ui } from '@vurb/core';",
+        "import { definePresenter, ui } from '@mcpfusion/core';",
         "import { SystemModel } from '../models/SystemModel.js';",
         '',
         'export const SystemPresenter = definePresenter({',

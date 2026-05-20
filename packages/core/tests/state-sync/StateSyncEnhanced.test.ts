@@ -96,8 +96,8 @@ describe('StateSyncLayer — notificationSink', () => {
 
         expect(notifications).toHaveLength(2);
         expect(notifications[0].method).toBe('notifications/resources/updated');
-        expect(notifications[0].params.uri).toBe('vurb://stale/billing.invoices.*');
-        expect(notifications[1].params.uri).toBe('vurb://stale/reports.balance');
+        expect(notifications[0].params.uri).toBe('mcpfusion://stale/billing.invoices.*');
+        expect(notifications[1].params.uri).toBe('mcpfusion://stale/reports.balance');
     });
 
     it('should NOT emit notifications on error responses', () => {

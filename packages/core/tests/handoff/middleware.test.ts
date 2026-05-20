@@ -14,7 +14,7 @@ function makeCtx(token?: string): unknown {
     if (!token) return {};
     return {
         requestInfo: {
-            headers: { 'x-vurb-delegation': token },
+            headers: { 'x-mcpfusion-delegation': token },
         },
     };
 }
@@ -22,12 +22,12 @@ function makeCtx(token?: string): unknown {
 /** Builds a context with headers in flat/fallback format (plain HTTP). */
 function makeFlatCtx(token?: string): unknown {
     if (!token) return {};
-    return { headers: { 'x-vurb-delegation': token } };
+    return { headers: { 'x-mcpfusion-delegation': token } };
 }
 
 describe('requireGatewayClearance — success paths', () => {
     it('should inject handoffScope, handoffTid and handoffState', async () => {
-        const token = await mintDelegationToken('finance', 60, SECRET, 'vurb-gateway', { userId: 'u-1' });
+        const token = await mintDelegationToken('finance', 60, SECRET, 'mcpfusion-gateway', { userId: 'u-1' });
         const middleware = requireGatewayClearance(SECRET);
         const ctx = await middleware(makeCtx(token));
 

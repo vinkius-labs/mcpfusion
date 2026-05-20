@@ -1,28 +1,28 @@
 <p align="center">
-  <h1 align="center">@vurb/oauth</h1>
+  <h1 align="center">@mcpfusion/oauth</h1>
   <p align="center">
-    <strong>MCP OAuth 2.0 Authentication for Vurb.ts</strong> — A framework for creating secure MCP servers<br/>
+    <strong>MCP OAuth 2.0 Authentication for MCP Fusion</strong> — A framework for creating secure MCP servers<br/>
     RFC 8628 Device Flow · Secure token storage · Drop-in auth tool · Provider-agnostic
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/oauth"><img src="https://img.shields.io/npm/v/@vurb/oauth?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/oauth"><img src="https://img.shields.io/npm/v/@mcpfusion/oauth?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP OAuth 2.0 Authentication for Vurb.ts** — the Model Context Protocol framework for building production MCP servers. RFC 8628 Device Authorization Grant, secure token storage (0o600 permissions), pre-built auth tool, and `requireAuth()` middleware with self-healing error hints.
+> **MCP OAuth 2.0 Authentication for MCP Fusion** — the Model Context Protocol framework for building production MCP servers. RFC 8628 Device Authorization Grant, secure token storage (0o600 permissions), pre-built auth tool, and `requireAuth()` middleware with self-healing error hints.
 
 ## Quick Start
 
 ```typescript
-import { createAuthTool, TokenManager } from '@vurb/oauth';
-import { ToolRegistry, createTool } from '@vurb/core';
+import { createAuthTool, TokenManager } from '@mcpfusion/oauth';
+import { ToolRegistry, createTool } from '@mcpfusion/core';
 
 const auth = createAuthTool({
     clientId: 'your-client-id',
@@ -50,7 +50,7 @@ registry.register(auth);
 ## requireAuth Middleware
 
 ```typescript
-import { requireAuth } from '@vurb/oauth';
+import { requireAuth } from '@mcpfusion/oauth';
 
 const projects = createTool('projects')
     .use(requireAuth({
@@ -85,20 +85,20 @@ Returns a `GroupedToolBuilder` with 4 actions: `login`, `complete`, `status`, `l
 ## Installation
 
 ```bash
-npm install @vurb/oauth
+npm install @mcpfusion/oauth
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^2.0.0` |
+| `@mcpfusion/core` | `^2.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
-- **Vurb.ts** ≥ 2.0.0 (peer dependency)
+- **MCP Fusion** ≥ 2.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

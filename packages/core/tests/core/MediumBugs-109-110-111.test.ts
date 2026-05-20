@@ -6,7 +6,7 @@
  * Bug #111 — prependSystem/appendSystem uses wrong role
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success } from '../../src/core/response.js';
 import { defineMiddleware } from '../../src/core/middleware/ContextDerivation.js';
 import { definePrompt, PromptMessage } from '../../src/prompt/index.js';
@@ -16,34 +16,34 @@ import { PromptRegistry } from '../../src/prompt/PromptRegistry.js';
 
 describe('Bug #109 — Multi-dot tool names crash with clear error', () => {
     it('should throw on triple-dot name like "admin.users.list"', () => {
-        const f = initVurb<Record<string, unknown>>();
+        const f = initMCPFusion<Record<string, unknown>>();
         expect(() =>
             f.query('admin.users.list').handle(async () => success('ok')),
         ).toThrow(/too many dot-separated segments/i);
     });
 
     it('should throw on double-dot name like "a.b.c.d"', () => {
-        const f = initVurb<Record<string, unknown>>();
+        const f = initMCPFusion<Record<string, unknown>>();
         expect(() =>
             f.mutation('a.b.c.d').handle(async () => success('ok')),
         ).toThrow(/too many dot-separated segments/i);
     });
 
     it('should accept single-dot name like "users.list"', () => {
-        const f = initVurb<Record<string, unknown>>();
+        const f = initMCPFusion<Record<string, unknown>>();
         const tool = f.query('users.list').handle(async () => success('ok'));
         expect(tool.getName()).toBe('users');
         expect(tool.getActionNames()).toContain('list');
     });
 
     it('should accept no-dot name like "ping"', () => {
-        const f = initVurb<Record<string, unknown>>();
+        const f = initMCPFusion<Record<string, unknown>>();
         const tool = f.query('ping').handle(async () => success('ok'));
         expect(tool.getName()).toBe('ping');
     });
 
     it('error message should include the offending tool name', () => {
-        const f = initVurb<Record<string, unknown>>();
+        const f = initMCPFusion<Record<string, unknown>>();
         expect(() =>
             f.query('x.y.z').handle(async () => success('ok')),
         ).toThrow(/x\.y\.z/);

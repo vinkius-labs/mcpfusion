@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { Role, createAnnotations } from '@vurb/core';
+ * import { Role, createAnnotations } from '@mcpfusion/core';
  *
  * const annotations = createAnnotations({
  *     audience: [Role.USER, Role.ASSISTANT],

@@ -23,7 +23,7 @@ describe('Bug #129 — autoDiscover router action dedup', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-        tempDir = join(tmpdir(), `vurb-dedup-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        tempDir = join(tmpdir(), `mcpfusion-dedup-${Date.now()}-${Math.random().toString(36).slice(2)}`);
         await fs.mkdir(tempDir, { recursive: true });
     });
 
@@ -33,7 +33,7 @@ describe('Bug #129 — autoDiscover router action dedup', () => {
 
     it('registers all exported builders from a file with the same getName()', async () => {
         // Simulate a router file that exports 3 action builders, all returning
-        // the same getName() value (as routers do in Vurb.ts)
+        // the same getName() value (as routers do in MCP Fusion)
         const fileContent = `
             const builder1 = { getName() { return 'my_router'; }, id: 1 };
             const builder2 = { getName() { return 'my_router'; }, id: 2 };

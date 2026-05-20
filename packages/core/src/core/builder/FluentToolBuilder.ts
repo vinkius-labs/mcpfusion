@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  *
  * const listUsers = f.query('users.list')
  *     .describe('List users from the database')
@@ -21,7 +21,7 @@
  * ```
  *
  * @see {@link FluentRouter} for prefix grouping
- * @see {@link initVurb} for the factory that creates these builders
+ * @see {@link initMCPFusion} for the factory that creates these builders
  *
  * @module
  */
@@ -70,7 +70,7 @@ function withDesc<T extends ZodType>(schema: T, description?: string): T {
 /**
  * Fluent builder that accumulates types at each step.
  *
- * @typeParam TContext - Base application context (from `initVurb<TContext>()`)
+ * @typeParam TContext - Base application context (from `initMCPFusion<TContext>()`)
  * @typeParam TInput - Accumulated input type (built by `with*()` methods)
  * @typeParam TCtx - Accumulated context type (enriched by `.use()`)
  */
@@ -979,7 +979,7 @@ export class FluentToolBuilder<
      *
      * @example
      * ```typescript
-     * import { ask } from '@vurb/core';
+     * import { ask } from '@mcpfusion/core';
      *
      * const deploy = f.mutation('infra.deploy')
      *     .withString('app_id', 'Application ID')

@@ -1,5 +1,5 @@
 /**
- * `vurb validate` — live server smoke test.
+ * `mcpfusion validate` — live server smoke test.
  *
  * Boots the server via introspection, validates all tools/prompts/resources,
  * checks schema consistency, handler coverage, and lockfile drift.
@@ -48,9 +48,9 @@ function printResult(r: CheckResult): void {
 // ─── Lockfile drift ──────────────────────────────────────────────
 
 function checkLockfileDrift(cwd: string, report: IntrospectionReport): CheckResult {
-    const lockfilePath = resolve(cwd, 'vurb.lock');
+    const lockfilePath = resolve(cwd, 'mcpfusion.lock');
     if (!existsSync(lockfilePath)) {
-        return warn('Lockfile', 'vurb.lock not found — run: vurb lock');
+        return warn('Lockfile', 'mcpfusion.lock not found — run: mcpfusion lock');
     }
 
     try {
@@ -60,9 +60,9 @@ function checkLockfileDrift(cwd: string, report: IntrospectionReport): CheckResu
         const freshSha = createHash('sha256').update(freshJson).digest('hex').slice(0, 12);
 
         if (diskSha === freshSha) {
-            return pass('Lockfile', `vurb.lock matches — no drift ${ansi.dim(`(${diskSha})`)}`);
+            return pass('Lockfile', `mcpfusion.lock matches — no drift ${ansi.dim(`(${diskSha})`)}`);
         }
-        return warn('Lockfile', `drift detected (disk:${diskSha} ≠ live:${freshSha}) — run: vurb lock`);
+        return warn('Lockfile', `drift detected (disk:${diskSha} ≠ live:${freshSha}) — run: mcpfusion lock`);
     } catch (err) {
         return warn('Lockfile', `could not read: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -131,7 +131,7 @@ function analyzeTools(report: IntrospectionReport): CheckResult[] {
 export async function commandValidate(args: CliArgs): Promise<void> {
     const cwd = args.cwd;
 
-    process.stderr.write(`\n  ${ansi.bold('Vurb Validate')} ${ansi.dim('— Live Server Check')}\n\n`);
+    process.stderr.write(`\n  ${ansi.bold('mcpfusion validate')} ${ansi.dim('— Live Server Check')}\n\n`);
 
     // 1. Resolve entrypoint
     const serverPath = args.server ?? inferServerEntry(cwd);

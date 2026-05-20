@@ -1,22 +1,22 @@
 <p align="center">
-  <h1 align="center">@vurb/skills</h1>
+  <h1 align="center">@mcpfusion/skills</h1>
   <p align="center">
-    <strong>MCP Agent Skills for Vurb.ts</strong> — A framework for teaching AI agents via MCP servers<br/>
+    <strong>MCP Agent Skills for MCP Fusion</strong> — A framework for teaching AI agents via MCP servers<br/>
     Progressive SKILL.md disclosure · Domain expertise over MCP · Context-efficient · agentskills.io standard
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/skills"><img src="https://img.shields.io/npm/v/@vurb/skills?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/skills"><img src="https://img.shields.io/npm/v/@mcpfusion/skills?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Agent Skills for Vurb.ts**, the Model Context Protocol framework for building production MCP servers. Parse, validate, search, and serve **SKILL.md** files via MCP — context-efficient three-layer progressive disclosure keeps agent context windows lean.
+> **MCP Agent Skills for MCP Fusion**, the Model Context Protocol framework for building production MCP servers. Parse, validate, search, and serve **SKILL.md** files via MCP — context-efficient three-layer progressive disclosure keeps agent context windows lean.
 
 ## What Are Agent Skills?
 
@@ -61,7 +61,7 @@ Step-by-step instructions for the agent...
 
 ## Progressive Disclosure
 
-Instead of flooding the agent's context with every skill, `@vurb/skills` serves information in three layers:
+Instead of flooding the agent's context with every skill, `@mcpfusion/skills` serves information in three layers:
 
 ```
 Layer 1 — Search     → Lightweight metadata (id, name, description)
@@ -74,15 +74,15 @@ This mirrors how developers browse documentation: **search → read overview →
 ## Quick Start
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 import {
     SkillRegistry,
     autoDiscoverSkills,
     createSkillTools,
-} from '@vurb/skills';
+} from '@mcpfusion/skills';
 
 // 1. Initialize
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 const skills = new SkillRegistry();
 
 // 2. Discover skills from a directory
@@ -111,7 +111,7 @@ Three tools are now available to any connected agent:
 Parse `SKILL.md` files with YAML frontmatter extraction:
 
 ```typescript
-import { parseSkillMd } from '@vurb/skills';
+import { parseSkillMd } from '@mcpfusion/skills';
 
 const skill = parseSkillMd(markdownContent, '/path/to/skill', ['scripts/run.sh']);
 // → { id, name, description, instructions, frontmatter, files }
@@ -120,7 +120,7 @@ const skill = parseSkillMd(markdownContent, '/path/to/skill', ['scripts/run.sh']
 For lower-level control:
 
 ```typescript
-import { extractFrontmatter, toSkillFrontmatter } from '@vurb/skills';
+import { extractFrontmatter, toSkillFrontmatter } from '@mcpfusion/skills';
 
 const { frontmatter, body } = extractFrontmatter(rawContent);
 const typed = toSkillFrontmatter(frontmatter);
@@ -131,7 +131,7 @@ const typed = toSkillFrontmatter(frontmatter);
 Validate skills against the [agentskills.io](https://agentskills.io) specification:
 
 ```typescript
-import { validateSkill, formatValidationIssues } from '@vurb/skills';
+import { validateSkill, formatValidationIssues } from '@mcpfusion/skills';
 
 const result = validateSkill(skill.frontmatter);
 
@@ -153,7 +153,7 @@ Validation checks include:
 MiniSearch-powered search engine with prefix matching, fuzzy search, and field boosting:
 
 ```typescript
-import { FullTextSearchEngine } from '@vurb/skills';
+import { FullTextSearchEngine } from '@mcpfusion/skills';
 
 const engine = new FullTextSearchEngine();
 engine.rebuild([
@@ -170,7 +170,7 @@ const results = engine.search('extract pdf', 5);
 Central hub for skill management with built-in validation and search:
 
 ```typescript
-import { SkillRegistry } from '@vurb/skills';
+import { SkillRegistry } from '@mcpfusion/skills';
 
 const registry = new SkillRegistry({
     validateOnRegister: true,   // enforce spec compliance
@@ -198,7 +198,7 @@ const file = await registry.readFile('pdf-processing', 'scripts/extract.py');
 Recursively scan directories for `SKILL.md` files:
 
 ```typescript
-import { SkillRegistry, autoDiscoverSkills } from '@vurb/skills';
+import { SkillRegistry, autoDiscoverSkills } from '@mcpfusion/skills';
 
 const skills = new SkillRegistry();
 
@@ -223,7 +223,7 @@ skills/SKILL.md                # Single skill at root
 Generate ready-to-use MCP tools with a single call:
 
 ```typescript
-import { createSkillTools } from '@vurb/skills';
+import { createSkillTools } from '@mcpfusion/skills';
 
 const tools = createSkillTools(f, registry, {
     prefix: 'skills',      // tool name prefix (default: 'skills')
@@ -231,7 +231,7 @@ const tools = createSkillTools(f, registry, {
 });
 ```
 
-The factory uses duck-typed interfaces — it works with any object that implements the `query()` fluent builder pattern, avoiding hard coupling to `Vurb.ts` internals.
+The factory uses duck-typed interfaces — it works with any object that implements the `query()` fluent builder pattern, avoiding hard coupling to `@mcpfusion/core` internals.
 
 ### Security
 
@@ -291,21 +291,21 @@ interface SkillFileContent {
 ## Installation
 
 ```bash
-npm install @vurb/skills
+npm install @mcpfusion/skills
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^3.0.0` |
+| `@mcpfusion/core` | `^3.0.0` |
 | `zod` | `^3.25.1 \|\| ^4.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
-- **Vurb.ts** ≥ 3.0.0 (peer dependency)
+- **MCP Fusion** ≥ 3.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

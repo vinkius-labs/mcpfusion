@@ -159,7 +159,7 @@ describe('Vercel Adapter', () => {
             await handler(createRequest());
 
             expect(mockServerConstructor).toHaveBeenCalledWith({
-                name: 'vurb-vercel',
+                name: 'mcpfusion-vercel',
                 version: '1.0.0',
             });
         });

@@ -1,26 +1,26 @@
 /**
- * vurb yaml — Subcommand handler for the @vurb/yaml plugin
+ * mcpfusion yaml — Subcommand handler for the @mcpfusion/yaml plugin
  *
- * This module is dynamically imported by the `vurb` CLI when the user runs
- * `vurb yaml <subcommand>`. It is NOT a standalone CLI binary.
+ * This module is dynamically imported by the `mcpfusion` CLI when the user runs
+ * `mcpfusion yaml <subcommand>`. It is NOT a standalone CLI binary.
  *
  * ## DX
  * ```bash
- * vurb yaml validate               # validate a vurb.yaml manifest
- * vurb yaml dev                     # start local MCP server (stdio)
- * vurb yaml dev --transport http    # start with Streamable HTTP
- * vurb yaml dev --port 3001         # custom port for HTTP transport
+ * mcpfusion yaml validate               # validate a mcpfusion.yaml manifest
+ * mcpfusion yaml dev                     # start local MCP server (stdio)
+ * mcpfusion yaml dev --transport http    # start with Streamable HTTP
+ * mcpfusion yaml dev --port 3001         # custom port for HTTP transport
  * ```
  *
  * @module
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { parseVurbYaml, VurbYamlError } from '../parser/VurbYamlParser.js';
+import { parseMCPFusionYaml, MCPFusionYamlError } from '../parser/MCPFusionYamlParser.js';
 import { loadYamlServer } from '../runtime/LocalServer.js';
 import { createYamlMcpServer } from '../runtime/YamlMcpServer.js';
 
-// ── ANSI (match @vurb/core style) ────────────────────────
+// ── ANSI (match @mcpfusion/core style) ────────────────────────
 
 const RST = '\x1b[0m';
 const RED = '\x1b[31m';
@@ -45,39 +45,39 @@ function findYamlFile(fileArg?: string): string {
         return abs;
     }
 
-    for (const name of ['vurb.yaml', 'vurb.yml']) {
+    for (const name of ['mcpfusion.yaml', 'mcpfusion.yml']) {
         const abs = resolve(name);
         if (existsSync(abs)) return abs;
     }
 
-    log(`${RED}✗ No vurb.yaml found in current directory.${RST}`);
-    log(`${DIM}  Create one or specify a path: vurb yaml dev ./path/to/vurb.yaml${RST}`);
+    log(`${RED}✗ No mcpfusion.yaml found in current directory.${RST}`);
+    log(`${DIM}  Create one or specify a path: mcpfusion yaml dev ./path/to/mcpfusion.yaml${RST}`);
     process.exit(1);
 }
 
 // ── Help ─────────────────────────────────────────────────
 
 export const YAML_HELP = `
-${BLD}vurb yaml${RST} — Declarative MCP Server Engine
+${BLD}mcpfusion yaml${RST} — Declarative MCP Server Engine
 
 ${BLD}USAGE${RST}
-  vurb yaml validate [file]          Validate a vurb.yaml manifest
-  vurb yaml dev [file]               Start a local MCP dev server
-  vurb yaml deploy [file]            Deploy manifest to Vinkius Cloud
+  mcpfusion yaml validate [file]          Validate a mcpfusion.yaml manifest
+  mcpfusion yaml dev [file]               Start a local MCP dev server
+  mcpfusion yaml deploy [file]            Deploy manifest to Vinkius Cloud
 
 ${BLD}DEV OPTIONS${RST}
   --transport, -t ${CYN}<stdio|http>${RST}   Transport layer (default: stdio)
   --port, -p ${CYN}<number>${RST}            HTTP port (default: 3001)
 
 ${BLD}DEPLOY OPTIONS${RST}
-  --token ${CYN}<token>${RST}                Connection token (or use .vurbrc / VURB_DEPLOY_TOKEN)
+  --token ${CYN}<token>${RST}                Connection token (or use .MCPFusionrc / MCPFUSION_DEPLOY_TOKEN)
 
 ${BLD}EXAMPLES${RST}
-  ${DIM}vurb yaml validate${RST}
-  ${DIM}vurb yaml dev${RST}
-  ${DIM}vurb yaml dev --transport http --port 8080${RST}
-  ${DIM}vurb yaml deploy${RST}
-  ${DIM}vurb yaml deploy ./servers/my-api/vurb.yaml --token vk_xxxxx${RST}
+  ${DIM}mcpfusion yaml validate${RST}
+  ${DIM}mcpfusion yaml dev${RST}
+  ${DIM}mcpfusion yaml dev --transport http --port 8080${RST}
+  ${DIM}mcpfusion yaml deploy${RST}
+  ${DIM}mcpfusion yaml deploy ./servers/my-api/mcpfusion.yaml --token vk_xxxxx${RST}
 `.trim();
 
 // ── Internal Arg Parser ──────────────────────────────────
@@ -101,7 +101,7 @@ function parseYamlArgs(argv: string[]): YamlArgs {
         help: false,
     };
 
-    // argv: ['node', 'vurb', 'yaml', 'dev', '--port', '3001', ...]
+    // argv: ['node', 'mcpfusion', 'yaml', 'dev', '--port', '3001', ...]
     // We start parsing from index 3 (after 'yaml')
     const args = argv.slice(3);
     const positional: string[] = [];
@@ -136,9 +136,9 @@ async function subValidate(fileArg: string | undefined): Promise<void> {
     log(`${DIM}Validating ${filePath}...${RST}`);
 
     try {
-        const spec = parseVurbYaml(yaml);
+        const spec = parseMCPFusionYaml(yaml);
 
-        log(`${GRN}✓ Valid vurb.yaml${RST}`);
+        log(`${GRN}✓ Valid mcpfusion.yaml${RST}`);
         log('');
         log(`  ${BLD}Server:${RST}      ${spec.server.name}`);
         if (spec.server.description) {
@@ -159,7 +159,7 @@ async function subValidate(fileArg: string | undefined): Promise<void> {
             }
         }
     } catch (e) {
-        if (e instanceof VurbYamlError) {
+        if (e instanceof MCPFusionYamlError) {
             log(`${RED}✗ Validation failed${RST}`);
             log('');
             for (const err of e.details ?? [e.message]) {
@@ -184,7 +184,7 @@ async function subDev(
     try {
         const compiled = await loadYamlServer(yaml);
 
-        log(`${GRN}✓ vurb.yaml compiled${RST}`);
+        log(`${GRN}✓ mcpfusion.yaml compiled${RST}`);
         log(`  ${BLD}${compiled.tools.length}${RST} tools, ${BLD}${compiled.resources.length}${RST} resources, ${BLD}${compiled.prompts.length}${RST} prompts`);
 
         if (compiled.settings?.dlp?.enabled || compiled.settings?.finops?.enabled) {
@@ -200,7 +200,7 @@ async function subDev(
             process.exit(0);
         });
     } catch (e) {
-        if (e instanceof VurbYamlError) {
+        if (e instanceof MCPFusionYamlError) {
             log(`${RED}✗ Failed to compile${RST}`);
             for (const err of e.details ?? [e.message]) {
                 log(`  ${RED}•${RST} ${err}`);
@@ -232,11 +232,11 @@ async function subDeploy(
     // ── 1. Local validation ──────────────────────────────
     log(`${DIM}Validating ${filePath}...${RST}`);
 
-    let spec: ReturnType<typeof parseVurbYaml>;
+    let spec: ReturnType<typeof parseMCPFusionYaml>;
     try {
-        spec = parseVurbYaml(yaml);
+        spec = parseMCPFusionYaml(yaml);
     } catch (e) {
-        if (e instanceof VurbYamlError) {
+        if (e instanceof MCPFusionYamlError) {
             log(`${RED}✗ Validation failed — fix errors before deploying${RST}`);
             for (const err of e.details ?? [e.message]) {
                 log(`  ${RED}•${RST} ${err}`);
@@ -246,29 +246,29 @@ async function subDeploy(
         throw e;
     }
 
-    log(`${GRN}✓ Valid vurb.yaml${RST}  ${spec.tools?.length ?? 0} tools, ${spec.resources?.length ?? 0} resources, ${spec.prompts?.length ?? 0} prompts`);
+    log(`${GRN}✓ Valid mcpfusion.yaml${RST}  ${spec.tools?.length ?? 0} tools, ${spec.resources?.length ?? 0} resources, ${spec.prompts?.length ?? 0} prompts`);
 
     // ── 2. Resolve credentials ───────────────────────────
-    // Priority: --token flag > VURB_DEPLOY_TOKEN env > .vurbrc
-    let token = tokenArg ?? process.env['VURB_DEPLOY_TOKEN'];
+    // Priority: --token flag > MCPFUSION_DEPLOY_TOKEN env > .MCPFusionrc
+    let token = tokenArg ?? process.env['MCPFUSION_DEPLOY_TOKEN'];
     let serverId: string | undefined;
     let remote = VINKIUS_CLOUD_URL;
 
     try {
-        const { readVurbRc, loadEnv } = await import('@vurb/core/cli');
+        const { readMCPFusionrc, loadEnv } = await import('@mcpfusion/core/cli');
         const cwd = process.cwd();
         loadEnv(cwd);
-        const rc = readVurbRc(cwd);
+        const rc = readMCPFusionrc(cwd);
         if (!token) token = rc.token;
         serverId = rc.serverId;
         if (rc.remote) remote = rc.remote;
     } catch {
-        // @vurb/core/cli not available — rely on env/flag only
+        // @mcpfusion/core/cli not available — rely on env/flag only
     }
 
     if (!token) {
         log(`${RED}✗ No deploy token found${RST}`);
-        log(`  ${DIM}Set via: --token <token>, VURB_DEPLOY_TOKEN env, or vurb token <token>${RST}`);
+        log(`  ${DIM}Set via: --token <token>, MCPFUSION_DEPLOY_TOKEN env, or mcpfusion token <token>${RST}`);
         process.exit(1);
     }
 
@@ -289,7 +289,7 @@ async function subDeploy(
                 log(`  ${GRN}✓${RST} ${info.server_name} ${DIM}(${serverId})${RST}`);
             } else {
                 log(`${RED}✗ Token rejected (HTTP ${infoRes.status})${RST}`);
-                log(`  ${DIM}Check your token or set serverId in .vurbrc${RST}`);
+                log(`  ${DIM}Check your token or set serverId in .MCPFusionrc${RST}`);
                 process.exit(1);
             }
         } catch (e) {
@@ -382,20 +382,20 @@ async function subDeploy(
     log('');
 }
 
-// ── Entry Point (called by @vurb/core CLI) ───────────────
+// ── Entry Point (called by @mcpfusion/core CLI) ───────────────
 
 /**
- * Handle the `vurb yaml` command group.
+ * Handle the `mcpfusion yaml` command group.
  *
- * Called by the core `vurb` CLI via dynamic import when the user runs
- * any `vurb yaml ...` command. The raw `process.argv` is re-parsed
+ * Called by the core `mcpfusion` CLI via dynamic import when the user runs
+ * any `mcpfusion yaml ...` command. The raw `process.argv` is re-parsed
  * internally to extract yaml-specific subcommands and flags.
  *
  * @example
  * ```typescript
- * // Inside @vurb/core vurb.ts:
+ * // Inside @mcpfusion/core mcpfusion.ts:
  * case 'yaml': {
- *     const { commandYaml } = await import('@vurb/yaml');
+ *     const { commandYaml } = await import('@mcpfusion/yaml');
  *     await commandYaml();
  *     break;
  * }

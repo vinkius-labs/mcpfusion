@@ -6,7 +6,7 @@
  * cognitive guardrails, middleware chain, state-sync policies) into
  * a single, serializable, diffable, hashable artifact.
  *
- * **Key insight**: Vurb's Presenter is not just a response
+ * **Key insight**: MCP Fusion's Presenter is not just a response
  * formatter — it's a declarative behavioral specification. The Zod
  * schema, system rules, agent limits, and affordances are all
  * explicit, serializable contracts. By materializing them into a

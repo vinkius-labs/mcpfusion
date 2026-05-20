@@ -1,11 +1,11 @@
 # Enterprise Quickstart
 
-A production-grade MCP server with JWT authentication, tenant isolation, field-level data protection, audit logging, and cognitive affordances. Uses [@vurb/oauth](/oauth) for OAuth Device Flow (RFC 8628). About 5 minutes of work.
+A production-grade MCP server with JWT authentication, tenant isolation, field-level data protection, audit logging, and cognitive affordances. Uses [@mcpfusion/oauth](/oauth) for OAuth Device Flow (RFC 8628). About 5 minutes of work.
 
 By the end, unauthenticated requests are rejected before any handler runs. A `viewer`-role agent receives user records _without_ email addresses. An `admin`-role agent sees everything — same tool, same handler, different perception.
 
 ::: tip Let your AI agent scaffold this entire pipeline
-Vurb.ts ships a **[SKILL.md](https://agentskills.io)** — a machine-readable architectural contract. Instead of following these steps manually, point your agent at the spec and prompt:
+MCP Fusion ships a **[SKILL.md](https://agentskills.io)** — a machine-readable architectural contract. Instead of following these steps manually, point your agent at the spec and prompt:
 
 ```
 "Build an MCP server with JWT auth, tenant isolation, role-based
@@ -30,28 +30,28 @@ Each stage has one job. If any stage throws, everything after it is skipped — 
 ## Step 1 — Scaffold with Lightspeed {#step-1-scaffold}
 
 ```bash
-vurb create secure-api --vector oauth --transport sse --yes
+mcpfusion create secure-api --vector oauth --transport sse --yes
 cd secure-api
 ```
 
 The CLI scaffolds a complete project with OAuth middleware, SSE transport, `autoDiscover()`, Vitest, and pre-configured IDE connections — all dependencies installed. You're ready to code in seconds.
 
 ::: tip Manual setup?
-If you prefer manual setup: `npm install @vurb/core @modelcontextprotocol/sdk zod` — then follow the [Traditional Quickstart](/quickstart).
+If you prefer manual setup: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — then follow the [Traditional Quickstart](/quickstart).
 :::
 
 ## Step 2 — Define Your Context Type {#step-2-context-type}
 
 ```typescript
-// src/vurb.ts
-import { initVurb } from '@vurb/core';
+// src/MCP Fusion
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   db: PrismaClient;
   user: { id: string; role: 'admin' | 'viewer'; tenantId: string };
 }
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 ```
 
 The `f` object provides typed factory methods — `f.query()`, `f.mutation()`, `f.action()`, `f.presenter()`, `f.middleware()`, `f.registry()` — that all inherit `AppContext`. TypeScript knows `ctx.user.tenantId` is a `string` in every handler.
@@ -84,11 +84,11 @@ For multiple sequential stages — authentication, then rate limiting, then feat
 For enterprise environments with an OAuth provider, use the [OAuth Device Flow](/oauth) module:
 
 ```bash
-npm install @vurb/oauth
+npm install @mcpfusion/oauth
 ```
 
 ```typescript
-import { createAuthTool, requireAuth } from '@vurb/oauth';
+import { createAuthTool, requireAuth } from '@mcpfusion/oauth';
 
 const auth = createAuthTool<AppContext>({
     clientId: process.env.OAUTH_CLIENT_ID!,
@@ -109,7 +109,7 @@ Instead of excluding what shouldn't be in the response, declare what _should_. T
 
 ```typescript
 // src/presenters/user.presenter.ts
-import { createPresenter, t, suggest } from '@vurb/core';
+import { createPresenter, t, suggest } from '@mcpfusion/core';
 
 export const UserPresenter = createPresenter('User')
   .schema({
@@ -140,7 +140,7 @@ The database row has 10+ fields. The agent sees 5. When a developer adds a new c
 
 ```typescript
 // src/tools/users/list.ts
-import { f } from '../../vurb.js';
+import { f } from '../../MCP Fusion.js';
 import { authMiddleware } from '../../middleware/auth.js';
 import { UserPresenter } from '../../presenters/user.presenter.js';
 
@@ -166,7 +166,7 @@ The handler has one job — query the database with tenant scope. Authentication
 
 ```typescript
 // src/tools/users/delete.ts
-import { f } from '../../vurb.js';
+import { f } from '../../MCP Fusion.js';
 import { authMiddleware } from '../../middleware/auth.js';
 
 export default f.mutation('users.delete')
@@ -193,10 +193,10 @@ export default f.mutation('users.delete')
 ## Step 6 — Run {#step-6-run}
 
 ```bash
-vurb dev
+mcpfusion dev
 ```
 
-`vurb dev` starts with `autoDiscover()`, SSE transport, observability, and **HMR** — edit any tool, middleware, or Presenter and the server reloads instantly. No manual restarts during development. See [HMR Dev Server](/cookbook/hmr-dev-server) for configuration details.
+`mcpfusion dev` starts with `autoDiscover()`, SSE transport, observability, and **HMR** — edit any tool, middleware, or Presenter and the server reloads instantly. No manual restarts during development. See [HMR Dev Server](/cookbook/hmr-dev-server) for configuration details.
 
 Connect it to your MCP client:
 
@@ -236,17 +236,17 @@ Same JSON format — add to `~/.codeium/windsurf/mcp_config.json` (Windsurf), `c
 Deploy your enterprise MCP server to Vinkius Cloud's global edge with built-in DLP, kill switch, audit logging, FinOps controls, and a managed MCP token:
 
 ```bash
-vurb deploy
+mcpfusion deploy
 ```
 
 The CLI packages your server, deploys it, and returns a connection token. Every deployment is protected by eight layers of security out of the box. Share the token with any MCP client and they connect instantly — no infrastructure to manage.
 
 ```bash
 # Deploy with a custom server name
-vurb deploy --name secure-api
+mcpfusion deploy --name secure-api
 
 # Deploy to a specific environment
-vurb deploy --env production
+mcpfusion deploy --env production
 ```
 
 [Learn more about Vinkius Cloud →](https://docs.vinkius.com/getting-started)
@@ -286,12 +286,12 @@ Both adapters use `enableJsonResponse: true` — pure JSON-RPC request/response 
 #### Vercel — Next.js App Router
 
 ```bash
-npm install @vurb/vercel
+npm install @mcpfusion/vercel
 ```
 
 ```typescript
 // app/api/mcp/route.ts
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 
 export const POST = vercelAdapter<AppContext>({
   registry,
@@ -311,12 +311,12 @@ See [Vercel Adapter](/vercel-adapter) for Edge vs Node.js runtime comparison and
 #### Cloudflare Workers — Global Edge with D1 & KV
 
 ```bash
-npm install @vurb/cloudflare
+npm install @mcpfusion/cloudflare
 ```
 
 ```typescript
 // src/worker.ts
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 
 export interface Env { DB: D1Database; CACHE: KVNamespace; API_SECRET: string }
 

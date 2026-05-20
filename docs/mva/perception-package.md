@@ -1,6 +1,6 @@
 # The Structured Perception Package
 
-When a tool handler returns raw data and a Presenter is attached, Vurb.ts's execution pipeline transforms that data into a **Structured Perception Package** — a multi-block MCP response where each block carries a specific semantic purpose. This page documents the exact structure, the block ordering, and why each layer exists.
+When a tool handler returns raw data and a Presenter is attached, MCP Fusion's execution pipeline transforms that data into a **Structured Perception Package** — a multi-block MCP response where each block carries a specific semantic purpose. This page documents the exact structure, the block ordering, and why each layer exists.
 
 ## The Six Blocks
 
@@ -197,7 +197,7 @@ The difference is architectural, not cosmetic. The AI operating on the second re
 Not all responses need a Presenter. The `ResponseBuilder` allows manual composition for handlers that need full control:
 
 ```typescript
-import { response, ui } from '@vurb/core';
+import { response, ui } from '@mcpfusion/core';
 
 handler: async (ctx, args) => {
     const stats = await ctx.analytics.getMonthlyStats();

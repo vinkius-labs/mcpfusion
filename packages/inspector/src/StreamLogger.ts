@@ -9,13 +9,13 @@
  * Features:
  *   - **Trace ID**: Short hex correlator (e.g., [a7b9]) for isolating
  *     a single request lifecycle across concurrent log streams.
- *   - **JSON mode**: Set `VURB_LOG_FORMAT=json` for structured NDJSON
+ *   - **JSON mode**: Set `MCPFUSION_LOG_FORMAT=json` for structured NDJSON
  *     output that CloudWatch/Datadog/ELK ingest natively.
  *
  * Usage:
- *   vurb dv --out stderr
- *   vurb dv --out stderr --demo
- *   VURB_LOG_FORMAT=json vurb dv --out stderr --demo
+ *   mcpfusion dv --out stderr
+ *   mcpfusion dv --out stderr --demo
+ *   MCPFUSION_LOG_FORMAT=json mcpfusion dv --out stderr --demo
  *
  * @module
  */
@@ -23,14 +23,14 @@ import * as net from 'node:net';
 import {
     getTelemetryPath, discoverSockets,
     type TelemetryEvent,
-} from '@vurb/core';
+} from '@mcpfusion/core';
 
 // ============================================================================
 // ANSI (minimal — respects NO_COLOR)
 // ============================================================================
 
 const useColor = !process.env['NO_COLOR'] && process.stderr.isTTY !== false;
-const useJsonFormat = process.env['VURB_LOG_FORMAT'] === 'json';
+const useJsonFormat = process.env['MCPFUSION_LOG_FORMAT'] === 'json';
 const c = {
     reset: useColor ? '\x1b[0m' : '',
     dim: useColor ? '\x1b[2m' : '',
@@ -129,7 +129,7 @@ export function formatEvent(event: TelemetryEvent): string {
 }
 
 // ============================================================================
-// JSON Formatter (for VURB_LOG_FORMAT=json)
+// JSON Formatter (for MCPFUSION_LOG_FORMAT=json)
 // ============================================================================
 
 /**
@@ -193,7 +193,7 @@ export async function streamToStderr(options: StreamLoggerOptions = {}): Promise
             ipcPath = sockets[0]!.path;
         } else {
             process.stderr.write(
-                `${c.red}✗${c.reset} No Vurb servers found.\n` +
+                `${c.red}✗${c.reset} No MCP mcpfusion servers found.\n` +
                 `  Start a server with telemetry or use ${c.bold}--demo${c.reset}\n`,
             );
             process.exit(1);

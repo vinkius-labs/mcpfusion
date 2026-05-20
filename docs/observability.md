@@ -1,7 +1,7 @@
 # Observability
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -16,12 +16,12 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 Debugging MCP tool calls is hard — the LLM sends a request, your server processes it through validation, middleware, and handlers, and the response goes back. Without observability, you're blind to what happened between request and response.
 
-Vurb.ts emits structured events at each pipeline stage. When debug is off (default), the hot path has **zero runtime overhead** — no conditionals, no observer objects, no `Date.now()` calls. Events only flow when you opt in.
+MCP Fusion emits structured events at each pipeline stage. When debug is off (default), the hot path has **zero runtime overhead** — no conditionals, no observer objects, no `Date.now()` calls. Events only flow when you opt in.
 
 ## Quick Start {#quickstart}
 
 ```typescript
-import { ToolRegistry, createDebugObserver } from '@vurb/core';
+import { ToolRegistry, createDebugObserver } from '@mcpfusion/core';
 
 const registry = new ToolRegistry<AppContext>();
 registry.registerAll(projectsTool, usersTool, billingTool);
@@ -33,9 +33,9 @@ registry.attachToServer(server, {
 ```
 
 ```
-[Vurb.ts] route     projects/list
-[Vurb.ts] validate  projects/list ✓ 0.2ms
-[Vurb.ts] execute   projects/list ✓ 14.3ms
+[fusion] route     projects/list
+[fusion] validate  projects/list ✓ 0.2ms
+[fusion] execute   projects/list ✓ 14.3ms
 ```
 
 ## Attachment Levels {#levels}
@@ -62,7 +62,7 @@ registry.enableDebug(createDebugObserver());
 ## createDebugObserver() {#factory}
 
 ```typescript
-import { createDebugObserver } from '@vurb/core';
+import { createDebugObserver } from '@mcpfusion/core';
 
 // Default — pretty console.debug output
 const observer = createDebugObserver();
@@ -176,7 +176,7 @@ The [governance](/governance/) stack emits `GovernanceEvent` objects through the
 **`createGovernanceObserver()`** wraps governance operations with debug events and optional tracing spans:
 
 ```typescript
-import { createGovernanceObserver, createNoopObserver } from 'Vurb.ts/introspection';
+import { createGovernanceObserver, createNoopObserver } from '@mcpfusion/core/introspection';
 
 const observer = createGovernanceObserver({
   debug: createDebugObserver(),

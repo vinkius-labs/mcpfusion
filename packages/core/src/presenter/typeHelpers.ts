@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { createPresenter, t, ui } from '@vurb/core';
+ * import { createPresenter, t, ui } from '@mcpfusion/core';
  *
  * const InvoicePresenter = createPresenter('Invoice')
  *     .schema({

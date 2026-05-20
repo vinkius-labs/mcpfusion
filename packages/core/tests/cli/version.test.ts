@@ -1,5 +1,5 @@
 /**
- * `vurb version` — Unit Tests
+ * `mcpfusion version` — Unit Tests
  *
  * Covers:
  *   - Happy path: prints CLI version, Node.js, OS
@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseArgs, HELP, VURB_VERSION } from '../../src/cli/vurb.js';
+import { parseArgs, HELP, MCPFUSION_VERSION } from '../../src/cli/mcpfusion.js';
 import { commandVersion } from '../../src/cli/commands/version.js';
 
 // ─── Stderr capture ──────────────────────────────────────────────
@@ -37,7 +37,7 @@ function captureStderr(fn: () => Promise<void>): Promise<string> {
 }
 
 function makeTmp(): string {
-    const dir = join(tmpdir(), `vurb-ver-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = join(tmpdir(), `mcpfusion-ver-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(dir, { recursive: true });
     return dir;
 }
@@ -48,15 +48,15 @@ function makeTmp(): string {
 
 describe('parseArgs recognizes version command', () => {
     it('parses "version" command', () => {
-        expect(parseArgs(['node', 'vurb', 'version']).command).toBe('version');
+        expect(parseArgs(['node', 'mcpfusion', 'version']).command).toBe('version');
     });
 
     it('parses "-v" shortcut', () => {
-        expect(parseArgs(['node', 'vurb', '-v']).command).toBe('version');
+        expect(parseArgs(['node', 'mcpfusion', '-v']).command).toBe('version');
     });
 
     it('parses "--version" flag', () => {
-        expect(parseArgs(['node', 'vurb', '--version']).command).toBe('version');
+        expect(parseArgs(['node', 'mcpfusion', '--version']).command).toBe('version');
     });
 });
 
@@ -74,19 +74,19 @@ describe('commandVersion', () => {
             commandVersion({ command: 'version', cwd: tmpDir, check: false, help: false }),
         );
 
-        expect(output).toContain('Vurb CLI');
-        expect(output).toContain(VURB_VERSION);
+        expect(output).toContain('MCP Fusion CLI');
+        expect(output).toContain(MCPFUSION_VERSION);
         expect(output).toContain(process.version); // Node.js
         expect(output).toContain(process.platform);
         expect(output).toContain(process.arch);
     });
 
-    it('displays installed @vurb packages when present', async () => {
+    it('displays installed @mcpfusion packages when present', async () => {
         // Create fake installed packages
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
-            dependencies: { '@vurb/core': '^3.0.0' },
+            dependencies: { '@mcpfusion/core': '^3.0.0' },
         }));
-        const pkgDir = join(tmpDir, 'node_modules', '@vurb', 'core');
+        const pkgDir = join(tmpDir, 'node_modules', '@mcpfusion', 'core');
         mkdirSync(pkgDir, { recursive: true });
         writeFileSync(join(pkgDir, 'package.json'), JSON.stringify({ version: '3.11.1' }));
 
@@ -95,11 +95,11 @@ describe('commandVersion', () => {
         );
 
         expect(output).toContain('Installed Packages');
-        expect(output).toContain('@vurb/core');
+        expect(output).toContain('@mcpfusion/core');
         expect(output).toContain('3.11.1');
     });
 
-    it('skips package list when no @vurb packages installed', async () => {
+    it('skips package list when no @mcpfusion packages installed', async () => {
         writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
             dependencies: { 'express': '^4.0.0' },
         }));
@@ -116,8 +116,8 @@ describe('commandVersion', () => {
             commandVersion({ command: 'version', cwd: tmpDir, check: false, help: false }),
         );
 
-        expect(output).toContain('Vurb CLI');
-        expect(output).toContain(VURB_VERSION);
+        expect(output).toContain('MCP Fusion CLI');
+        expect(output).toContain(MCPFUSION_VERSION);
         expect(output).not.toContain('Installed Packages');
     });
 });
@@ -128,18 +128,18 @@ describe('commandVersion', () => {
 
 describe('HELP text includes version command', () => {
     it('contains version command entry', () => {
-        expect(HELP).toContain('vurb version');
+        expect(HELP).toContain('mcpfusion version');
     });
 
     it('contains update command entry', () => {
-        expect(HELP).toContain('vurb update');
+        expect(HELP).toContain('mcpfusion update');
     });
 
     it('contains doctor command entry', () => {
-        expect(HELP).toContain('vurb doctor');
+        expect(HELP).toContain('mcpfusion doctor');
     });
 
     it('contains validate command entry', () => {
-        expect(HELP).toContain('vurb validate');
+        expect(HELP).toContain('mcpfusion validate');
     });
 });

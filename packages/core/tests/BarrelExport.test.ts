@@ -68,6 +68,6 @@ describe('Client Barrel Export (src/client/index.ts)', () => {
     it('should export all client symbols from the client sub-path', async () => {
         const mod = await import('../src/client/index.js');
 
-        expect(mod.createVurbClient).toBeTypeOf('function');
+        expect(mod.createMCPFusionClient).toBeTypeOf('function');
     });
 });

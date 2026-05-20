@@ -148,7 +148,7 @@ function runGenerate(rawArgs: RawCliArgs): void {
 
 function printHelp(): void {
     console.log(`
-openapi-gen — OpenAPI → Vurb Server Generator
+openapi-gen — OpenAPI → MCP mcpfusion Server Generator
 
 USAGE:
   openapi-gen generate -i <spec> -o <outDir> [options]

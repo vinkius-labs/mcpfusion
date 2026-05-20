@@ -15,7 +15,7 @@ In a large MCP server with 100+ tools, you don't always want the agent to see ev
 Tag your tools during definition:
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const listInvoices = f.query('billing.list')
   .describe('List invoices')

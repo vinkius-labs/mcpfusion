@@ -6,10 +6,10 @@ description: "Every assertion pattern for MvaTestResult — data, systemRules, u
 # Assertions
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
-The `VurbTester` returns `MvaTestResult` objects. Every field in the result maps to a specific MVA pipeline layer. This page documents every assertion pattern.
+The `MCPFusionTester` returns `MvaTestResult` objects. Every field in the result maps to a specific MVA pipeline layer. This page documents every assertion pattern.
 
 ## `result.data` — Egress Firewall Output
 
@@ -238,7 +238,7 @@ expect(json).not.toContain('passwordHash');
 ### Assert Symbol accessibility
 
 ```typescript
-import { MVA_META_SYMBOL } from '@vurb/core';
+import { MVA_META_SYMBOL } from '@mcpfusion/core';
 
 const meta = (result.rawResponse as any)[MVA_META_SYMBOL];
 expect(meta).toBeDefined();

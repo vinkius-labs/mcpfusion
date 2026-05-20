@@ -1,22 +1,22 @@
 <p align="center">
-  <h1 align="center">@vurb/inspector</h1>
+  <h1 align="center">@mcpfusion/inspector</h1>
   <p align="center">
-    <strong>MCP Inspector for Vurb.ts</strong> — A framework for creating MCP servers<br/>
+    <strong>MCP Inspector for MCP Fusion</strong> — A framework for creating MCP servers<br/>
     Real-time interactive terminal dashboard for MCP servers · Zero stdio interference · Shadow Socket IPC
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/inspector"><img src="https://img.shields.io/npm/v/@vurb/inspector?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/inspector"><img src="https://img.shields.io/npm/v/@mcpfusion/inspector?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Inspector for Vurb.ts** — the Model Context Protocol framework for building production MCP servers. Zero-overhead observability: connects via **Shadow Socket** (IPC) — no stdio interference, no port conflicts, no agent disruption.
+> **MCP Inspector for MCP Fusion** — the Model Context Protocol framework for building production MCP servers. Zero-overhead observability: connects via **Shadow Socket** (IPC) — no stdio interference, no port conflicts, no agent disruption.
 
 ## Why Inspector?
 
@@ -26,7 +26,7 @@ MCP servers communicate over stdio, which means traditional debugging tools (`co
 ┌─────────────────────────────────────────────┐
 │  MCP Client (Claude, Cursor, etc.)         │
 │         ↕ stdio (MCP protocol)             │
-│  Vurb.ts Server                         │
+│  MCP mcpfusion Server                         │
 │         ↕ Shadow Socket (IPC)              │
 │  Inspector TUI / stderr logger              │
 └─────────────────────────────────────────────┘
@@ -36,19 +36,19 @@ MCP servers communicate over stdio, which means traditional debugging tools (`co
 
 ```bash
 # Launch interactive TUI (auto-discovers running server)
-vurb inspect
+mcpfusion inspect
 
 # Short alias
-vurb insp
+fusion insp
 
 # Built-in simulator (no server needed — great for demos)
-vurb insp --demo
+fusion insp --demo
 
 # Headless stderr output (ECS / K8s / CI)
-vurb insp --out stderr
+fusion insp --out stderr
 
 # Connect to a specific server PID
-vurb insp --pid 12345
+fusion insp --pid 12345
 ```
 
 ## Dashboard Panels
@@ -100,7 +100,7 @@ Server name · PID · Heap usage · Uptime · Requests/second
 
 ## Telemetry Events
 
-The Inspector processes all events emitted by the Vurb.ts pipeline:
+The Inspector processes all events emitted by the MCP Fusion pipeline:
 
 | Event | Source | Description |
 |-------|--------|-------------|
@@ -125,8 +125,8 @@ The Inspector processes all events emitted by the Vurb.ts pipeline:
 Full-screen terminal dashboard with keyboard navigation.
 
 ```bash
-Vurb.ts inspect
-Vurb.ts insp --demo
+mcpfusion inspect
+fusion insp --demo
 ```
 
 **Keyboard shortcuts:**
@@ -142,13 +142,13 @@ Structured log output for non-TTY environments. Ideal for containers, CI/CD, and
 
 ```bash
 # Color-coded stderr
-Vurb.ts insp --out stderr
+fusion insp --out stderr
 
 # NDJSON format (set env var)
-Vurb.ts_LOG_FORMAT=json Vurb.ts insp --out stderr
+FUSION_LOG_FORMAT=json fusion insp --out stderr
 
 # Pipe to file
-Vurb.ts insp --out stderr | tee telemetry.log
+fusion insp --out stderr | tee telemetry.log
 ```
 
 Respects `NO_COLOR` environment variable.
@@ -160,7 +160,7 @@ import {
     commandTop,
     streamToStderr,
     startSimulator,
-} from '@vurb/inspector';
+} from '@mcpfusion/inspector';
 
 // Launch the interactive TUI
 await commandTop({ pid: 12345 });
@@ -189,18 +189,18 @@ import {
     progressBar,
     stringWidth,
     RingBuffer,
-} from '@vurb/inspector';
+} from '@mcpfusion/inspector';
 ```
 
 ## Installation
 
 ```bash
-npm install @vurb/inspector
+npm install @mcpfusion/inspector
 ```
 
 ### Peer Dependency
 
-Requires `Vurb.ts` ≥ 3.0.0 (provides `TelemetryEvent` types and `TelemetryBus`).
+Requires `@mcpfusion/core` ≥ 3.0.0 (provides `TelemetryEvent` types and `TelemetryBus`).
 
 ## How It Works
 
@@ -214,8 +214,8 @@ Requires `Vurb.ts` ≥ 3.0.0 (provides `TelemetryEvent` types and `TelemetryBus`
 
 - **Node.js** ≥ 18.0.0
 - **Interactive terminal** (for TUI mode) — `--out stderr` for non-TTY environments
-- **Vurb.ts** ≥ 3.0.0 (peer dependency)
+- **MCP Fusion** ≥ 3.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

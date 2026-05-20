@@ -5,11 +5,11 @@ description: "Mock Prisma, HTTP clients, and external services for deterministic
 
 # Test Doubles
 
-Test doubles (stubs, mocks, spies) replace real dependencies with controlled implementations. In the VurbTester, the primary test double is the **mock context** — the fake database, HTTP client, or cache layer that your handlers interact with.
+Test doubles (stubs, mocks, spies) replace real dependencies with controlled implementations. In the MCPFusionTester, the primary test double is the **mock context** — the fake database, HTTP client, or cache layer that your handlers interact with.
 
 ## What Gets Mocked
 
-The VurbTester runs the **real** pipeline — Zod validation, middleware, handler, Presenter. The only thing you mock is the **context** passed to handlers:
+The MCPFusionTester runs the **real** pipeline — Zod validation, middleware, handler, Presenter. The only thing you mock is the **context** passed to handlers:
 
 ```
 Real:  ToolRegistry.routeCall() → Zod → Middleware → Handler → Presenter
@@ -116,7 +116,7 @@ const findManyFn = vi.fn(async ({ take }: { take: number }) => [
     { id: '1', name: 'Alice', email: 'alice@acme.com', passwordHash: 'bcrypt$abc', tenantId: 't_42' },
 ].slice(0, take));
 
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: { user: { findMany: findManyFn } },
         tenantId: 't_42',
@@ -158,7 +158,7 @@ const failingPrisma = {
     },
 };
 
-const failTester = createVurbTester(registry, {
+const failTester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: failingPrisma,
         tenantId: 't_42',
@@ -194,7 +194,7 @@ const smartMock = {
 
 ## Best Practices
 
-1. **Mock the context, not the pipeline.** The VurbTester runs the real pipeline. Only mock what the handler calls.
+1. **Mock the context, not the pipeline.** The MCPFusionTester runs the real pipeline. Only mock what the handler calls.
 2. **Use typed mocks.** Keep your mock interfaces aligned with real types to catch drift.
 3. **Spy on database calls.** Use `vi.fn()` to verify that Zod rejects invalid input before hitting the database.
 4. **Test failures too.** Use error-throwing mocks to verify graceful degradation.

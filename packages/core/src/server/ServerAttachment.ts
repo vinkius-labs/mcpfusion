@@ -24,7 +24,7 @@ import { type ToolBuilder } from '../core/types.js';
 import { type ProgressSink, type ProgressEvent } from '../core/execution/ProgressHelper.js';
 import { resolveServer } from './ServerResolver.js';
 import { type DebugObserverFn } from '../observability/DebugObserver.js';
-import { type VurbTracer } from '../observability/Tracing.js';
+import { type MCPFusionTracer } from '../observability/Tracing.js';
 import { StateSyncLayer } from '../state-sync/StateSyncLayer.js';
 import { type StateSyncConfig, type SyncPolicy } from '../state-sync/types.js';
 import { type IntrospectionConfig } from '../introspection/types.js';
@@ -114,7 +114,7 @@ export interface AttachOptions<TContext> {
     /**
      * Enable State Sync to prevent LLM Temporal Blindness and Causal State Drift.
      *
-     * When configured, Vurb automatically:
+     * When configured, MCP Fusion automatically:
      * 1. Appends `[Cache-Control: X]` to tool descriptions during `tools/list`
      * 2. Prepends `[System: Cache invalidated...]` after successful mutations in `tools/call`
      *
@@ -157,7 +157,7 @@ export interface AttachOptions<TContext> {
      *     contextFactory: createContext,
      *     introspection: {
      *         enabled: process.env.NODE_ENV !== 'production',
-     *         uri: 'vurb://manifest.json',
+     *         uri: 'mcpfusion://manifest.json',
      *         filter: (manifest, ctx) => {
      *             if (ctx.user.role !== 'admin') {
      *                 delete manifest.capabilities.tools['admin.delete_user'];
@@ -178,7 +178,7 @@ export interface AttachOptions<TContext> {
      * When set, the tracer is automatically propagated to every tool
      * builder, and registry-level routing spans are also created.
      *
-     * **Context propagation limitation**: Since Vurb does not depend
+     * **Context propagation limitation**: Since MCP Fusion does not depend
      * on `@opentelemetry/api`, it cannot call `context.with(trace.setSpan(...))`.
      * Auto-instrumented downstream calls (Prisma, HTTP, Redis) inside tool
      * handlers will appear as **siblings**, not children, of the MCP span.
@@ -190,13 +190,13 @@ export interface AttachOptions<TContext> {
      *
      * registry.attachToServer(server, {
      *     contextFactory: createContext,
-     *     tracing: trace.getTracer('vurb'),
+     *     tracing: trace.getTracer('mcpfusion'),
      * });
      * ```
      *
-     * @see {@link VurbTracer} for the tracer interface contract
+     * @see {@link MCPFusionTracer} for the tracer interface contract
      */
-    tracing?: VurbTracer;
+    tracing?: MCPFusionTracer;
 
     /**
      * Telemetry sink for the Inspector TUI.
@@ -210,7 +210,7 @@ export interface AttachOptions<TContext> {
 
     /**
      * Server name used in the introspection manifest.
-     * @defaultValue `'vurb-server'`
+     * @defaultValue `'mcpfusion-server'`
      */
     serverName?: string;
 
@@ -302,8 +302,8 @@ export interface AttachOptions<TContext> {
      *     contextFactory: createContext,
      *     zeroTrust: {
      *         signer: 'hmac',
-     *         secret: process.env.VURB_SIGNING_SECRET,
-     *         expectedDigest: process.env.VURB_EXPECTED_DIGEST,
+     *         secret: process.env.FUSION_SIGNING_SECRET,
+     *         expectedDigest: process.env.FUSION_EXPECTED_DIGEST,
      *         failOnMismatch: process.env.NODE_ENV === 'production',
      *     },
      * });
@@ -429,14 +429,14 @@ export interface AttachOptions<TContext> {
      * and activates the B2BUA tunnel to the upstream MCP micro-server.
      * Zero overhead when omitted — no FHP code runs.
      *
-     * Import from `@vurb/swarm`:
+     * Import from `@mcpfusion/swarm`:
      * ```typescript
-     * import { SwarmGateway } from '@vurb/swarm';
+     * import { SwarmGateway } from '@mcpfusion/swarm';
      *
      * registry.attachToServer(server, {
      *     swarmGateway: new SwarmGateway({
      *         registry: { finance: 'http://finance-agent:8081' },
-     *         delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+     *         delegationSecret: process.env.MCPFUSION_DELEGATION_SECRET!,
      *     }),
      * });
      * ```
@@ -447,8 +447,8 @@ export interface AttachOptions<TContext> {
 
 /**
  * Minimal duck-typed interface for the SwarmGateway.
- * Defined here to avoid a hard dependency on `@vurb/swarm` from `@vurb/core`.
- * The real `SwarmGateway` from `@vurb/swarm` satisfies this interface automatically.
+ * Defined here to avoid a hard dependency on `@mcpfusion/swarm` from `@mcpfusion/core`.
+ * The real `SwarmGateway` from `@mcpfusion/swarm` satisfies this interface automatically.
  *
  * @internal
  */
@@ -471,7 +471,7 @@ export interface RegistryDelegate<TContext> {
     /** Propagate a debug observer to all registered builders (duck-typed) */
     enableDebug?(observer: DebugObserverFn): void;
     /** Propagate a tracer to all registered builders (duck-typed) */
-    enableTracing?(tracer: VurbTracer): void;
+    enableTracing?(tracer: MCPFusionTracer): void;
     /** Propagate a telemetry sink to all registered builders (duck-typed) */
     enableTelemetry?(sink: TelemetrySink): void;
     /** Get an iterable of all registered builders (for introspection and exposition) */
@@ -517,7 +517,7 @@ interface HandlerContext<TContext> {
 function propagateObservability<TContext>(
     registry: RegistryDelegate<TContext>,
     debug?: DebugObserverFn,
-    tracing?: VurbTracer,
+    tracing?: MCPFusionTracer,
     telemetry?: TelemetrySink,
 ): void {
     if (debug && registry.enableDebug) {
@@ -550,7 +550,7 @@ export const _missingContextProxy: unknown = new Proxy(Object.freeze({}), {
         // JSON.stringify probing ('toJSON') to avoid breaking framework internals.
         if (typeof prop === 'symbol') return undefined;
         throw new Error(
-            `[vurb] Attempted to access "ctx.${String(prop)}" but no contextFactory was provided. ` +
+            `[mcpfusion] Attempted to access "ctx.${String(prop)}" but no contextFactory was provided. ` +
             `Add contextFactory to your attachToServer() options:\n\n` +
             `  registry.attachToServer(server, {\n` +
             `      contextFactory: (extra) => createAppContext(extra),\n` +
@@ -981,7 +981,7 @@ function registerResourceHandlers<TContext>(
     const resourceServer = resolved as unknown as McpServerWithResourceSubscriptions;
 
     // Pre-compute introspection manifest URI for merge.
-    const manifestUri = introspection?.config.uri ?? 'vurb://manifest.json';
+    const manifestUri = introspection?.config.uri ?? 'mcpfusion://manifest.json';
 
     // Wire notification sink for `notifications/resources/updated`
     const serverAny = server as Record<string, unknown>;
@@ -1017,7 +1017,7 @@ function registerResourceHandlers<TContext>(
             if (introspection) {
                 list.push({
                     uri: manifestUri,
-                    name: 'Vurb Manifest',
+                    name: 'mcpfusion:manifest',
                     description: 'Dynamic introspection manifest exposing all registered tools, actions, and presenters. RBAC-filtered per session context.',
                     mimeType: 'application/json',
                 });
@@ -1142,7 +1142,7 @@ export async function attachToServer<TContext>(
         registerIntrospectionResource(
             resolved,
             introspection,
-            serverName ?? 'vurb-server',
+            serverName ?? 'mcpfusion-server',
             { values: () => registry.getBuilders() },
             contextFactory,
         );
@@ -1158,7 +1158,7 @@ export async function attachToServer<TContext>(
         if (zeroTrust.expectedDigest && serverDigest.digest !== zeroTrust.expectedDigest) {
             if (zeroTrust.failOnMismatch ?? true) {
                 throw new AttestationError(
-                    `[Vurb] Zero-Trust attestation failed: computed digest ${serverDigest.digest} does not match expected ${zeroTrust.expectedDigest}`,
+                    `[mcpfusion] Zero-Trust attestation failed: computed digest ${serverDigest.digest} does not match expected ${zeroTrust.expectedDigest}`,
                     {
                         valid: false,
                         computedDigest: serverDigest.digest,
@@ -1268,7 +1268,7 @@ export async function attachToServer<TContext>(
             resolved, server, resources, contextFactory,
             introspection?.enabled ? {
                 config: introspection,
-                serverName: serverName ?? 'vurb-server',
+                serverName: serverName ?? 'mcpfusion-server',
                 builders: { values: () => registry.getBuilders() },
             } : undefined,
         );

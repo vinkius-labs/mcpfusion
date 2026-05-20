@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  *
  * const users = f.router('users')
  *     .describe('User management')

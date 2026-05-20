@@ -155,8 +155,8 @@ export function stepRedact<T>(
         }
         if (!snapshot.compiledRedactor) {
             console.warn(
-                `[vurb] Presenter "${snapshot.name}": PII redaction configured but fast-redact is not available. ` +
-                `Data will pass through WITHOUT redaction. Ensure initVurb() completes before .make() is called, ` +
+                `[mcpfusion] Presenter "${snapshot.name}": PII redaction configured but fast-redact is not available. ` +
+                `Data will pass through WITHOUT redaction. Ensure initMCPFusion() completes before .make() is called, ` +
                 `or install fast-redact as a dependency.`,
             );
         }

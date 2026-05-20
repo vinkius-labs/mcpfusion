@@ -11,9 +11,9 @@
  *
  * @example
  * ```typescript
- * import { initVurb, ask } from '@vurb/core';
+ * import { initMCPFusion, ask } from '@mcpfusion/core';
  *
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  *
  * const deploy = f.mutation('infra.deploy')
  *     .withString('app_id', 'Application ID')
@@ -205,7 +205,7 @@ function getSink(): ElicitSink {
  *
  * @example
  * ```typescript
- * import { ask } from '@vurb/core';
+ * import { ask } from '@mcpfusion/core';
  *
  * // DSL — field descriptors
  * ask.string('Name')

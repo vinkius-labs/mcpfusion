@@ -7,7 +7,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success } from '../../src/core/response.js';
 
 // ── Test Context ─────────────────────────────────────────
@@ -43,7 +43,7 @@ const testCtx: TestContext = {
 
 describe('Semantic Verbs', () => {
     it('f.query() should create a tool with readOnly action', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('users.list')
             .describe('List users')
@@ -61,7 +61,7 @@ describe('Semantic Verbs', () => {
     });
 
     it('f.mutation() should create a tool with destructive action', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('users.delete')
             .describe('Delete a user')
@@ -79,7 +79,7 @@ describe('Semantic Verbs', () => {
     });
 
     it('f.action() should create a neutral tool (no readOnly/destructive)', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.action('users.update')
             .describe('Update user')
@@ -103,7 +103,7 @@ describe('Semantic Verbs', () => {
     });
 
     it('tool without dot should use "default" action', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('health')
             .handle(async () => success('ok'));
@@ -113,7 +113,7 @@ describe('Semantic Verbs', () => {
     });
 
     it('semantic overrides should take precedence', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         // Query is readOnly by default, but we can add destructive too
         const tool = f.query('users.sync')
@@ -134,7 +134,7 @@ describe('Semantic Verbs', () => {
 
 describe('Handler Execution', () => {
     it('handler should receive typed (input, ctx)', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         let receivedInput: unknown;
         let receivedCtx: unknown;
@@ -154,7 +154,7 @@ describe('Handler Execution', () => {
     });
 
     it('implicit success() wrapping — return raw data', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('test.raw')
             .withNumber('limit', 'Max results')
@@ -170,7 +170,7 @@ describe('Handler Execution', () => {
     });
 
     it('explicit ToolResponse should pass through', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('test.explicit')
             .handle(async () => success('explicit response'));
@@ -186,7 +186,7 @@ describe('Handler Execution', () => {
 
 describe('with*() Parameter Declaration', () => {
     it('.withString() should add a required string parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.string')
             .withString('name', 'User name')
@@ -197,7 +197,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withOptionalString() should add an optional string parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.optstr')
             .withOptionalString('title', 'Optional title')
@@ -209,7 +209,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withNumber() should add a required number parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.num')
             .withNumber('limit', 'Max results')
@@ -220,7 +220,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withBoolean() should add a required boolean parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.bool')
             .withBoolean('active', 'Filter by active status')
@@ -231,7 +231,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withEnum() should add a required enum parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.enum')
             .withEnum('status', ['active', 'inactive', 'suspended'] as const, 'Filter by status')
@@ -242,7 +242,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withEnum() should reject invalid values', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('params.enumval')
             .withEnum('status', ['active', 'inactive'] as const, 'Status')
@@ -253,7 +253,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withArray() should add a required array parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('params.arr')
             .withArray('tags', 'string', 'Tags to apply')
@@ -264,7 +264,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withJson() should add a required JSON object parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.action('params.json')
             .withJson('payload', 'Configuration object')
@@ -279,7 +279,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withOptionalJson() should add an optional JSON object parameter', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.action('params.optjson')
             .withOptionalJson('filters', 'Optional filter set')
@@ -298,7 +298,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withJson() should reject non-object input at runtime', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.action('params.jsonval')
             .withJson('data', 'JSON payload')
@@ -313,7 +313,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('.withJson() should work chained with other with*() methods', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.action('params.jsonchain')
             .withString('id', 'Entity ID')
@@ -335,7 +335,7 @@ describe('with*() Parameter Declaration', () => {
     });
 
     it('chained with*() should accumulate all parameters', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.mutation('params.chain')
             .withString('id', 'Entity ID')
@@ -368,7 +368,7 @@ describe('with*() Parameter Declaration', () => {
 
 describe('AI-First DX', () => {
     it('.instructions() should inject text into description', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('docs.search')
             .describe('Search documentation')
@@ -382,7 +382,7 @@ describe('AI-First DX', () => {
     });
 
     it('.instructions() without .describe() should still work', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('docs.help')
             .instructions('Only for help queries.')
@@ -400,7 +400,7 @@ describe('AI-First DX', () => {
 
 describe('Context Derivation (.use())', () => {
     it('.use() middleware should enrich context', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         let enrichedAdmin: unknown;
 
@@ -427,7 +427,7 @@ describe('Context Derivation (.use())', () => {
 
 describe('Tags', () => {
     it('.tags() should set capability tags', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('admin.stats')
             .tags('admin', 'reporting')
@@ -444,7 +444,7 @@ describe('Tags', () => {
 
 describe('FluentRouter', () => {
     it('router should prefix action names', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const users = f.router('users');
 
@@ -456,7 +456,7 @@ describe('FluentRouter', () => {
     });
 
     it('router should inherit middleware', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         let middlewareRan = false;
 
         const users = f.router('users')
@@ -473,7 +473,7 @@ describe('FluentRouter', () => {
     });
 
     it('router should inherit tags', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const admin = f.router('admin')
             .tags('admin', 'restricted');
@@ -486,7 +486,7 @@ describe('FluentRouter', () => {
     });
 
     it('router mutation should be destructive by default', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const users = f.router('users');
 
@@ -499,7 +499,7 @@ describe('FluentRouter', () => {
     });
 
     it('router query should be readOnly by default', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const users = f.router('users');
 
@@ -517,7 +517,7 @@ describe('FluentRouter', () => {
 
 describe('Internal APIs', () => {
     it('f.defineTool() should still work (internal)', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.defineTool('platform', {
             actions: {
@@ -533,7 +533,7 @@ describe('Internal APIs', () => {
     });
 
     it('f.middleware() should still work', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const mw = f.middleware(async (ctx) => ({
             enriched: true,
@@ -544,7 +544,7 @@ describe('Internal APIs', () => {
     });
 
     it('f.registry() should still work', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const registry = f.registry();
         expect(registry).toBeDefined();
     });
@@ -556,7 +556,7 @@ describe('Internal APIs', () => {
 
 describe('Multiple .use() Middleware Stacking', () => {
     it('multiple .use() should merge context cumulatively', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const log: string[] = [];
 
         const tool = f.mutation('admin.action')
@@ -586,7 +586,7 @@ describe('Multiple .use() Middleware Stacking', () => {
 
 describe('Schema Validation', () => {
     it('withNumber() should reject string input at runtime', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('validate.strict')
             .withNumber('limit', 'Max results')
@@ -604,7 +604,7 @@ describe('Schema Validation', () => {
     });
 
     it('withEnum() should reject invalid enum value at runtime', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('validate.enum')
             .withEnum('status', ['active', 'inactive'] as const, 'Status')
@@ -625,7 +625,7 @@ describe('Schema Validation', () => {
 
 describe('Tool Definition Compilation', () => {
     it('fluent tool should produce valid MCP tool definition with input schema', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const tool = f.query('reports.daily')
             .describe('Generate daily report')
@@ -646,7 +646,7 @@ describe('Tool Definition Compilation', () => {
     });
 
     it('router tool should produce valid MCP tool definition', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
 
         const api = f.router('api').tags('v2');
 

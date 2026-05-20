@@ -1,8 +1,8 @@
 /**
  * Bug #151 — Deploy edge-stub resolution (integration + source analysis)
  *
- * Previously, `edgeStubAliases()` used `createRequire().resolve('vurb')`
- * which failed because (1) the package is `@vurb/core`, and (2) the
+ * Previously, `edgeStubAliases()` used `createRequire().resolve('mcpfusion')`
+ * which failed because (1) the package is `@mcpfusion/core`, and (2) the
  * exports map only defines the `"import"` (ESM) condition — CJS
  * `require.resolve` fails even with the correct name.
  *
@@ -33,10 +33,10 @@ const deploySource = readFileSync(SRC_PATH, 'utf-8');
 
 describe('Bug #151 — source analysis: no require.resolve', () => {
     it('should NOT use require.resolve to locate edge-stub', () => {
-        expect(deploySource).not.toContain("require.resolve('vurb')");
-        expect(deploySource).not.toContain('require.resolve("vurb")');
-        expect(deploySource).not.toContain("require.resolve('@vurb/core')");
-        expect(deploySource).not.toContain('require.resolve("@vurb/core")');
+        expect(deploySource).not.toContain("require.resolve('mcpfusion')");
+        expect(deploySource).not.toContain('require.resolve("mcpfusion")');
+        expect(deploySource).not.toContain("require.resolve('@mcpfusion/core')");
+        expect(deploySource).not.toContain('require.resolve("@mcpfusion/core")');
     });
 
     it('should NOT use esbuild alias (prefix matching breaks subpaths)', () => {
@@ -128,7 +128,7 @@ describe('Bug #151 — BUILTIN_FILTER regex coverage', () => {
     it('should NOT match non-node modules', () => {
         expect(filter.test('lodash')).toBe(false);
         expect(filter.test('esbuild')).toBe(false);
-        expect(filter.test('@vurb/core')).toBe(false);
+        expect(filter.test('@mcpfusion/core')).toBe(false);
         expect(filter.test('zod')).toBe(false);
         expect(filter.test('./my-module')).toBe(false);
     });
@@ -152,7 +152,7 @@ function createTestPlugin(): import('esbuild').Plugin {
     const stubPathEscaped = JSON.stringify(EDGE_STUB_DIST);
 
     return {
-        name: 'vurb-edge-stub',
+        name: 'mcpfusion-edge-stub',
         setup(build) {
             build.onResolve({ filter: builtinFilter }, (args) => ({
                 path: args.path,
@@ -183,7 +183,7 @@ describe('Bug #151 — esbuild plugin integration', () => {
         const esbuild = await import('esbuild');
 
         // Create a temp file that imports various node builtins (including subpaths)
-        const tmpDir = mkdtempSync(join(tmpdir(), 'vurb-deploy-test-'));
+        const tmpDir = mkdtempSync(join(tmpdir(), 'mcpfusion-deploy-test-'));
         const entryFile = join(tmpDir, 'entry.mjs');
         writeFileSync(entryFile, [
             'import { readFileSync } from "node:fs";',
@@ -235,13 +235,13 @@ describe('Bug #151 — esbuild plugin integration', () => {
         const esbuild = await import('esbuild');
 
         // Simulate the exact imports that caused failures in production
-        const tmpDir = mkdtempSync(join(tmpdir(), 'vurb-deploy-mcp-'));
+        const tmpDir = mkdtempSync(join(tmpdir(), 'mcpfusion-deploy-mcp-'));
         const entryFile = join(tmpDir, 'mcp-entry.mjs');
         writeFileSync(entryFile, [
             '// Simulates @modelcontextprotocol/sdk imports',
             'import process from "node:process";',
             'import { createServer } from "node:http";',
-            '// Simulates @vurb/core/dist/introspection/CapabilityLockfile.js',
+            '// Simulates @mcpfusion/core/dist/introspection/CapabilityLockfile.js',
             'import { readFile } from "node:fs/promises";',
             '// Simulates @hono/node-server',
             'import { connect } from "http2";',
@@ -281,8 +281,8 @@ describe('Bug #151 — compiled deploy.js correctness', () => {
     it('should not contain stale require.resolve in compiled output', () => {
         if (!existsSync(DIST_PATH)) return;
         const compiled = readFileSync(DIST_PATH, 'utf-8');
-        expect(compiled).not.toContain("require.resolve('vurb')");
-        expect(compiled).not.toContain("require.resolve('@vurb/core')");
+        expect(compiled).not.toContain("require.resolve('mcpfusion')");
+        expect(compiled).not.toContain("require.resolve('@mcpfusion/core')");
     });
 
     it('should contain the relative URL resolution in compiled output', () => {

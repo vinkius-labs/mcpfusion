@@ -12,7 +12,7 @@
  *
  * @example
  * ```ts
- * import { JwtVerifier } from '@vurb/jwt';
+ * import { JwtVerifier } from '@mcpfusion/jwt';
  *
  * // With symmetric secret (HS256)
  * const verifier = new JwtVerifier({ secret: 'my-secret' });

@@ -2,7 +2,7 @@
  * Federated Handoff Protocol (FHP) — HandoffStateStore
  *
  * Interface e implementação padrão para o padrão Claim-Check.
- * Extender com adaptadores de plataforma (ex: `@vurb/cloudflare`).
+ * Extender com adaptadores de plataforma (ex: `@mcpfusion/cloudflare`).
  *
  * @module
  */
@@ -19,19 +19,19 @@ interface StoreEntry {
  * **Default for Node.js stateful processes.**
  * Not suitable for edge/serverless where each request runs in a fresh isolate.
  * For those environments, implement `HandoffStateStore` using your platform's
- * KV store (e.g. Cloudflare KV via `@vurb/cloudflare`).
+ * KV store (e.g. Cloudflare KV via `@mcpfusion/cloudflare`).
  *
  * TTL is enforced lazily on `getAndDelete` — no background timers or
  * memory leaks from expired entries that are never retrieved.
  *
  * @example
  * ```typescript
- * import { SwarmGateway } from '@vurb/swarm';
- * import { InMemoryHandoffStateStore } from '@vurb/core';
+ * import { SwarmGateway } from '@mcpfusion/swarm';
+ * import { InMemoryHandoffStateStore } from '@mcpfusion/core';
  *
  * const gateway = new SwarmGateway({
  *     registry: { finance: 'http://finance-agent:8081' },
- *     delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+ *     delegationSecret: process.env.MCPFUSION_DELEGATION_SECRET!,
  *     stateStore: new InMemoryHandoffStateStore(),
  * });
  * ```

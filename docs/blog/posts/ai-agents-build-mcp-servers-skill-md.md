@@ -3,7 +3,7 @@ title: "The End of Framework Documentation: How SKILL.md Lets AI Agents Build Yo
 date: 2026-03-15
 author: Renato Marinho
 authorUrl: https://github.com/renatomarinho
-description: "Every framework makes you read docs before you write code. Vurb.ts ships a machine-readable SKILL.md that your AI coding agent consumes directly — zero learning curve, deterministic code generation, production-ready MCP servers from a single prompt."
+description: "Every framework makes you read docs before you write code. MCP Fusion ships a machine-readable SKILL.md that your AI coding agent consumes directly — zero learning curve, deterministic code generation, production-ready MCP servers from a single prompt."
 tags:
   - skill-md
   - ai-agent
@@ -23,7 +23,7 @@ Every framework you've ever adopted follows the same loop: read the docs, study 
 
 Your AI coding agent goes through the exact same cycle — except it's worse. It hallucinates patterns from whatever framework dominated its training data. Ask Cursor to build an MCP server with Hono conventions and you get Express middleware. Ask Claude Code to scaffold a Presenter-based architecture and it invents an API that doesn't exist. The agent has nothing authoritative to reference — it's just pattern-matching against stale training data.
 
-**Vurb.ts breaks this loop entirely.** It ships a `SKILL.md` — a machine-readable architectural contract that any AI coding agent can read before writing a single line of code. The agent doesn't approximate your framework's API. It compiles against the spec.
+**MCP Fusion breaks this loop entirely.** It ships a `SKILL.md` — a machine-readable architectural contract that any AI coding agent can read before writing a single line of code. The agent doesn't approximate your framework's API. It compiles against the spec.
 
 ---
 
@@ -62,7 +62,7 @@ The agent has three options:
 
 3. **Read a formal specification.** A structured document that declares every API method, every convention, every composition rule — in a format the agent can consume without ambiguity.
 
-Option 3 didn't exist before Vurb.ts.
+Option 3 didn't exist before MCP Fusion.
 
 ---
 
@@ -79,7 +79,7 @@ Option 3 didn't exist before Vurb.ts.
 
 Think of it as a `tsconfig.json` for AI behavior. TypeScript needs a config file to understand your project's constraints; your AI coding agent needs a spec file to understand your framework's contracts.
 
-Vurb.ts ships its SKILL.md as part of the package. When you scaffold a project with `vurb create`, the spec lands in your repo. Point your agent at it and it knows — with zero ambiguity — how to:
+MCP Fusion ships its SKILL.md as part of the package. When you scaffold a project with `mcpfusion create`, the spec lands in your repo. Point your agent at it and it knows — with zero ambiguity — how to:
 
 - Define tools using the Fluent API (`f.query()`, `f.action()`, `f.mutation()`)
 - Compose Presenters with schema, rules, PII redaction, and suggested actions
@@ -97,7 +97,7 @@ Three steps. That's it.
 
 ### 1. Agent reads the specification
 
-When your agent opens a Vurb.ts project, it reads the `SKILL.md` file. This happens automatically in Claude Code (via the agent skills directory), or you can explicitly point the agent to the file in Cursor, Copilot, Windsurf, or Cline.
+When your agent opens a MCP Fusion project, it reads the `SKILL.md` file. This happens automatically in Claude Code (via the agent skills directory), or you can explicitly point the agent to the file in Cursor, Copilot, Windsurf, or Cline.
 
 ### 2. You describe what you need
 
@@ -110,25 +110,25 @@ When your agent opens a Vurb.ts project, it reads the `SKILL.md` file. This happ
  after mutations."
 ```
 
-### 3. Agent generates idiomatic Vurb.ts code
+### 3. Agent generates idiomatic MCP Fusion code
 
 Not approximations. Not hallucinated APIs. Correct code that uses the exact methods declared in the specification:
 
 ```typescript
-// src/vurb.ts
-import { initVurb } from '@vurb/core';
+// src/MCP Fusion
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
     db: PrismaClient;
     user: { id: string; role: 'admin' | 'billing'; tenantId: string };
 }
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 ```
 
 ```typescript
 // src/presenters/invoice.presenter.ts
-import { createPresenter, t, suggest } from '@vurb/core';
+import { createPresenter, t, suggest } from '@mcpfusion/core';
 
 export const InvoicePresenter = createPresenter('Invoice')
     .schema({
@@ -157,7 +157,7 @@ export const InvoicePresenter = createPresenter('Invoice')
 
 ```typescript
 // src/tools/billing/pay.ts
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 import { authMiddleware } from '../../middleware/auth.js';
 import { InvoicePresenter } from '../../presenters/invoice.presenter.js';
 
@@ -197,15 +197,15 @@ Every method call is correct. `.bindState()` hides the payment tool until the in
 
 To understand why SKILL.md works, you need to understand why agents fail without it.
 
-LLMs generate code by predicting the most likely next token given the preceding context. When you ask for "an MCP server with Vurb.ts," the model's training corpus contains:
+LLMs generate code by predicting the most likely next token given the preceding context. When you ask for "an MCP server with MCP Fusion," the model's training corpus contains:
 
 - **Thousands** of examples using the raw `@modelcontextprotocol/sdk` with `server.tool()` and `JSON.stringify()`
 - **Hundreds** of Express/Fastify/Hono patterns that have nothing to do with MCP
-- **A handful** of Vurb.ts-specific content — if any
+- **A handful** of MCP Fusion specific content — if any
 
 The model defaults to the statistically dominant pattern. This is why your agent generates `server.tool('get_invoice', ...)` with `JSON.stringify(invoice)` instead of `f.query('billing.get_invoice').returns(InvoicePresenter)`. It's not wrong about MCP — it's wrong about *your* framework.
 
-SKILL.md fixes this by injecting the correct patterns into the agent's context window at generation time. The spec overrides training-data priors with authoritative, current, and complete API definitions. The agent doesn't need to have been trained on Vurb.ts — it just needs to read the spec.
+SKILL.md fixes this by injecting the correct patterns into the agent's context window at generation time. The spec overrides training-data priors with authoritative, current, and complete API definitions. The agent doesn't need to have been trained on MCP Fusion — it just needs to read the spec.
 
 This is why the approach is fundamentally different from docs sites, `llms.txt` files, or fine-tuning:
 
@@ -221,7 +221,7 @@ This is why the approach is fundamentally different from docs sites, `llms.txt` 
 
 ## The SKILL.md Contract: What Your Agent Reads {#the-contract}
 
-The Vurb.ts SKILL.md isn't a getting-started guide reformatted for machines. It's a **typed behavioral contract** that declares:
+The MCP Fusion SKILL.md isn't a getting-started guide reformatted for machines. It's a **typed behavioral contract** that declares:
 
 ### Builder Methods
 
@@ -390,7 +390,7 @@ For 30 years, framework adoption has followed the same pattern:
 6. Repeat steps 2-5 until proficient (weeks to months)
 ```
 
-Vurb.ts flips the model:
+MCP Fusion flips the model:
 
 ```
 1. Framework author writes SKILL.md (for agents)
@@ -400,9 +400,9 @@ Vurb.ts flips the model:
 5. Developer reviews the PR
 ```
 
-This isn't an incremental DX improvement. It's a structural change in how frameworks get consumed. The docs are still there — for humans who want to understand the internals. But the primary consumer of the Vurb.ts API surface is now the agent, and the primary interface is `SKILL.md`.
+This isn't an incremental DX improvement. It's a structural change in how frameworks get consumed. The docs are still there — for humans who want to understand the internals. But the primary consumer of the MCP Fusion API surface is now the agent, and the primary interface is `SKILL.md`.
 
-**You don't learn Vurb.ts. You don't teach your agent Vurb.ts.** You hand it a spec. It writes the server. You review the PR.
+**You don't learn MCP Fusion. You don't teach your agent MCP Fusion.** You hand it a spec. It writes the server. You review the PR.
 
 ---
 
@@ -410,34 +410,34 @@ This isn't an incremental DX improvement. It's a structural change in how framew
 
 ```bash
 # Scaffold a new project
-vurb create my-server
+mcpfusion create my-server
 cd my-server
 
 # Point your agent at the spec
 # (Varies by agent — see table above)
 
 # Prompt: describe what you need
-# The agent generates idiomatic Vurb.ts code
+# The agent generates idiomatic MCP Fusion code
 
 # Run it
-vurb dev
+mcpfusion dev
 ```
 
 Or if you'd rather build by hand:
 
 ```bash
-npm install @vurb/core @modelcontextprotocol/sdk zod
+npm install @mcpfusion/core @modelcontextprotocol/sdk
 ```
 
 Either way, the SKILL.md is there. Your agent knows the API. Describe the server in plain English. It builds it.
 
 ---
 
-**[Read the full documentation →](https://vurb.vinkius.com/)**
+**[Read the full documentation →](https://mcpfusion.vinkius.com/)**
 
 **[View the SKILL.md specification →](https://agentskills.io)**
 
-**[GitHub Repository →](https://github.com/vinkius-labs/vurb.ts)**
+**[GitHub Repository →](https://github.com/vinkius-labs/mcpfusion)**
 
 ---
 

@@ -15,20 +15,20 @@ describe('mintDelegationToken + verifyDelegationToken — roundtrip', () => {
         const claims = await verifyDelegationToken(token, SECRET);
 
         expect(claims.sub).toBe('finance');
-        expect(claims.iss).toBe('vurb-gateway');
+        expect(claims.iss).toBe('mcpfusion-gateway');
         expect(claims.tid).toBeDefined();
     });
 
     it('should preserve inline carryOverState (< 2 KB)', async () => {
         const state = { userId: 'u-1', plan: 'enterprise' };
-        const token = await mintDelegationToken('finance', 60, SECRET, 'vurb-gateway', state);
+        const token = await mintDelegationToken('finance', 60, SECRET, 'mcpfusion-gateway', state);
         const claims = await verifyDelegationToken(token, SECRET);
 
         expect(claims.state).toEqual(state);
     });
 
     it('should include traceparent in the claims', async () => {
-        const token = await mintDelegationToken('finance', 60, SECRET, 'vurb-gateway', undefined, undefined, '00-abc-def-01');
+        const token = await mintDelegationToken('finance', 60, SECRET, 'mcpfusion-gateway', undefined, undefined, '00-abc-def-01');
         const claims = await verifyDelegationToken(token, SECRET);
 
         expect(claims.traceparent).toBe('00-abc-def-01');
@@ -37,7 +37,7 @@ describe('mintDelegationToken + verifyDelegationToken — roundtrip', () => {
     it('should use Claim-Check when state exceeds 2 KB', async () => {
         const store = new InMemoryHandoffStateStore();
         const largeState = { data: 'x'.repeat(2500) };
-        const token = await mintDelegationToken('finance', 60, SECRET, 'vurb-gateway', largeState, store);
+        const token = await mintDelegationToken('finance', 60, SECRET, 'mcpfusion-gateway', largeState, store);
 
         // token must not contain the state inline
         const rawPayload = token.split('.')[0]!;
@@ -69,7 +69,7 @@ describe('mintDelegationToken + verifyDelegationToken — roundtrip', () => {
     it('should throw INVALID_DELEGATION_TOKEN if state_id is present but no store is given', async () => {
         const store = new InMemoryHandoffStateStore();
         const largeState = { data: 'x'.repeat(2500) };
-        const token = await mintDelegationToken('finance', 60, SECRET, 'vurb-gateway', largeState, store);
+        const token = await mintDelegationToken('finance', 60, SECRET, 'mcpfusion-gateway', largeState, store);
 
         // verify without store → must fail
         await expect(verifyDelegationToken(token, SECRET)).rejects.toMatchObject({ code: 'INVALID_DELEGATION_TOKEN' });
@@ -116,7 +116,7 @@ describe('BUG-FHP-1 regression — minimal store (only set + getAndDelete)', () 
         const largeState = { data: 'x'.repeat(2500) };
         // mintDelegationToken uses InMemoryHandoffStateStore-compatible interface OK
         const token = await mintDelegationToken(
-            'finance', 60, SECRET, 'vurb-gateway', largeState, minimalStore as any,
+            'finance', 60, SECRET, 'mcpfusion-gateway', largeState, minimalStore as any,
         );
 
         // BUG-FHP-1: this would crash with "store.get is not a function" before the fix

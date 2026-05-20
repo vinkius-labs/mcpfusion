@@ -9,22 +9,22 @@ import { CORE_VERSION, TESTING_VERSION, MCP_SDK_VERSION, ZOD_VERSION } from './c
 export function packageJson(config: ProjectConfig): string {
     const deps: Record<string, string> = {
         '@modelcontextprotocol/sdk': MCP_SDK_VERSION,
-        '@vurb/core': CORE_VERSION,
+        '@mcpfusion/core': CORE_VERSION,
         'zod': ZOD_VERSION,
     };
 
     if (config.vector === 'prisma') {
         deps['@prisma/client'] = '^6.0.0';
-        deps['@vurb/prisma-gen'] = '^1.0.0';
+        deps['@mcpfusion/prisma-gen'] = '^1.0.0';
     }
     if (config.vector === 'n8n') {
-        deps['@vurb/n8n'] = '^1.0.0';
+        deps['@mcpfusion/n8n'] = '^1.0.0';
     }
     if (config.vector === 'openapi') {
-        deps['@vurb/openapi-gen'] = '^1.0.0';
+        deps['@mcpfusion/openapi-gen'] = '^1.0.0';
     }
     if (config.vector === 'oauth') {
-        deps['@vurb/oauth'] = '^1.0.0';
+        deps['@mcpfusion/oauth'] = '^1.0.0';
     }
 
     const devDeps: Record<string, string> = {
@@ -38,12 +38,12 @@ export function packageJson(config: ProjectConfig): string {
     }
     if (config.testing) {
         devDeps['vitest'] = '^3.0.5';
-        devDeps['@vurb/testing'] = TESTING_VERSION;
+        devDeps['@mcpfusion/testing'] = TESTING_VERSION;
     }
 
     const scripts: Record<string, string> = {
-        'dev': 'vurb dev',
-        'start': 'vurb dev',
+        'dev': 'mcpfusion dev',
+        'start': 'mcpfusion dev',
         'build': 'tsc',
         'typecheck': 'tsc --noEmit',
     };
@@ -111,7 +111,7 @@ coverage/
 
 /** Generate `.env.example` with vector-specific vars */
 export function envExample(config: ProjectConfig): string {
-    let env = `# ── Vurb Server Environment ─────────────────────
+    let env = `# ── MCP mcpfusion Server Environment ─────────────────────
 # Copy this to .env and fill in your values.
 
 # Server

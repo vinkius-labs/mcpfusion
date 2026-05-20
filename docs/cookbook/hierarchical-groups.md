@@ -1,7 +1,7 @@
 # Hierarchical Groups
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -14,7 +14,7 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 For small APIs, individual `f.query()` and `f.mutation()` definitions work perfectly. But when your domain grows to 50+ actions across multiple entities, you need **hierarchical groups** — a way to organize actions under a domain tree with shared middleware, shared descriptions, and automatic namespace prefixing.
 
-Vurb.ts provides two modern patterns depending on your exposition strategy: **Prefix Routing** (for flat exposition) and **Grouped Builders** (for single-endpoint exposition).
+MCP Fusion provides two modern patterns depending on your exposition strategy: **Prefix Routing** (for flat exposition) and **Grouped Builders** (for single-endpoint exposition).
 
 ## Flat Prefix Routing (`f.router`) {#flat-prefix-routing}
 
@@ -23,7 +23,7 @@ The most common approach for large APIs is to keep tools "flat" (one MCP endpoin
 The `FluentRouter` acts as a shared prefix context:
 
 ```typescript
-import { f } from '../vurb';
+import { f } from '../MCP Fusion';
 
 const users = f.router('users')
   .describe('User management');
@@ -44,7 +44,7 @@ Instead of infinitely nested closures (which create massive, unreadable files), 
 
 ```typescript
 // src/tools/platform/admin/index.ts
-import { f } from '../../../vurb';
+import { f } from '../../../MCP Fusion';
 
 // Deep namespace router
 const admin = f.router('platform.users.admin')
@@ -62,7 +62,7 @@ export const resetUser = admin.mutation('reset')
 If your agent struggles with too many individual flat tools, you can group related actions behind a single MCP endpoint using `createTool()`. The framework will expose this as one tool and use an `action` enum to dispatch the call.
 
 ```typescript
-import { createTool, success } from '@vurb/core';
+import { createTool, success } from '@mcpfusion/core';
 import { z } from 'zod';
 
 export const platformTool = createTool<AppContext>('platform')

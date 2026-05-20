@@ -3,13 +3,13 @@ import { getPageHeadTags, getPageSEO } from './seo'
 import typedocSidebar from '../api/typedoc-sidebar.json'
 
 export default defineConfig({
-  title: "Vurb.ts",
+  title: "MCP Fusion",
   description: "The AI-First DX for the Model Context Protocol: building scalable Agentic APIs with the MVA pattern.",
   base: '/',
   cleanUrls: true,
   appearance: 'force-dark',
   sitemap: {
-    hostname: 'https://mcp-fusion.vinkius.com'
+    hostname: 'https://mcpfusion.vinkius.com'
   },
 
   head: [
@@ -27,18 +27,18 @@ export default defineConfig({
     ['meta', { name: 'msapplication-TileColor', content: '#30363D' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
-    ['meta', { name: 'apple-mobile-web-app-title', content: 'Vurb.ts' }],
-    ['meta', { name: 'application-name', content: 'Vurb.ts' }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: 'MCP Fusion' }],
+    ['meta', { name: 'application-name', content: 'MCP Fusion' }],
 
     // ── JSON-LD: SoftwareSourceCode ──
     ['script', { type: 'application/ld+json' }, JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'SoftwareSourceCode',
-      'name': 'vurb-ts',
-      'alternateName': 'Vurb.ts',
+      'name': 'mcpfusion',
+      'alternateName': 'MCP Fusion',
       'description': 'The AI-First DX for the Model Context Protocol. Introduces Presenters — a deterministic View layer for AI agents — with action consolidation, cognitive guardrails, structured perception packages, and self-healing errors.',
-      'url': 'https://mcp-fusion.vinkius.com/',
-      'codeRepository': 'https://github.com/vinkius-labs/vurb.ts',
+      'url': 'https://mcpfusion.vinkius.com/',
+      'codeRepository': 'https://github.com/vinkius-labs/mcpfusion',
       'programmingLanguage': 'TypeScript',
       'runtimePlatform': 'Node.js',
       'license': 'https://opensource.org/licenses/Apache-2.0',
@@ -54,9 +54,9 @@ export default defineConfig({
         'Vercel AI SDK MCP', 'LangChain MCP server', 'LlamaIndex MCP backend',
         'Vercel MCP server', 'Cloudflare Workers MCP', 'AWS Lambda MCP',
         'OpenAPI to MCP', 'Prisma to MCP', 'n8n MCP',
-        'mcp-fusion-vercel', 'mcp-fusion-cloudflare', 'mcp-fusion-aws',
-        'mcp-fusion-openapi-gen', 'mcp-fusion-prisma-gen', 'mcp-fusion-n8n',
-        'mcp-fusion-oauth', 'mcp-fusion-jwt', 'mcp-fusion-api-key', 'mcp-fusion-testing',
+        '@mcpfusion/vercel', '@mcpfusion/cloudflare', '@mcpfusion/aws',
+        '@mcpfusion/openapi-gen', '@mcpfusion/prisma-gen', '@mcpfusion/n8n',
+        '@mcpfusion/oauth', '@mcpfusion/jwt', '@mcpfusion/api-key', '@mcpfusion/testing',
         'MCP server framework', 'build MCP server', 'MCP tool builder',
         'MCP resource subscriptions', 'real-time AI agent notifications',
         'MCP resources', 'subscribable resources', 'push notifications MCP'
@@ -99,7 +99,7 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: { src: 'https://site-assets.vinkius.com/vk/vurb-logo.png', width: 160, height: 36 },
+    logo: { src: 'https://site-assets.vinkius.com/vk/mcpfusion-logo.png', width: 160, height: 36 },
     siteTitle: false,
     
     search: {
@@ -196,7 +196,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: 'All Posts', link: '/blog/' },
-          { text: 'Introducing Vurb.ts', link: '/blog/posts/introducing-vurb-ts' },
+          { text: 'Introducing MCP Fusion', link: '/blog/posts/introducing-mcpfusion' },
           { text: 'Anatomy of an AI Platform Breach', link: '/blog/posts/anatomy-of-an-ai-platform-breach' },
           { text: 'MVA Pattern Deep Dive', link: '/blog/posts/mva-pattern-deep-dive' },
         ]
@@ -204,7 +204,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vinkius-labs/vurb.ts' }
+      { icon: 'github', link: 'https://github.com/vinkius-labs/mcpfusion' }
     ]
   }
 })

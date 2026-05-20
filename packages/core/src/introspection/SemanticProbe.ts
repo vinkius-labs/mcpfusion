@@ -16,7 +16,7 @@
  * network dependencies" principle.
  *
  * **Testing integration**: Designed to be integrated with
- * `VurbTester.callAction()` for automated regression
+ * `MCPFusionTester.callAction()` for automated regression
  * testing: "given these inputs, does the output semantically
  * match the previous known-good output?"
  *

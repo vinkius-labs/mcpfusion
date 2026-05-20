@@ -27,13 +27,13 @@ function makeUserModel(): DMMFModel {
     return model('User', [
         field({ name: 'id', isId: true, hasDefaultValue: true }),
         field({ name: 'email', isUnique: true }),
-        field({ name: 'passwordHash', documentation: '@vurb.hide' }),
-        field({ name: 'stripeToken', documentation: 'Payment token.\n@vurb.hide' }),
-        field({ name: 'creditScore', type: 'Int', documentation: '@vurb.describe("Financial score from 0 to 1000. Above 700 is PREMIUM.")' }),
+        field({ name: 'passwordHash', documentation: '@mcpfusion.hide' }),
+        field({ name: 'stripeToken', documentation: 'Payment token.\n@mcpfusion.hide' }),
+        field({ name: 'creditScore', type: 'Int', documentation: '@mcpfusion.describe("Financial score from 0 to 1000. Above 700 is PREMIUM.")' }),
         field({ name: 'role', hasDefaultValue: true }),
         field({ name: 'isActive', type: 'Boolean', isRequired: false }),
         field({ name: 'balance', type: 'Float' }),
-        field({ name: 'tenantId', documentation: '@vurb.tenantKey' }),
+        field({ name: 'tenantId', documentation: '@mcpfusion.tenantKey' }),
         field({ name: 'createdAt', type: 'DateTime', hasDefaultValue: true }),
         // Relation fields — must NOT appear in output
         field({ name: 'posts', kind: 'object', type: 'Post', isList: true, isRequired: false }),
@@ -47,19 +47,19 @@ function makeUserModel(): DMMFModel {
 
 describe('PresenterEmitter', () => {
 
-    // ── Egress Firewall (@vurb.hide) ───────────────────
+    // ── Egress Firewall (@mcpfusion.hide) ───────────────────
 
-    describe('Egress Firewall (@vurb.hide)', () => {
-        it('should physically exclude @vurb.hide fields from ResponseSchema', () => {
+    describe('Egress Firewall (@mcpfusion.hide)', () => {
+        it('should physically exclude @mcpfusion.hide fields from ResponseSchema', () => {
             const m = makeUserModel();
             const file = emitPresenter(m, parseAnnotations(m));
             expect(file.content).not.toContain('passwordHash');
             expect(file.content).not.toContain('stripeToken');
         });
 
-        it('should exclude @vurb.hide even when doc is multi-line', () => {
+        it('should exclude @mcpfusion.hide even when doc is multi-line', () => {
             const m = model('Secret', [
-                field({ name: 'apiKey', documentation: 'Internal API key.\n@vurb.hide\nNever expose.' }),
+                field({ name: 'apiKey', documentation: 'Internal API key.\n@mcpfusion.hide\nNever expose.' }),
             ]);
             const file = emitPresenter(m, parseAnnotations(m));
             expect(file.content).not.toContain('apiKey');
@@ -67,8 +67,8 @@ describe('PresenterEmitter', () => {
 
         it('should handle model where ALL fields are hidden', () => {
             const m = model('Secrets', [
-                field({ name: 'key1', documentation: '@vurb.hide' }),
-                field({ name: 'key2', documentation: '@vurb.hide' }),
+                field({ name: 'key1', documentation: '@mcpfusion.hide' }),
+                field({ name: 'key2', documentation: '@mcpfusion.hide' }),
             ]);
             const file = emitPresenter(m, parseAnnotations(m));
             // Schema should still be valid — empty .strict() object
@@ -136,16 +136,16 @@ describe('PresenterEmitter', () => {
 
         it('should map optional fields with .describe() before .optional()', () => {
             const m = model('Test', [
-                field({ name: 'bio', isRequired: false, documentation: '@vurb.describe("User bio")' }),
+                field({ name: 'bio', isRequired: false, documentation: '@mcpfusion.describe("User bio")' }),
             ]);
             const file = emitPresenter(m, parseAnnotations(m));
             expect(file.content).toContain("bio: z.string().describe('User bio').optional()");
         });
     });
 
-    // ── @vurb.describe → .describe() ───────────────────
+    // ── @mcpfusion.describe → .describe() ───────────────────
 
-    describe('@vurb.describe injection', () => {
+    describe('@mcpfusion.describe injection', () => {
         it('should inject .describe() on required field', () => {
             const m = makeUserModel();
             const file = emitPresenter(m, parseAnnotations(m));
@@ -154,7 +154,7 @@ describe('PresenterEmitter', () => {
 
         it('should correctly order .describe() on Int type', () => {
             const m = model('Test', [
-                field({ name: 'score', type: 'Int', documentation: '@vurb.describe("0 to 100")' }),
+                field({ name: 'score', type: 'Int', documentation: '@mcpfusion.describe("0 to 100")' }),
             ]);
             const file = emitPresenter(m, parseAnnotations(m));
             expect(file.content).toContain("score: z.number().int().describe('0 to 100')");
@@ -162,7 +162,7 @@ describe('PresenterEmitter', () => {
 
         it('should escape single quotes in description', () => {
             const m = model('Test', [
-                field({ name: 'note', documentation: "@vurb.describe(\"Don't use special chars\")" }),
+                field({ name: 'note', documentation: "@mcpfusion.describe(\"Don't use special chars\")" }),
             ]);
             const file = emitPresenter(m, parseAnnotations(m));
             expect(file.content).toContain("Don\\'t use special chars");
@@ -193,7 +193,7 @@ describe('PresenterEmitter', () => {
         it('should import createPresenter', () => {
             const m = makeUserModel();
             const file = emitPresenter(m, parseAnnotations(m));
-            expect(file.content).toContain("import { createPresenter } from '@vurb/core'");
+            expect(file.content).toContain("import { createPresenter } from '@mcpfusion/core'");
         });
     });
 

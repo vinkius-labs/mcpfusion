@@ -1,7 +1,7 @@
 # Agentic Affordances
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -16,7 +16,7 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 In a traditional MCP server, after receiving a response the AI must scan the entire `tools/list` to figure out what to do next. With 50+ tools, it often picks the wrong one or hallucinates a tool name that doesn't exist.
 
-Vurb.ts introduces **Agentic Affordances** — a HATEOAS-style mechanism where each response carries suggested next actions based on the *current data state*. The AI no longer guesses. It follows the shortest path.
+MCP Fusion introduces **Agentic Affordances** — a HATEOAS-style mechanism where each response carries suggested next actions based on the *current data state*. The AI no longer guesses. It follows the shortest path.
 
 ## The Problem — Blind Navigation {#problem}
 
@@ -35,7 +35,7 @@ The AI wastes tokens scanning tool lists and may hallucinate non-existent tool n
 The `suggest()` helper creates HATEOAS-style hints inside a Presenter's `.suggest()` method. Each hint carries a tool name and a human-readable reason:
 
 ```typescript
-import { createPresenter, t, suggest } from '@vurb/core';
+import { createPresenter, t, suggest } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
   .schema({
@@ -109,9 +109,9 @@ const UserPresenter = createPresenter('User')
 Connect your Presenter to a tool with `.returns()`. The handler just returns raw data — the Presenter handles validation, rules, UI blocks, and affordances automatically:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const getInvoice = f.query('billing.get_invoice')
   .describe('Get an invoice by ID')

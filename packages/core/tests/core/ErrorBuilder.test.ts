@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ErrorBuilder } from '../../src/core/builder/ErrorBuilder.js';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 
 describe('ErrorBuilder', () => {
     it('should construct a basic error response', () => {
@@ -56,9 +56,9 @@ describe('ErrorBuilder', () => {
     });
 });
 
-describe('initVurb — f.error()', () => {
+describe('initMCPFusion — f.error()', () => {
     it('should expose f.error() which returns an ErrorBuilder', () => {
-        const f = initVurb();
+        const f = initMCPFusion();
         const builder = f.error('UNAUTHORIZED', 'Login required');
         
         expect(builder).toBeInstanceOf(ErrorBuilder);

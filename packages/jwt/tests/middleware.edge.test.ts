@@ -13,7 +13,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import * as crypto from 'node:crypto';
-import type { ToolResponse } from '@vurb/core';
+import type { ToolResponse } from '@mcpfusion/core';
 import { requireJwt } from '../src/middleware.js';
 
 // ── JWT Helper ───────────────────────────────────────────

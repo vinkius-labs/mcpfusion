@@ -9,7 +9,7 @@
  *
  * @module
  */
-import type { YamlResponseTransform } from '../schema/VurbYamlSpec.js';
+import type { YamlResponseTransform } from '../schema/MCPFusionYamlSpec.js';
 
 /**
  * Extract a value from a nested object using dot-notation.

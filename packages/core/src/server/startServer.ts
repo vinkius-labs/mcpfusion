@@ -1,5 +1,5 @@
 /**
- * startServer — One-Liner Bootstrap for Vurb Servers
+ * startServer — One-Liner Bootstrap for MCP mcpfusion Servers
  *
  * Abstracts the entire server startup boilerplate into a single call:
  *   1. Creates the MCP Server instance
@@ -128,7 +128,7 @@ export interface StartServerOptions<TContext> {
     /**
      * Server Card configuration for MCP auto-discovery (SEP-1649).
      *
-     * When provided (or set to `true`), Vurb serves a standard
+     * When provided (or set to `true`), MCP mcpfusion serves a standard
      * `/.well-known/mcp/server-card.json` endpoint that AI clients
      * use to automatically discover and configure this server.
      *
@@ -202,7 +202,7 @@ export interface StartServerOptions<TContext> {
      *
      * @example
      * ```ts
-     * import { defineCredentials } from '@vurb/core';
+     * import { defineCredentials } from '@mcpfusion/core';
      *
      * export const credentials = defineCredentials({
      *   API_KEY: { label: 'API Key', description: 'Your key', type: 'api_key', required: true, sensitive: true },
@@ -356,14 +356,14 @@ function applyCorsHeaders(
 // ============================================================================
 
 /**
- * Start an Vurb server with a single call.
+ * Start an MCP mcpfusion server with a single call.
  *
  * Handles all bootstrap boilerplate: Server creation, registry attachment,
  * telemetry bus, and stdio transport connection.
  *
  * @example
  * ```typescript
- * import { startServer, autoDiscover } from '@vurb/core';
+ * import { startServer, autoDiscover } from '@mcpfusion/core';
  *
  * const registry = f.registry();
  * await autoDiscover(registry, new URL('./tools', import.meta.url));
@@ -526,10 +526,10 @@ export async function startServer<TContext>(
     }
 
     // ── CLI Introspection Mode ───────────────────────────────────────────
-    // When `vurb deploy` sets VURB_INTROSPECT=1, we capture the registry
+    // When `mcpfusion deploy` sets MCPFUSION_INTROSPECT=1, we capture the registry
     // and tool definitions without starting any transport. This allows the
     // CLI to generate a fresh lockfile manifest as the deploy's signature.
-    if (process.env['VURB_INTROSPECT'] === '1') {
+    if (process.env['MCPFUSION_INTROSPECT'] === '1') {
         const introspectResult = {
             serverName: name,
             version,
@@ -538,9 +538,9 @@ export async function startServer<TContext>(
         };
 
         // Store result and resolve the waiting promise from deploy.ts
-        g.__vurb_introspect_result = introspectResult;
-        if (typeof g.__vurb_introspect_resolve === 'function') {
-            g.__vurb_introspect_resolve(introspectResult);
+        g.__MCPFUSION_INTROSPECT_result = introspectResult;
+        if (typeof g.__MCPFUSION_INTROSPECT_resolve === 'function') {
+            g.__MCPFUSION_INTROSPECT_resolve(introspectResult);
         }
 
         return { server: null, close: async () => {} };
@@ -814,7 +814,7 @@ export async function startServer<TContext>(
                     res.writeHead(405).end();
                 }
             } catch (err) {
-                console.error('[Vurb] Unhandled error in HTTP handler:', err);
+                console.error('[mcpfusion] Unhandled error in HTTP handler:', err);
                 if (!res.headersSent) res.writeHead(500).end();
             }
         });

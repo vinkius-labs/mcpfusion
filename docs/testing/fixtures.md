@@ -6,18 +6,18 @@ description: "Shared context, per-test overrides, async factories, and isolation
 # Fixtures
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
-Fixtures are the foundation of every test suite — the shared context, mock data, and configuration that prepare the environment before any assertion runs. In the VurbTester, the fixture is the **`contextFactory`** and the **`setup.ts`** file.
+Fixtures are the foundation of every test suite — the shared context, mock data, and configuration that prepare the environment before any assertion runs. In the MCPFusionTester, the fixture is the **`contextFactory`** and the **`setup.ts`** file.
 
 ## The `setup.ts` File
 
-Every test suite shares a single `VurbTester` instance defined in `tests/setup.ts`:
+Every test suite shares a single `MCPFusionTester` instance defined in `tests/setup.ts`:
 
 ```typescript
 // tests/setup.ts
-import { createVurbTester } from '@vurb/testing';
+import { createMCPFusionTester } from '@mcpfusion/testing';
 import { registry } from '../src/index.js';
 
 // Mock database layer
@@ -45,7 +45,7 @@ const mockPrisma = {
     },
 };
 
-export const tester = createVurbTester(registry, {
+export const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_42',
@@ -66,7 +66,7 @@ import { tester } from '../setup.js';
 The `contextFactory` is called **once per `callAction()`**. This ensures each test call gets a fresh context:
 
 ```typescript
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_42',
@@ -81,7 +81,7 @@ const tester = createVurbTester(registry, {
 For scenarios that require async resolution (JWT decoding, database lookups):
 
 ```typescript
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
     contextFactory: async () => {
         const token = await decodeTestJWT('test-token');
         return {
@@ -96,7 +96,7 @@ const tester = createVurbTester(registry, {
 
 ## Per-Test Context Overrides
 
-The fourth argument of `callAction()` lets you **override specific context fields** for a single test call, without creating a new VurbTester:
+The fourth argument of `callAction()` lets you **override specific context fields** for a single test call, without creating a new MCPFusionTester:
 
 ```typescript
 // Base context: role = 'ADMIN' (from contextFactory)
@@ -134,7 +134,7 @@ describe('Context Isolation', () => {
 
     it('does not mutate the original context object', async () => {
         const ctx = { prisma: mockPrisma, tenantId: 't_42', role: 'ADMIN' as string };
-        const isolatedTester = createVurbTester(registry, {
+        const isolatedTester = createMCPFusionTester(registry, {
             contextFactory: () => ctx,
         });
 
@@ -156,7 +156,7 @@ For tests that require fundamentally different configurations, create separate t
 // tests/setup.ts
 
 // Admin tester (default)
-export const adminTester = createVurbTester(registry, {
+export const adminTester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_42',
@@ -165,7 +165,7 @@ export const adminTester = createVurbTester(registry, {
 });
 
 // Guest tester (for unauthorized path testing)
-export const guestTester = createVurbTester(registry, {
+export const guestTester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_42',
@@ -174,7 +174,7 @@ export const guestTester = createVurbTester(registry, {
 });
 
 // Multi-tenant tester (for tenant isolation testing)
-export const tenantBTester = createVurbTester(registry, {
+export const tenantBTester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrismaTenantB,
         tenantId: 't_other',
@@ -189,15 +189,15 @@ If you need per-test setup/teardown, use your runner's lifecycle hooks:
 
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createVurbTester } from '@vurb/testing';
+import { createMCPFusionTester } from '@mcpfusion/testing';
 import { registry } from '../../src/index.js';
 
 describe('User CRUD', () => {
-    let tester: ReturnType<typeof createVurbTester>;
+    let tester: ReturnType<typeof createMCPFusionTester>;
 
     beforeEach(() => {
         // Fresh tester per test
-        tester = createVurbTester(registry, {
+        tester = createMCPFusionTester(registry, {
             contextFactory: () => ({
                 prisma: createFreshMockPrisma(),
                 tenantId: 't_42',

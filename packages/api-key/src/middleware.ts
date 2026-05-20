@@ -1,13 +1,13 @@
 /**
  * API Key Auth Middleware — requireApiKey()
  *
- * vurb middleware that ensures requests carry a valid API key.
+ * MCP Fusion middleware that ensures requests carry a valid API key.
  * Extracts the key, validates it via ApiKeyManager, and rejects
  * invalid/missing keys with self-healing error responses.
  *
  * @example
  * ```ts
- * import { requireApiKey } from '@vurb/api-key';
+ * import { requireApiKey } from '@mcpfusion/api-key';
  *
  * const projects = createTool('projects')
  *     .use(requireApiKey({ keys: ['sk_live_abc123'] }))
@@ -15,8 +15,8 @@
  * ```
  */
 
-import { toolError } from '@vurb/core';
-import type { ToolResponse } from '@vurb/core';
+import { toolError } from '@mcpfusion/core';
+import type { ToolResponse } from '@mcpfusion/core';
 import { ApiKeyManager } from './ApiKeyManager.js';
 import type { ApiKeyManagerConfig } from './ApiKeyManager.js';
 
@@ -67,7 +67,7 @@ export interface RequireApiKeyOptions extends ApiKeyManagerConfig {
 // ============================================================================
 
 /**
- * Creates a vurb middleware that validates API keys.
+ * Creates a MCP Fusion middleware that validates API keys.
  *
  * Returns `toolError('APIKEY_INVALID')` with self-healing hints
  * when no valid key is found.

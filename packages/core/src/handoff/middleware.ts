@@ -7,10 +7,10 @@
  *
  * @example
  * ```typescript
- * import { requireGatewayClearance } from '@vurb/core';
+ * import { requireGatewayClearance } from '@mcpfusion/core';
  *
  * export const refund = f.tool('finance.refund')
- *     .use(requireGatewayClearance(process.env.VURB_DELEGATION_SECRET!))
+ *     .use(requireGatewayClearance(process.env.MCPFUSION_DELEGATION_SECRET!))
  *     .withString('invoiceId', 'Invoice ID')
  *     .handle(async (input, ctx) => {
  *         // ctx.handoffState       — carry-over state from the gateway
@@ -56,7 +56,7 @@ export interface GatewayClearanceContext {
 /**
  * Zero-trust middleware que valida o token de delegação HMAC.
  *
- * Lê o header `x-vurb-delegation` do `extra` do pedido MCP,
+ * Lê o header `x-mcpfusion-delegation` do `extra` do pedido MCP,
  * verifica a assinatura HMAC-SHA256 e o TTL, e injeta
  * {@link GatewayClearanceContext} no contexto do handler.
  *
@@ -113,23 +113,23 @@ export function requireGatewayClearance(
  * Header lookup is case-insensitive (HTTP/1.1 RFC 7230 §3.2).
  *
  * HTTP proxies (nginx, Cloudflare, AWS ALB) may normalize headers to
- * Title-Case (`X-Vurb-Delegation`) or strip them. A case-insensitive scan
+ * Title-Case (`x-mcpfusion-delegation`) or strip them. A case-insensitive scan
  * with `toLowerCase()` ensures the token is found regardless of normalization.
  */
 function extractDelegationHeader(ctx: unknown): string | undefined {
     if (!ctx || typeof ctx !== 'object') return undefined;
     const c = ctx as Record<string, unknown>;
 
-    // MCP SDK extra: extra.requestInfo.headers['x-vurb-delegation']
+    // MCP SDK extra: extra.requestInfo.headers['x-mcpfusion-delegation']
     const requestInfo = c['requestInfo'];
     if (requestInfo && typeof requestInfo === 'object') {
         const h = (requestInfo as Record<string, unknown>)['headers'];
-        const val = findHeaderCaseInsensitive(h, 'x-vurb-delegation');
+        const val = findHeaderCaseInsensitive(h, 'x-mcpfusion-delegation');
         if (val !== undefined) return val;
     }
 
     // Fallback: ctx.headers (plain HTTP / custom transports)
-    const val = findHeaderCaseInsensitive(c['headers'], 'x-vurb-delegation');
+    const val = findHeaderCaseInsensitive(c['headers'], 'x-mcpfusion-delegation');
     if (val !== undefined) return val;
 
     return undefined;

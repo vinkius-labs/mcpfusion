@@ -8,8 +8,8 @@
 // Config (package.json, tsconfig, etc.)
 export { packageJson, tsconfig, gitignore, envExample } from './config.js';
 
-// Core source (vurb.ts, context.ts, server.ts)
-export { vurbTs, contextTs, serverTs } from './core.js';
+// Core source (mcpfusion.ts, context.ts, server.ts)
+export { mcpfusionTs, contextTs, serverTs } from './core.js';
 
 // Tools
 export { healthToolTs, echoToolTs } from './tools.js';
@@ -41,13 +41,13 @@ export { prismaSchema, dbUsersToolTs, n8nConnectorTs, openapiYaml, openapiSetupM
 // Target: Vercel
 export {
     vercelPackageJson, vercelTsconfig, vercelNextConfig, vercelRouteTs,
-    vercelRegistryTs, vercelVurbTs, vercelContextTs, vercelEnvExample,
+    vercelRegistryTs, vercelFusionTs, vercelContextTs, vercelEnvExample,
     vercelGitignore, vercelReadme,
 } from './vercel.js';
 
 // Target: Cloudflare
 export {
     cloudflarePackageJson, cloudflareTsconfig, cloudflareWranglerToml, cloudflareWorkerTs,
-    cloudflareRegistryTs, cloudflareVurbTs, cloudflareContextTs, cloudflareEnvExample,
+    cloudflareRegistryTs, cloudflareFusionTs, cloudflareContextTs, cloudflareEnvExample,
     cloudflareGitignore, cloudflareReadme,
 } from './cloudflare.js';

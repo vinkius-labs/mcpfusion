@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
-    createVurbClient,
-    VurbClientError,
-    type VurbTransport,
+    createMCPFusionClient,
+    MCPFusionClientError,
+    type MCPFusionTransport,
     type ClientMiddleware,
-} from '../../src/client/VurbClient.js';
+} from '../../src/client/MCPFusionClient.js';
 import { success, error, toolError } from '../../src/core/response.js';
 import { type ToolResponse } from '../../src/core/response.js';
 
@@ -12,7 +12,7 @@ import { type ToolResponse } from '../../src/core/response.js';
 // Mock Transport Helper
 // ============================================================================
 
-function createMockTransport(): VurbTransport & {
+function createMockTransport(): MCPFusionTransport & {
     calls: Array<{ name: string; args: Record<string, unknown> }>;
 } {
     const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
@@ -32,13 +32,13 @@ function createMockTransport(): VurbTransport & {
 describe('FluentProxy — Core', () => {
     it('should expose a proxy property on the client', () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         expect(client.proxy).toBeDefined();
     });
 
     it('should build dotted path from chained property accesses', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await (client.proxy as any).projects.create({ name: 'Vinkius V2' });
 
@@ -52,7 +52,7 @@ describe('FluentProxy — Core', () => {
 
     it('should produce the same result as client.execute()', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         const resultA = await client.execute('projects.create', { name: 'V2' });
         const resultB = await (client.proxy as any).projects.create({ name: 'V2' });
@@ -62,7 +62,7 @@ describe('FluentProxy — Core', () => {
 
     it('should handle deep nested paths (3+ segments)', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await (client.proxy as any).platform.users.list({ limit: 10 });
 
@@ -75,7 +75,7 @@ describe('FluentProxy — Core', () => {
 
     it('should handle 4-level deep paths', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await (client.proxy as any).a.b.c.d({ x: 1 });
 
@@ -88,7 +88,7 @@ describe('FluentProxy — Core', () => {
 
     it('should default to empty args when called without arguments', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await (client.proxy as any).health.check();
 
@@ -98,7 +98,7 @@ describe('FluentProxy — Core', () => {
 
     it('should allow multiple independent calls without interference', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await (client.proxy as any).users.list({ status: 'active' });
         await (client.proxy as any).projects.create({ name: 'P1' });
@@ -110,7 +110,7 @@ describe('FluentProxy — Core', () => {
 
     it('should be safe to store a partial proxy and reuse it', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         const projects = (client.proxy as any).projects;
         await projects.create({ name: 'A' });
@@ -123,7 +123,7 @@ describe('FluentProxy — Core', () => {
 
     it('should be awaitable without .then trapping', async () => {
         const transport = createMockTransport();
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         // Accessing .then should return undefined (not create a deeper proxy)
         // so that Promise.resolve(client.proxy) doesn't blow up
@@ -138,13 +138,13 @@ describe('FluentProxy — Core', () => {
 
 describe('FluentProxy — Error Handling', () => {
     it('should propagate transport errors', async () => {
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool() {
                 return error('Something went wrong');
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         const result = await (client.proxy as any).tool.action({});
 
         expect(result.isError).toBe(true);
@@ -152,18 +152,18 @@ describe('FluentProxy — Error Handling', () => {
     });
 
     it('should propagate transport exceptions as rejected promises', async () => {
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool() {
                 throw new Error('Network failure');
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         await expect((client.proxy as any).tool.action({})).rejects.toThrow('Network failure');
     });
 
     it('should respect throwOnError option', async () => {
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool() {
                 return toolError('NOT_FOUND', {
                     message: 'Resource not found.',
@@ -173,14 +173,14 @@ describe('FluentProxy — Error Handling', () => {
             },
         };
 
-        const client = createVurbClient(transport, { throwOnError: true });
+        const client = createMCPFusionClient(transport, { throwOnError: true });
 
         try {
             await (client.proxy as any).items.get({ id: '123' });
             expect.fail('Should have thrown');
         } catch (err) {
-            expect(err).toBeInstanceOf(VurbClientError);
-            const e = err as VurbClientError;
+            expect(err).toBeInstanceOf(MCPFusionClientError);
+            const e = err as MCPFusionClientError;
             expect(e.code).toBe('NOT_FOUND');
             expect(e.message).toBe('Resource not found.');
             expect(e.recovery).toBe('Try listing first.');
@@ -204,7 +204,7 @@ describe('FluentProxy — Middleware', () => {
         };
 
         const transport = createMockTransport();
-        const client = createVurbClient(transport, { middleware: [mw] });
+        const client = createMCPFusionClient(transport, { middleware: [mw] });
 
         await (client.proxy as any).billing.process({ amount: 100 });
 
@@ -217,7 +217,7 @@ describe('FluentProxy — Middleware', () => {
         };
 
         const transport = createMockTransport();
-        const client = createVurbClient(transport, { middleware: [authMw] });
+        const client = createMCPFusionClient(transport, { middleware: [authMw] });
 
         await (client.proxy as any).secure.endpoint({ data: 'test' });
 
@@ -232,7 +232,7 @@ describe('FluentProxy — Middleware', () => {
 describe('FluentProxy — Concurrency', () => {
     it('should handle concurrent proxy calls without interference', async () => {
         let callCount = 0;
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool(name) {
                 callCount++;
                 await new Promise(r => setTimeout(r, 10));
@@ -240,7 +240,7 @@ describe('FluentProxy — Concurrency', () => {
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         const results = await Promise.all([
             (client.proxy as any).a.one({}),

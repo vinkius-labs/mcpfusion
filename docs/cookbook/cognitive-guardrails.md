@@ -1,7 +1,7 @@
 # Cognitive Guardrails
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -15,7 +15,7 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 LLMs have finite context windows. When your database returns 10,000 rows and your handler blindly passes them through, the result is a **token DDoS** — 10,000 rows × ~500 tokens each = 5,000,000 tokens. The LLM chokes, the response is expensive, and the output quality degrades drastically.
 
-Vurb.ts's Cognitive Guardrails solve this by truncating data *before* it reaches the LLM and injecting intelligent guidance about what was omitted. The agent learns to use filters instead of paginating through massive datasets.
+MCP Fusion's Cognitive Guardrails solve this by truncating data *before* it reaches the LLM and injecting intelligent guidance about what was omitted. The agent learns to use filters instead of paginating through massive datasets.
 
 ## The Token Explosion Problem {#problem}
 
@@ -43,7 +43,7 @@ Result: Fast, cheap, and the LLM knows to suggest filters
 The simplest guardrail is `.limit()`. It slices the array before validation and appends an auto-generated truncation message:
 
 ```typescript
-import { createPresenter, t } from '@vurb/core';
+import { createPresenter, t } from '@mcpfusion/core';
 
 const UserPresenter = createPresenter('User')
   .schema({
@@ -70,7 +70,7 @@ This is enough to teach the AI to add filters on the next call. No configuration
 When the auto-generated message isn't specific enough, `.agentLimit()` lets you craft a custom truncation message that guides the AI to the right filter:
 
 ```typescript
-import { createPresenter, t, ui } from '@vurb/core';
+import { createPresenter, t, ui } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
   .schema({
@@ -95,7 +95,7 @@ The callback receives the number of `omitted` items, so you can build a dynamic 
 The real power emerges when you combine guardrails with [Agentic Affordances](/cookbook/agentic-affordances). The truncation warning tells the AI *that* data is missing; the suggested actions tell it *how* to get what it needs:
 
 ```typescript
-import { createPresenter, t, suggest, ui } from '@vurb/core';
+import { createPresenter, t, suggest, ui } from '@mcpfusion/core';
 
 const TaskPresenter = createPresenter('Task')
   .schema({

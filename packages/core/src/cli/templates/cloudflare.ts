@@ -1,5 +1,5 @@
 /**
- * Cloudflare Templates — Workers scaffold for @vurb/cloudflare
+ * Cloudflare Templates — Workers scaffold for @mcpfusion/cloudflare
  *
  * Generates a complete Cloudflare Worker project that exposes an MCP
  * server via `cloudflareWorkersAdapter()`. Deploy with `wrangler deploy`.
@@ -13,17 +13,17 @@ import { CORE_VERSION, MCP_SDK_VERSION, CLOUDFLARE_ADAPTER_VERSION, ZOD_VERSION,
 export function cloudflarePackageJson(config: ProjectConfig): string {
     const deps: Record<string, string> = {
         '@modelcontextprotocol/sdk': MCP_SDK_VERSION,
-        '@vurb/core': CORE_VERSION,
-        '@vurb/cloudflare': CLOUDFLARE_ADAPTER_VERSION,
+        '@mcpfusion/core': CORE_VERSION,
+        '@mcpfusion/cloudflare': CLOUDFLARE_ADAPTER_VERSION,
         'zod': ZOD_VERSION,
     };
 
     if (config.vector === 'prisma') {
         deps['@prisma/client'] = '^6.0.0';
-        deps['@vurb/prisma-gen'] = '^1.0.0';
+        deps['@mcpfusion/prisma-gen'] = '^1.0.0';
     }
     if (config.vector === 'oauth') {
-        deps['@vurb/oauth'] = '^1.0.0';
+        deps['@mcpfusion/oauth'] = '^1.0.0';
     }
 
     const devDeps: Record<string, string> = {
@@ -38,7 +38,7 @@ export function cloudflarePackageJson(config: ProjectConfig): string {
     }
     if (config.testing) {
         devDeps['vitest'] = '^3.0.5';
-        devDeps['@vurb/testing'] = TESTING_VERSION;
+        devDeps['@mcpfusion/testing'] = TESTING_VERSION;
     }
 
     const scripts: Record<string, string> = {
@@ -132,10 +132,10 @@ export function cloudflareWorkerTs(config: ProjectConfig): string {
     return `/**
  * Cloudflare Worker — MCP Server
  *
- * Exposes your Vurb tools as a stateless MCP endpoint.
+ * Exposes your MCP Fusion tools as a stateless MCP endpoint.
  * Connect any MCP client to: POST https://your-worker.workers.dev/
  */
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 import { registry } from './registry.js';
 import { createContext } from './context.js';
 
@@ -162,7 +162,7 @@ export function cloudflareRegistryTs(): string {
  * Registered tools are compiled once during cold start.
  * Warm requests only instantiate McpServer + Transport.
  */
-import { f } from './vurb.js';
+import { f } from './mcpfusion.js';
 import healthTool from './tools/system/health.js';
 import echoTool from './tools/system/echo.js';
 
@@ -172,18 +172,18 @@ registry.register(echoTool);
 `;
 }
 
-/** Generate `src/vurb.ts` — initVurb instance */
-export function cloudflareVurbTs(): string {
+/** Generate `src/mcpfusion.ts` — initMCPFusion instance */
+export function cloudflareFusionTs(): string {
     return `/**
- * Vurb Instance — Context Initialization
+ * MCP Fusion Instance — Context Initialization
  *
  * Define your context type ONCE. Every f.query(), f.mutation(),
  * and f.presenter() call inherits AppContext.
  */
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 import type { AppContext } from './context.js';
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 `;
 }
 
@@ -221,7 +221,7 @@ export function createContext(): AppContext {
 
 /** Generate `.env.example` for Cloudflare */
 export function cloudflareEnvExample(config: ProjectConfig): string {
-    let env = `# ── Vurb + Cloudflare Workers Environment ─────
+    let env = `# ── MCP Fusion + Cloudflare Workers Environment ─────
 # Secrets are managed via wrangler:
 #   wrangler secret put MY_SECRET
 
@@ -254,7 +254,7 @@ coverage/
 export function cloudflareReadme(config: ProjectConfig): string {
     return `# ${config.name}
 
-MCP Server built with [Vurb](https://vurb.vinkius.com/) — deployed to Cloudflare Workers.
+MCP Server built with [mcpfusion](https://mcpfusion.vinkius.com/) — deployed to Cloudflare Workers.
 
 ## Quick Start
 
@@ -310,7 +310,7 @@ Add to your \`claude_desktop_config.json\`:
 \`\`\`
 src/
 ├── worker.ts          # Worker entry → cloudflareWorkersAdapter()
-├── vurb.ts            # initVurb<AppContext>()
+├── mcpfusion.ts            # initMCPFusion<AppContext>()
 ├── context.ts         # AppContext type + factory
 ├── registry.ts        # Tool registry (cold-start)
 └── tools/
@@ -345,7 +345,7 @@ export default cloudflareWorkersAdapter<Env, MyContext>({
 1. Create a tool in \`src/tools/\`:
 
 \`\`\`typescript
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 
 export default f.query('my_tool')
     .describe('What this tool does')
@@ -364,8 +364,8 @@ registry.register(myTool);
 
 ## Documentation
 
-- [Vurb Docs](https://vurb.vinkius.com/)
-- [Cloudflare Adapter](https://vurb.vinkius.com/cloudflare-adapter)
-- [Presenter — Egress Firewall](https://vurb.vinkius.com/presenter)
+- [MCP Fusion Docs](https://mcpfusion.vinkius.com/)
+- [Cloudflare Adapter](https://mcpfusion.vinkius.com/cloudflare-adapter)
+- [Presenter — Egress Firewall](https://mcpfusion.vinkius.com/presenter)
 `;
 }

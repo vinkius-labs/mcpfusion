@@ -9,7 +9,7 @@ import { GroupItem } from './GroupItem.js';
  *
  * @example
  * ```typescript
- * import { Resource, createAnnotations, Role } from '@vurb/core';
+ * import { Resource, createAnnotations, Role } from '@mcpfusion/core';
  *
  * const resource = new Resource('config');
  * resource.uri = 'file:///etc/app/config.json';

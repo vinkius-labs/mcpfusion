@@ -7,7 +7,7 @@ import type { AwsToolConfig } from './types.js';
 import type { SynthesizedToolConfig, SynthesizedAction } from './ToolSynthesizer.js';
 
 /**
- * Manually define an AWS resource (Lambda or Step Function) as an Vurb tool.
+ * Manually define an AWS resource (Lambda or Step Function) as an MCP Fusion tool.
  *
  * For when architects need surgical control: strict params,
  * custom annotations, specific middleware chains.

@@ -1,22 +1,22 @@
 <p align="center">
-  <h1 align="center">@vurb/openapi-gen</h1>
+  <h1 align="center">@mcpfusion/openapi-gen</h1>
   <p align="center">
-    <strong>MCP Server Generator from OpenAPI — Vurb.ts</strong> — A framework for creating MCP servers from any REST API<br/>
+    <strong>MCP Server Generator from OpenAPI — MCP Fusion</strong> — A framework for creating MCP servers from any REST API<br/>
     OpenAPI 3.x / Swagger 2.0 → complete MCP server in one command · Presenters · PII redaction · Zod schemas
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/openapi-gen"><img src="https://img.shields.io/npm/v/@vurb/openapi-gen?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/openapi-gen"><img src="https://img.shields.io/npm/v/@mcpfusion/openapi-gen?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Server Generator from OpenAPI — Vurb.ts**, the Model Context Protocol framework for building production MCP servers. Parse any **OpenAPI 3.x** or **Swagger 2.0** spec and generate a **complete, ready-to-run MCP Server** — with Presenters, Tools, ToolRegistry, and server bootstrap. All features configurable via YAML.
+> **MCP Server Generator from OpenAPI — MCP Fusion**, the Model Context Protocol framework for building production MCP servers. Parse any **OpenAPI 3.x** or **Swagger 2.0** spec and generate a **complete, ready-to-run MCP Server** — with Presenters, Tools, ToolRegistry, and server bootstrap. All features configurable via YAML.
 
 ## What It Generates
 
@@ -35,7 +35,7 @@ output/
 └── index.ts               # ToolRegistry + registerAll barrel
 ```
 
-Every file follows the **MVA Convention** — the standard directory structure for Vurb.ts projects.
+Every file follows the **MVA Convention** — the standard directory structure for MCP Fusion projects.
 
 ## Quick Start
 
@@ -88,7 +88,7 @@ server:
 ## Programmatic API
 
 ```typescript
-import { parseOpenAPI, mapEndpoints, emitFiles, mergeConfig } from '@vurb/openapi-gen';
+import { parseOpenAPI, mapEndpoints, emitFiles, mergeConfig } from '@mcpfusion/openapi-gen';
 
 const spec = parseOpenAPI(yamlString);
 const mapped = mapEndpoints(spec);
@@ -123,7 +123,7 @@ The converter handles:
 Runtime mode (`loadOpenAPI()`) also accepts Swagger 2.0:
 
 ```typescript
-import { loadOpenAPI } from '@vurb/openapi-gen';
+import { loadOpenAPI } from '@mcpfusion/openapi-gen';
 
 // Swagger 2.0 JSON — auto-converted internally
 const tools = loadOpenAPI(swagger2Json, { baseUrl: 'https://petstore.swagger.io/v2' });
@@ -159,21 +159,21 @@ OpenAPI 3.x / Swagger 2.0 Spec (YAML/JSON)
 ## Installation
 
 ```bash
-npm install @vurb/openapi-gen
+npm install @mcpfusion/openapi-gen
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^2.0.0` |
+| `@mcpfusion/core` | `^2.0.0` |
 | `zod` | `^3.25.1 \|\| ^4.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
-- **Vurb.ts** ≥ 2.0.0 (peer dependency)
+- **MCP Fusion** ≥ 2.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

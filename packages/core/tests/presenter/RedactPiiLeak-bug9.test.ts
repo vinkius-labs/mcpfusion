@@ -78,7 +78,7 @@ describe('Bug #9 — PII leak when structuredClone fails', () => {
                 callback: () => {}, // not cloneable
             };
 
-            expect(() => redact(sensitiveData)).toThrow('[Vurb] PII redaction failed');
+            expect(() => redact(sensitiveData)).toThrow('[mcpfusion] PII redaction failed');
         });
 
         it('error message mentions PII leak prevention', async () => {

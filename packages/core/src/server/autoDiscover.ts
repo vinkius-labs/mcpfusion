@@ -25,7 +25,7 @@
  *
  * @example
  * ```typescript
- * import { autoDiscover, ToolRegistry } from '@vurb/core';
+ * import { autoDiscover, ToolRegistry } from '@mcpfusion/core';
  *
  * const registry = new ToolRegistry<AppContext>();
  *

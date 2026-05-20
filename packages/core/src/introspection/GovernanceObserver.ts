@@ -16,7 +16,7 @@
  * @module
  */
 import type { DebugObserverFn, GovernanceOperation } from '../observability/DebugObserver.js';
-import type { VurbTracer } from '../observability/Tracing.js';
+import type { MCPFusionTracer } from '../observability/Tracing.js';
 import { SpanStatusCode } from '../observability/Tracing.js';
 import { toErrorMessage } from '../core/ErrorUtils.js';
 
@@ -34,7 +34,7 @@ export interface GovernanceObserverConfig {
     /** Debug event handler — receives GovernanceEvent */
     readonly debug?: DebugObserverFn;
     /** OpenTelemetry-compatible tracer */
-    readonly tracer?: VurbTracer;
+    readonly tracer?: MCPFusionTracer;
 }
 
 // ============================================================================
@@ -86,8 +86,8 @@ export interface GovernanceObserver {
  *
  * @example
  * ```typescript
- * import { createGovernanceObserver } from 'vurb/introspection';
- * import { createDebugObserver } from '@vurb/core';
+ * import { createGovernanceObserver } from '@mcpfusion/core/introspection';
+ * import { createDebugObserver } from '@mcpfusion/core';
  *
  * const observer = createGovernanceObserver({
  *     debug: createDebugObserver(),
@@ -181,7 +181,7 @@ export function createGovernanceObserver(config: GovernanceObserverConfig): Gove
             // Runtime guard — reject async callbacks passed to sync observe()
             if (result != null && typeof (result as Record<string, unknown>)['then'] === 'function') {
                 throw new Error(
-                    '[Vurb] observe() received an async callback. Use observeAsync() for async operations.',
+                    '[mcpfusion] observe() received an async callback. Use observeAsync() for async operations.',
                 );
             }
 

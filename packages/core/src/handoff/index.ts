@@ -1,7 +1,7 @@
 /**
  * Federated Handoff Protocol (FHP) — Core Barrel
  *
- * Exporta todas as primitivas FHP que pertencem ao `@vurb/core`:
+ * Exporta todas as primitivas FHP que pertencem ao `@mcpfusion/core`:
  *
  * - **Tipos de dados**: `HandoffPayload`, `HandoffResponse`, `HandoffStateStore`
  * - **Guards e factories**: `isHandoffResponse`, `handoff`
@@ -25,7 +25,7 @@ export type {
      * keeping HTTP headers within safe limits (< 8 KB nginx/ALB limit).
      *
      * Default implementation: {@link InMemoryHandoffStateStore}.
-     * Platform adapters: implement this interface (e.g. `@vurb/cloudflare`).
+     * Platform adapters: implement this interface (e.g. `@mcpfusion/cloudflare`).
      */
     HandoffStateStore,
 } from './types.js';

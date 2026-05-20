@@ -18,7 +18,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StateMachineGate } from '../../src/fsm/StateMachineGate.js';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success, error } from '../../src/core/response.js';
 import type { FsmConfig, FsmSnapshot } from '../../src/fsm/StateMachineGate.js';
 
@@ -803,7 +803,7 @@ describe('TransitionResult contract', () => {
 
 describe('FluentToolBuilder — .bindState() edge inputs', () => {
     it('empty array of states should produce a binding that is never visible', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const tool = f.mutation('ghost')
             .describe('invisible tool')
             .bindState([], 'NEVER')
@@ -815,7 +815,7 @@ describe('FluentToolBuilder — .bindState() edge inputs', () => {
     });
 
     it('duplicate states in array should be handled gracefully', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const tool = f.mutation('duped')
             .describe('duplicated states')
             .bindState(['empty', 'empty', 'empty'], 'ADD_ITEM')
@@ -838,7 +838,7 @@ describe('FluentToolBuilder — .bindState() edge inputs', () => {
     });
 
     it('bindState with empty string transition should be treated as no-transition', () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const tool = f.mutation('empty_event')
             .describe('empty string event')
             .bindState('payment', '')
@@ -950,7 +950,7 @@ describe('Transition callback ordering', () => {
 
 describe('Gate + tool execution — error path', () => {
     it('tools returning error should not trigger FSM transition', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const gate = new StateMachineGate(checkoutConfig);
         gate.bindTool('cart', ['empty'], 'ADD_ITEM');
 
@@ -973,7 +973,7 @@ describe('Gate + tool execution — error path', () => {
     });
 
     it('tools returning success should trigger FSM transition', async () => {
-        const f = initVurb<TestContext>();
+        const f = initMCPFusion<TestContext>();
         const gate = new StateMachineGate(checkoutConfig);
         gate.bindTool('cart', ['empty'], 'ADD_ITEM');
 

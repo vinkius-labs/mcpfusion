@@ -23,7 +23,7 @@ import {
     createTelemetryBus,
     type TelemetryEvent,
     type TelemetryBusInstance,
-} from '@vurb/core';
+} from '@mcpfusion/core';
 import { formatEvent, formatEventJson } from '../src/StreamLogger.js';
 import { startSimulator } from '../src/Simulator.js';
 
@@ -130,8 +130,8 @@ let _testPathCounter = 0;
 function uniqueTestPath(): string {
     const id = `${process.pid}-${Date.now()}-${_testPathCounter++}`;
     return platform() === 'win32'
-        ? `\\\\.\\pipe\\vurb-streamlogger-${id}`
-        : `/tmp/vurb-streamlogger-${id}.sock`;
+        ? `\\\\.\\pipe\\mcpfusion-streamlogger-${id}`
+        : `/tm./mcpfusion-streamlogger-${id}.sock`;
 }
 
 // ============================================================================
@@ -384,7 +384,7 @@ describe('StreamLogger — Cross-Platform IPC Paths', () => {
     it('should generate Windows Named Pipe path on win32', () => {
         const path = getTelemetryPath('testfingerprint');
         if (isWindows) {
-            expect(path).toMatch(/^\\\\.\\pipe\\vurb-testfingerprint$/);
+            expect(path).toMatch(/^\\\\.\\pipe\\mcpfusion-testfingerprint$/);
             expect(path).not.toContain('/tmp');
         }
     });
@@ -392,7 +392,7 @@ describe('StreamLogger — Cross-Platform IPC Paths', () => {
     it('should generate POSIX Unix Socket path on Linux/macOS', () => {
         const path = getTelemetryPath('testfingerprint');
         if (!isWindows) {
-            expect(path).toBe('/tmp/vurb-testfingerprint.sock');
+            expect(path).toBe('/tm./mcpfusion-testfingerprint.sock');
             expect(path).not.toContain('\\');
         }
     });
@@ -905,8 +905,8 @@ describe('StreamLogger — Cross-Platform Connection Stability', () => {
 
     it('should accept custom IPC path on both Windows and POSIX', async () => {
         const customPath = platform() === 'win32'
-            ? `\\\\.\\pipe\\vurb-xplat-test-${Date.now()}`
-            : `/tmp/vurb-xplat-test-${Date.now()}.sock`;
+            ? `\\\\.\\pipe\\mcpfusion-xplat-test-${Date.now()}`
+            : `/tm./mcpfusion-xplat-test-${Date.now()}.sock`;
 
         bus = await createTelemetryBus({ path: customPath });
         expect(bus.path).toBe(customPath);

@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { success, error, toonSuccess } from '@vurb/core';
+ * import { success, error, toonSuccess } from '@mcpfusion/core';
  *
  * // String response
  * return success('Project created');
@@ -36,7 +36,7 @@ import { type StringifyFn } from './serialization/JsonSerializer.js';
  *
  * @internal
  */
-export const TOOL_RESPONSE_BRAND: unique symbol = Symbol.for('vurb.ToolResponse');
+export const TOOL_RESPONSE_BRAND: unique symbol = Symbol.for('mcpfusion.ToolResponse');
 
 // ============================================================================
 // XML Safety
@@ -82,7 +82,7 @@ export function escapeXmlAttr(str: string): string {
 /**
  * Standard MCP tool response.
  *
- * Every handler in vurb must return this shape.
+ * Every handler in MCP Fusion must return this shape.
  * Use the helper functions ({@link success}, {@link error}, {@link toonSuccess})
  * instead of constructing this manually.
  *
@@ -418,8 +418,8 @@ export function toolError(code: ErrorCode, options: ToolErrorOptions): ToolRespo
 
 /**
  * Payload for a federated agent handoff.
- * Full type lives in `@vurb/swarm` — this is the minimal shape needed by core.
- * @see `HandoffPayload` in `@vurb/swarm`
+ * Full type lives in `@mcpfusion/swarm` — this is the minimal shape needed by core.
+ * @see `HandoffPayload` in `@mcpfusion/swarm`
  */
 export interface HandoffPayload {
     target: string;
@@ -436,20 +436,20 @@ export interface HandoffPayload {
  * to the `SwarmGateway` instead of being forwarded to the LLM.
  */
 export interface HandoffResponse {
-    readonly _vurb_handoff: true;
+    readonly _MCPFUSION_handoff: true;
     readonly isHandoff: true;
     readonly payload: HandoffPayload;
 }
 
 /**
  * Type-guard used by `ServerAttachment` to detect a `HandoffResponse`
- * without importing `@vurb/swarm` (avoids circular dependency).
+ * without importing `@mcpfusion/swarm` (avoids circular dependency).
  */
 export function isHandoffResponse(v: unknown): v is HandoffResponse {
     return (
         typeof v === 'object' &&
         v !== null &&
-        (v as HandoffResponse)._vurb_handoff === true &&
+        (v as HandoffResponse)._MCPFUSION_handoff === true &&
         (v as HandoffResponse).isHandoff === true
     );
 }
@@ -465,7 +465,7 @@ export function isHandoffResponse(v: unknown): v is HandoffResponse {
  *
  * @example
  * ```typescript
- * import { f } from '@vurb/core';
+ * import { f } from '@mcpfusion/core';
  *
  * export const triage = f.tool('system.triage')
  *     .withEnum('domain', ['finance', 'devops'])
@@ -478,7 +478,7 @@ export function isHandoffResponse(v: unknown): v is HandoffResponse {
  */
 export function handoff(target: string, options?: Omit<HandoffPayload, 'target'>): HandoffResponse {
     const resp: HandoffResponse = {
-        _vurb_handoff: true,
+        _MCPFUSION_handoff: true,
         isHandoff: true,
         payload: { target, ...options },
     };

@@ -2,7 +2,7 @@
  * ServerCard — MCP Server Card Compiler (SEP-1649)
  *
  * Compiles a standard `/.well-known/mcp/server-card.json` payload from
- * the Vurb registry metadata for auto-discovery by MCP clients
+ * the MCP Fusion registry metadata for auto-discovery by MCP clients
  * (Claude, Cursor, ChatGPT, etc.).
  *
  * The Server Card enables AI agents to automatically discover and
@@ -68,7 +68,7 @@ interface ResourceEntryLike {
 // ── Public API ───────────────────────────────────────────
 
 /**
- * Compile a Server Card payload from Vurb registry metadata.
+ * Compile a Server Card payload from MCP Fusion registry metadata.
  *
  * Extracts tool names, descriptions, prompt definitions, resource
  * URIs, and auth requirements into the standard Server Card format.

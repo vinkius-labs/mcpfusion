@@ -37,7 +37,7 @@ import { definePrompt } from './definePrompt.js';
  * when the `PromptBuilder` interface methods are accessed — this means
  * you can pass a `FluentPromptBuilder` directly to `PromptRegistry.register()`.
  *
- * @typeParam TContext - Application context type (inherited from `initVurb`)
+ * @typeParam TContext - Application context type (inherited from `initMCPFusion`)
  * @typeParam TArgs - Inferred argument type from the schema
  */
 export class FluentPromptBuilder<TContext = void, TArgs extends Record<string, unknown> = Record<string, unknown>>

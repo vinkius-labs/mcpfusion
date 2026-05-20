@@ -1,7 +1,7 @@
 # Cancellation
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -14,21 +14,21 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 When the user clicks "Stop" or the connection drops mid-stream, the in-flight handler should stop immediately — not continue burning CPU, holding database locks, or sending HTTP requests into the void.
 
-Vurb.ts propagates `AbortSignal` through middleware, handlers, and generators. The framework checks `signal.aborted` before each pipeline stage. If the request was already cancelled, the handler never executes.
+MCP Fusion propagates `AbortSignal` through middleware, handlers, and generators. The framework checks `signal.aborted` before each pipeline stage. If the request was already cancelled, the handler never executes.
 
 ## Extracting the Signal {#signal}
 
 Capture the `AbortSignal` from the MCP SDK's `RequestHandlerExtra` via `contextFactory`:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   db: PrismaClient;
   signal?: AbortSignal;
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 registry.attachToServer(server, {
   contextFactory: (extra) => {
@@ -80,7 +80,7 @@ for (const file of files) {
 Generators get cancellation for free. `drainGenerator()` checks `signal.aborted` before each `yield`. If fired mid-stream, the generator is aborted via `gen.return()`, triggering `finally {}` cleanup:
 
 ```typescript
-import { progress } from '@vurb/core';
+import { progress } from '@mcpfusion/core';
 
 const analyzeRepo = f.query('repo.analyze')
   .describe('Analyze a repository')

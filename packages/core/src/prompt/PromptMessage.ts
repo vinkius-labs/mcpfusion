@@ -10,7 +10,7 @@
  *
  * @example
  * ```typescript
- * import { PromptMessage } from '@vurb/core';
+ * import { PromptMessage } from '@mcpfusion/core';
  *
  * return {
  *     messages: [
@@ -132,7 +132,7 @@ export const PromptMessage = {
      *
      * @example
      * ```typescript
-     * import { definePrompt, PromptMessage } from '@vurb/core';
+     * import { definePrompt, PromptMessage } from '@mcpfusion/core';
      * import { InvoicePresenter } from './presenters';
      *
      * const AuditPrompt = definePrompt<AppContext>('audit', {

@@ -27,13 +27,13 @@ function makeUserModel(): DMMFModel {
     return model('User', [
         field({ name: 'id', isId: true, hasDefaultValue: true }),
         field({ name: 'email', isUnique: true }),
-        field({ name: 'passwordHash', documentation: '@vurb.hide' }),
-        field({ name: 'stripeToken', documentation: 'Payment token.\n@vurb.hide' }),
-        field({ name: 'creditScore', type: 'Int', documentation: '@vurb.describe("Financial score 0-1000")' }),
+        field({ name: 'passwordHash', documentation: '@mcpfusion.hide' }),
+        field({ name: 'stripeToken', documentation: 'Payment token.\n@mcpfusion.hide' }),
+        field({ name: 'creditScore', type: 'Int', documentation: '@mcpfusion.describe("Financial score 0-1000")' }),
         field({ name: 'role', hasDefaultValue: true }),
         field({ name: 'isActive', type: 'Boolean', isRequired: false }),
         field({ name: 'balance', type: 'Float' }),
-        field({ name: 'tenantId', documentation: '@vurb.tenantKey' }),
+        field({ name: 'tenantId', documentation: '@mcpfusion.tenantKey' }),
         field({ name: 'createdAt', type: 'DateTime', hasDefaultValue: true }),
         // Relations — must be filtered
         field({ name: 'posts', kind: 'object', type: 'Post', isList: true, isRequired: false }),
@@ -65,13 +65,13 @@ function extractActionSection(content: string, action: string): string {
 
 describe('ToolEmitter', () => {
 
-    // ── PrismaVurbContext (Shift-Left Security) ────────
+    // ── PrismaFusionContext (Shift-Left Security) ────────
 
-    describe('PrismaVurbContext (Shift-Left TS Safety)', () => {
-        it('should emit PrismaVurbContext interface', () => {
+    describe('PrismaFusionContext (Shift-Left TS Safety)', () => {
+        it('should emit PrismaFusionContext interface', () => {
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
-            expect(file.content).toContain('export interface PrismaVurbContext');
+            expect(file.content).toContain('export interface PrismaFusionContext');
         });
 
         it('should include prisma property in context', () => {
@@ -80,20 +80,20 @@ describe('ToolEmitter', () => {
             expect(file.content).toContain('readonly prisma:');
         });
 
-        it('should include tenantId when @vurb.tenantKey exists', () => {
+        it('should include tenantId when @mcpfusion.tenantKey exists', () => {
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
             expect(file.content).toContain('readonly tenantId: string');
         });
 
-        it('should NOT include tenantId when no @vurb.tenantKey', () => {
+        it('should NOT include tenantId when no @mcpfusion.tenantKey', () => {
             const m = model('Config', [
                 field({ name: 'id', isId: true, hasDefaultValue: true }),
                 field({ name: 'key' }),
                 field({ name: 'value' }),
             ]);
             const file = emitTool(m, parseAnnotations(m));
-            expect(file.content).toContain('export interface PrismaVurbContext');
+            expect(file.content).toContain('export interface PrismaFusionContext');
             expect(file.content).not.toContain('readonly tenantId');
         });
 
@@ -101,16 +101,16 @@ describe('ToolEmitter', () => {
             const m = model('Invoice', [
                 field({ name: 'id', isId: true, hasDefaultValue: true }),
                 field({ name: 'amount', type: 'Float' }),
-                field({ name: 'companyId', documentation: '@vurb.tenantKey' }),
+                field({ name: 'companyId', documentation: '@mcpfusion.tenantKey' }),
             ]);
             const file = emitTool(m, parseAnnotations(m));
             expect(file.content).toContain('readonly companyId: string');
         });
 
-        it('should use PrismaVurbContext as defineTool generic', () => {
+        it('should use PrismaFusionContext as defineTool generic', () => {
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
-            expect(file.content).toContain("defineTool<PrismaVurbContext>('db_user'");
+            expect(file.content).toContain("defineTool<PrismaFusionContext>('db_user'");
         });
     });
 
@@ -152,7 +152,7 @@ describe('ToolEmitter', () => {
             expect(deleteSection).toContain('tenantId: ctx.tenantId');
         });
 
-        it('should NOT inject tenant when no @vurb.tenantKey', () => {
+        it('should NOT inject tenant when no @mcpfusion.tenantKey', () => {
             const m = model('Config', [
                 field({ name: 'id', isId: true, hasDefaultValue: true }),
                 field({ name: 'key' }),
@@ -166,7 +166,7 @@ describe('ToolEmitter', () => {
     // ── Schema Asymmetry (Input ≠ Output) ────────────────
 
     describe('Schema Asymmetry (Input ≠ Output)', () => {
-        it('should INCLUDE @vurb.hide fields in create params', () => {
+        it('should INCLUDE @mcpfusion.hide fields in create params', () => {
             // The LLM needs to send passwordHash to create the user
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
@@ -182,7 +182,7 @@ describe('ToolEmitter', () => {
             expect(create).not.toMatch(/params:[\s\S]*id: z\.string\(\)/);
         });
 
-        it('should EXCLUDE @vurb.tenantKey from create params', () => {
+        it('should EXCLUDE @mcpfusion.tenantKey from create params', () => {
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
             const create = extractActionSection(file.content, 'create');
@@ -416,7 +416,7 @@ describe('ToolEmitter', () => {
         it('should import defineTool', () => {
             const m = makeUserModel();
             const file = emitTool(m, parseAnnotations(m));
-            expect(file.content).toContain("import { defineTool } from '@vurb/core'");
+            expect(file.content).toContain("import { defineTool } from '@mcpfusion/core'");
         });
 
         it('should generate tool name with db_ prefix + snake_case', () => {
@@ -425,7 +425,7 @@ describe('ToolEmitter', () => {
                 field({ name: 'name' }),
             ]);
             const file = emitTool(m, parseAnnotations(m));
-            expect(file.content).toContain("defineTool<PrismaVurbContext>('db_user_profile'");
+            expect(file.content).toContain("defineTool<PrismaFusionContext>('db_user_profile'");
         });
     });
 

@@ -64,7 +64,7 @@ const CustomLayout = defineComponent({
           h('span', { class: 'nav-badge-opensource' }, 'Open Source'),
           h('span', { class: 'nav-separator' }, '|'),
           h('a', {
-            href: 'https://github.com/vinkius-labs/vurb.ts',
+            href: 'https://github.com/vinkius-labs/mcpfusion',
             target: '_blank',
             rel: 'noopener noreferrer',
             class: 'nav-github-link'

@@ -1,43 +1,43 @@
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\cli\progress.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\cli\progress.ts
   60:49  warning  Unnecessary conditional, the types have no overlap  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\cli\registry.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\cli\registry.ts
   51:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unsafe-assignment')
   87:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unsafe-assignment' or '@typescript-eslint/no-unsafe-member-access')
   93:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                                          @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\client\VurbClient.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\client\MCPFusionClient.ts
   483:30  warning  Unnecessary conditional, comparison is always true, since `"text" === "text"` is true  @typescript-eslint/no-unnecessary-condition
   568:34  warning  Unexpected empty function                                                              @typescript-eslint/no-empty-function
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\StandardSchema.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\StandardSchema.ts
   137:13  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
   138:17  warning  Unnecessary conditional, the types have no overlap                                                     @typescript-eslint/no-unnecessary-condition
   187:52  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined     @typescript-eslint/no-unnecessary-condition
   187:64  warning  Unnecessary optional chain on a non-nullish value                                                      @typescript-eslint/no-unnecessary-condition
   216:9   warning  Unnecessary conditional, the types have no overlap                                                     @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\builder\BuildPipeline.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\builder\BuildPipeline.ts
   117:43  warning  Unnecessary conditional, the types have no overlap  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\builder\FluentToolBuilder.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\builder\FluentToolBuilder.ts
    79:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-empty-object-type')
   652:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
   656:60  error    Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
   733:39  warning  Unnecessary conditional, the types have no overlap                                                          @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\createGroup.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\createGroup.ts
   224:31  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\execution\ExecutionPipeline.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\execution\ExecutionPipeline.ts
   250:31  warning  Unexpected empty arrow function  @typescript-eslint/no-empty-function
   274:73  warning  Unexpected empty arrow function  @typescript-eslint/no-empty-function
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\execution\MiddlewareCompiler.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\execution\MiddlewareCompiler.ts
   35:23  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\initVurb.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\initMCPFusion.ts
   142:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   142:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   142:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
@@ -45,10 +45,10 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\initV
   362:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   362:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\middleware\AuditTrail.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\middleware\AuditTrail.ts
   228:31  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\registry\ToolRegistry.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\registry\ToolRegistry.ts
   107:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   108:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   109:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
@@ -56,22 +56,22 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\regis
   111:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   112:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\core\serialization\JsonSerializer.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\core\serialization\JsonSerializer.ts
   164:28  warning  Unnecessary conditional, the types have no overlap  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\edge-stub.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\edge-stub.ts
   39:59  warning  Unexpected empty method 'listen'  @typescript-eslint/no-empty-function
   39:76  warning  Unexpected empty method 'close'   @typescript-eslint/no-empty-function
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\introspection\CryptoAttestation.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\introspection\CryptoAttestation.ts
    35:15  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
    35:32  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
   159:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\introspection\canonicalize.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\introspection\canonicalize.ts
   31:53  warning  Unnecessary conditional, the types have no overlap  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\Presenter.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\presenter\Presenter.ts
   159:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   159:36   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   159:41   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
@@ -83,15 +83,15 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\
   244:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   244:117  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\PresenterPipeline.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\presenter\PresenterPipeline.ts
   67:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   67:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   67:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\ZodDescriptionExtractor.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\presenter\ZodDescriptionExtractor.ts
   88:42  warning  Unnecessary conditional, the types have no overlap  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\definePresenter.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\presenter\definePresenter.ts
    72:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
    72:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
    72:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
@@ -105,7 +105,7 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\presenter\
   434:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   495:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\prompt\CursorCodec.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\prompt\CursorCodec.ts
    30:53  warning  Unnecessary conditional, value is always truthy                                                                                                             @typescript-eslint/no-unnecessary-condition
    30:53  error    Unexpected object value in conditional. The condition is always true                                                                                        @typescript-eslint/strict-boolean-expressions
    39:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unsafe-assignment' or '@typescript-eslint/no-unsafe-member-access')
@@ -123,10 +123,10 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\prompt\Cur
   229:37  error    Unexpected any. Specify a different type                                                                                                                    @typescript-eslint/no-explicit-any
   230:35  error    Unexpected any. Specify a different type                                                                                                                    @typescript-eslint/no-explicit-any
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\sandbox\SandboxEngine.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\sandbox\SandboxEngine.ts
   404:17  warning  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\DevServer.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\server\DevServer.ts
   332:13  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
   343:17  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
   391:17  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
@@ -134,7 +134,7 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\Dev
   421:13  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
   429:13  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\ServerAttachment.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\server\ServerAttachment.ts
   662:40  warning  Unnecessary optional chain on a non-nullish value                                                      @typescript-eslint/no-unnecessary-condition
   672:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
   678:14  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
@@ -142,10 +142,10 @@ C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\Ser
   697:30  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
   759:20  warning  Unnecessary optional chain on a non-nullish value                                                      @typescript-eslint/no-unnecessary-condition
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\autoDiscover.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\server\autoDiscover.ts
   218:13  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
 
-C:\Users\renat\Projects\Vinkius\VinkiusLabs\vurb-ts\packages\core\src\server\startServer.ts
+C:\Users\renat\Projects\Vinkius\VinkiusLabs\fusion-ts\packages\core\src\server\startServer.ts
   366:60  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
   368:48  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
   410:41  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition

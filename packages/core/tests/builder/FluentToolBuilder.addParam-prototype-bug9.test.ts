@@ -13,9 +13,9 @@
  * Actual:   throws "Duplicate parameter name 'constructor'".
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/index.js';
+import { initMCPFusion } from '../../src/index.js';
 
-const f = initVurb();
+const f = initMCPFusion();
 
 describe('Bug #9 — _addParam prototype pollution false positive', () => {
     const prototypeNames = [

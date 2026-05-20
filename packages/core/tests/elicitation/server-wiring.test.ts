@@ -14,14 +14,14 @@
  * @module
  */
 import { describe, it, expect, vi } from 'vitest';
-import { initVurb, ask } from '../../src/index.js';
+import { initMCPFusion, ask } from '../../src/index.js';
 import { _elicitStore } from '../../src/core/elicitation/ask.js';
 import { ElicitationUnsupportedError } from '../../src/core/elicitation/types.js';
 
 describe('ServerAttachment — elicitation wiring (unit)', () => {
 
     it('ask() inside _elicitStore.run() resolves from mock sink', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         let capturedResult: unknown;
@@ -62,7 +62,7 @@ describe('ServerAttachment — elicitation wiring (unit)', () => {
     });
 
     it('ask() inside handler without _elicitStore context throws', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -81,13 +81,13 @@ describe('ServerAttachment — elicitation wiring (unit)', () => {
         // The error should be caught by GroupedToolBuilder and returned as an error response
         expect(result.isError).toBe(true);
         const text = (result.content[0] as { text: string }).text;
-        // Error message is wrapped in Vurb's tool_error XML format
+        // Error message is wrapped in MCP Fusion's tool_error XML format
         expect(text).toContain('Elicitation requested but no transport context is available');
         expect(text).toContain('.interactive()');
     });
 
     it('handler that conditionally uses ask() works in both contexts', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -133,7 +133,7 @@ describe('ServerAttachment — elicitation wiring (unit)', () => {
     });
 
     it('multi-step ask() through full pipeline', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -180,7 +180,7 @@ describe('ServerAttachment — elicitation wiring (unit)', () => {
     });
 
     it('ask.redirect() through full pipeline', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(

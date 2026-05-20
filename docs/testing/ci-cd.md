@@ -5,7 +5,7 @@ description: "GitHub Actions, GitLab CI, and Azure Pipelines — deterministic A
 
 # CI/CD Integration
 
-The VurbTester runs entirely in RAM with **zero external dependencies**. No LLM API keys. No servers. No network. It integrates natively into any CI/CD pipeline without external services.
+The MCPFusionTester runs entirely in RAM with **zero external dependencies**. No LLM API keys. No servers. No network. It integrates natively into any CI/CD pipeline without external services.
 
 ## GitHub Actions
 
@@ -227,7 +227,7 @@ Add a governance badge to your README:
 
 ## Performance in CI
 
-The VurbTester is designed for CI speed:
+The MCPFusionTester is designed for CI speed:
 
 | Metric | Value |
 |---|---|
@@ -239,11 +239,11 @@ The VurbTester is designed for CI speed:
 | API keys required | **None** |
 | External services | **None** |
 
-Because the VurbTester runs in RAM with zero external dependencies, your CI tests have **zero flakiness**. No API rate limits. No network timeouts. No model behavior variance. The same test produces the same result every time, on every machine.
+Because the MCPFusionTester runs in RAM with zero external dependencies, your CI tests have **zero flakiness**. No API rate limits. No network timeouts. No model behavior variance. The same test produces the same result every time, on every machine.
 
 ## SOC2 Automated Audit — The Tests That Block PRs
 
-This is where **Vurb.ts** does what no other AI framework can. Each test below maps directly to a SOC2 control. If any of them fail, **the PR cannot merge**.
+This is where **MCP Fusion** does what no other AI framework can. Each test below maps directly to a SOC2 control. If any of them fail, **the PR cannot merge**.
 
 ### CC6.1 — Logical Access: No PII Reaches the LLM
 
@@ -460,11 +460,11 @@ If a developer introduces a regression that leaks `passwordHash`:
 
 No other AI framework in existence can do this. Every other MCP server relies on a developer opening Claude Desktop and saying *"looks fine to me."* That is not an audit. That is a liability.
 
-**Vurb.ts** converts compliance requirements into `expect()` assertions that run on every commit. The auditor receives a CI/CD log, not a verbal assurance.
+**MCP Fusion** converts compliance requirements into `expect()` assertions that run on every commit. The auditor receives a CI/CD log, not a verbal assurance.
 
 ### Manual Audit vs Automated Audit
 
-| | Manual SOC2 Audit | Vurb.ts Automated Audit |
+| | Manual SOC2 Audit | MCP Fusion Automated Audit |
 |---|---|---|
 | **Frequency** | Quarterly or annually | Every commit, every PR |
 | **Cost** | $50,000–$250,000 per audit | $0.00 (CI/CD minutes only) |

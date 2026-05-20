@@ -1,30 +1,30 @@
 <p align="center">
-  <h1 align="center">@vurb/api-key</h1>
+  <h1 align="center">@mcpfusion/api-key</h1>
   <p align="center">
-    <strong>MCP API Key Authentication for Vurb.ts</strong> — A framework for creating secure MCP servers<br/>
+    <strong>MCP API Key Authentication for MCP Fusion</strong> — A framework for creating secure MCP servers<br/>
     Timing-safe API key validation · SHA-256 hashing · Async validators · Self-healing error responses
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/api-key"><img src="https://img.shields.io/npm/v/@vurb/api-key?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/api-key"><img src="https://img.shields.io/npm/v/@mcpfusion/api-key?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP API Key Authentication for Vurb.ts** — the Model Context Protocol framework for building production MCP servers. Timing-safe key comparison, SHA-256 hashing, async validators, and self-healing error responses.
+> **MCP API Key Authentication for MCP Fusion** — the Model Context Protocol framework for building production MCP servers. Timing-safe key comparison, SHA-256 hashing, async validators, and self-healing error responses.
 
 ## Quick Start
 
 ```typescript
-import { initVurb } from '@vurb/core';
-import { apiKeyGuard } from '@vurb/api-key';
+import { initMCPFusion } from '@mcpfusion/core';
+import { apiKeyGuard } from '@mcpfusion/api-key';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const withApiKey = apiKeyGuard({
     keys: [process.env.API_KEY!],
@@ -71,20 +71,20 @@ const withApiKey = apiKeyGuard({
 ## Installation
 
 ```bash
-npm install @vurb/api-key
+npm install @mcpfusion/api-key
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^2.0.0` |
+| `@mcpfusion/core` | `^2.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
-- **Vurb.ts** ≥ 2.0.0 (peer dependency)
+- **MCP Fusion** ≥ 2.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

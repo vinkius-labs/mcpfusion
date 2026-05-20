@@ -28,7 +28,7 @@ const config: ProjectConfig = {
 let tmpBase: string;
 
 beforeEach(() => {
-    tmpBase = join(tmpdir(), `vurb-scaffold-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpBase = join(tmpdir(), `mcpfusion-scaffold-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(tmpBase, { recursive: true });
 });
 
@@ -50,7 +50,7 @@ describe('Bug #80 — scaffold() partial-failure cleanup', () => {
         const targetDir = join(tmpBase, 'blocked');
         // Pre-create the target dir and place a FILE where scaffold expects
         // a directory — this will cause mkdirSync to fail when it tries
-        // to create a subdirectory under it (e.g. src/vurb.ts needs src/ dir)
+        // to create a subdirectory under it (e.g. src/mcpfusion.ts needs src/ dir)
         mkdirSync(targetDir, { recursive: true });
         writeFileSync(join(targetDir, 'src'), 'blocker', 'utf-8');
 

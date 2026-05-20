@@ -51,7 +51,7 @@ Produces three entries in `tools/list`:
 }
 ```
 
-Each action gets its own schema — `projects_list` doesn't include `id`. Vurb.ts explicitly emits `destructiveHint: false` on non-destructive actions to prevent unnecessary confirmation dialogs (the MCP spec defaults it to `true`).
+Each action gets its own schema — `projects_list` doesn't include `id`. MCP Fusion explicitly emits `destructiveHint: false` on non-destructive actions to prevent unnecessary confirmation dialogs (the MCP spec defaults it to `true`).
 
 ### O(1) Dispatch {#dispatch}
 

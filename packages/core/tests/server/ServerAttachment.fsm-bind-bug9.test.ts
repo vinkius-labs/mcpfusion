@@ -21,7 +21,7 @@
  * tools using f.query() / f.mutation() / f.action() in flat mode.
  *
  * This is a security/correctness issue: .bindState() has no effect on
- * single-action tools, which are the MOST COMMON tool type in Vurb.
+ * single-action tools, which are the MOST COMMON tool type in MCP Fusion.
  */
 import { describe, it, expect, vi } from 'vitest';
 

@@ -13,7 +13,7 @@
  *
  * @example
  * ```typescript
- * import { ResourceRegistry, defineResource } from '@vurb/core';
+ * import { ResourceRegistry, defineResource } from '@mcpfusion/core';
  *
  * const resourceRegistry = new ResourceRegistry<AppContext>();
  * resourceRegistry.register(stockPrice);

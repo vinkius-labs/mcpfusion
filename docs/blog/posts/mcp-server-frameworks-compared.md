@@ -3,7 +3,7 @@ title: "MCP Server Frameworks in 2026: The Complete Guide for TypeScript and Pyt
 date: 2026-03-14
 author: Renato Marinho
 authorUrl: https://github.com/renatomarinho
-description: "A deep technical comparison of every MCP server framework: the official SDK, FastMCP, mcp-framework, EasyMCP, and Vurb.ts. Learn what each offers, where they fall short, and why the Presenter pattern changes everything."
+description: "A deep technical comparison of every MCP server framework: the official SDK, FastMCP, mcp-framework, EasyMCP, and MCP Fusion. Learn what each offers, where they fall short, and why the Presenter pattern changes everything."
 tags:
   - mcp
   - framework
@@ -31,7 +31,7 @@ This guide is the most thorough technical comparison you'll find. We break down 
 - [2. FastMCP (Python)](#fastmcp)
 - [3. mcp-framework (TypeScript)](#mcp-framework)
 - [4. EasyMCP (TypeScript)](#easymcp)
-- [5. Vurb.ts (TypeScript)](#vurb-ts)
+- [5. MCP Fusion (TypeScript)](#mcpfusion)
 - [Feature-by-Feature Comparison Matrix](#comparison-matrix)
 - [The Core Problem None of These Solve (Except One)](#the-core-problem)
 - [Architecture Deep Dive: Why Raw MCP Servers Fail in Production](#architecture-deep-dive)
@@ -42,7 +42,7 @@ This guide is the most thorough technical comparison you'll find. We break down 
 - [Deployment: Serverless, Edge, and Beyond](#deployment)
 - [Testing: The Death of Vibes-Based QA](#testing)
 - [When to Use What: Decision Framework](#decision-framework)
-- [Getting Started with Vurb.ts in 30 Seconds](#getting-started)
+- [Getting Started with MCP Fusion in 30 Seconds](#getting-started)
 
 ---
 
@@ -57,7 +57,7 @@ The MCP ecosystem has exploded since Anthropic's initial release in November 202
 | **FastMCP** | Python | 2024 (v1), Jan 2026 (v3) | High-level decorator-based | 5k+ |
 | **mcp-framework** | TypeScript | 2025 | CLI + class-based scaffolding | 1k+ |
 | **EasyMCP** | TypeScript | 2025 | Express-like minimalist API | 500+ |
-| **Vurb.ts** | TypeScript | Feb 2026 | Full-stack MVA architecture | Growing |
+| **MCP Fusion** | TypeScript | Feb 2026 | Full-stack MVA architecture | Growing |
 
 Each one targets a different audience. Let's break them down.
 
@@ -219,22 +219,22 @@ server.tool('getUser', { id: 'string' }, async ({ id }) => {
 
 ---
 
-## 5. Vurb.ts (TypeScript) {#vurb-ts}
+## 5. MCP Fusion (TypeScript) {#mcpfusion}
 
-Vurb.ts is a **full-stack architecture layer** for the Model Context Protocol. It introduces the **MVA (Model-View-Agent)** pattern — built from the ground up for agentic workloads — where the **Presenter** replaces `JSON.stringify()` with a deterministic perception layer that controls what the agent sees, understands, and does next.
+MCP Fusion is a **full-stack architecture layer** for the Model Context Protocol. It introduces the **MVA (Model-View-Agent)** pattern — built from the ground up for agentic workloads — where the **Presenter** replaces `JSON.stringify()` with a deterministic perception layer that controls what the agent sees, understands, and does next.
 
 ### What you get
 
 ```bash
-vurb create my-server
-cd my-server && vurb dev
+mcpfusion create my-server
+cd my-server && mcpfusion dev
 ```
 
 ```typescript
-import { initVurb, createPresenter, suggest, ui, t } from '@vurb/core';
+import { initMCPFusion, createPresenter, suggest, ui, t } from '@mcpfusion/core';
 import { z } from 'zod';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const UserPresenter = createPresenter('User')
     .schema({ id: t.string, name: t.string, email: t.string })
@@ -255,11 +255,11 @@ export default f.query('users.get')
     }));
 ```
 
-### What sets Vurb.ts apart
+### What sets MCP Fusion apart
 
-Every other framework on this list solves the **plumbing** problem: transport, validation, scaffolding. Vurb.ts solves the **perception** problem — what happens between your database and the LLM's context window. That distinction matters, because the number-one cause of AI agent failures isn't broken transport — it's broken context.
+Every other framework on this list solves the **plumbing** problem: transport, validation, scaffolding. MCP Fusion solves the **perception** problem — what happens between your database and the LLM's context window. That distinction matters, because the number-one cause of AI agent failures isn't broken transport — it's broken context.
 
-Here's what Vurb.ts brings to the table that no other MCP framework offers:
+Here's what MCP Fusion brings to the table that no other MCP framework offers:
 
 1. **Presenters (MVA View layer).** Zod schema as security boundary, system rules, UI blocks (ECharts, Mermaid), suggested actions, and cognitive guardrails — all in a single reusable object.
 
@@ -279,11 +279,11 @@ Here's what Vurb.ts brings to the table that no other MCP framework offers:
 
 9. **Code Generators.** OpenAPI → MCP, Prisma → MCP, n8n → MCP. One command.
 
-10. **Serverless Adapters.** `@vurb/vercel` for Vercel Edge, `@vurb/cloudflare` for Cloudflare Workers, `@vurb/aws` for Lambda.
+10. **Serverless Adapters.** `@mcpfusion/vercel` for Vercel Edge, `@mcpfusion/cloudflare` for Cloudflare Workers, `@mcpfusion/aws` for Lambda.
 
 11. **Inspector.** Real-time terminal dashboard via Shadow Socket — no stdio interference.
 
-12. **Testing Harness.** `@vurb/testing` runs the full MVA pipeline in RAM. Assert every layer: data, systemRules, uiBlocks. Zero tokens consumed.
+12. **Testing Harness.** `@mcpfusion/testing` runs the full MVA pipeline in RAM. Assert every layer: data, systemRules, uiBlocks. Zero tokens consumed.
 
 **Best for:** Production MCP servers. Enterprise deployments. Teams that care about security, token economics, and deterministic AI behavior.
 
@@ -291,7 +291,7 @@ Here's what Vurb.ts brings to the table that no other MCP framework offers:
 
 ## Feature-by-Feature Comparison Matrix {#comparison-matrix}
 
-| Capability | Official SDK | FastMCP (Python) | mcp-framework | EasyMCP | **Vurb.ts** |
+| Capability | Official SDK | FastMCP (Python) | mcp-framework | EasyMCP | **MCP Fusion** |
 |---|:---:|:---:|:---:|:---:|:---:|
 | **Language** | TS / Python | Python | TypeScript | TypeScript | **TypeScript** |
 | **Zod validation** | ✅ | ❌ (Pydantic) | ✅ | Partial | **✅** |
@@ -330,7 +330,7 @@ Here's what Vurb.ts brings to the table that no other MCP framework offers:
 
 ## The Core Problem None of These Solve (Except One) {#the-core-problem}
 
-Every MCP framework on the market — except Vurb.ts — treats the MCP server as a **proxy** between a database and an LLM. The pattern is always the same:
+Every MCP framework on the market — except MCP Fusion — treats the MCP server as a **proxy** between a database and an LLM. The pattern is always the same:
 
 ```
 Database → JSON.stringify() → LLM Context Window
@@ -350,13 +350,13 @@ An unbounded `findMany()` dumps 10,000 rows into the context window. At ~500 tok
 
 The LLM receives `{ amount_cents: 45000 }` and displays **$45,000** instead of **$450.00**. There are no domain rules, no context, no guidance. The agent guesses — and guesses wrong.
 
-These aren't edge cases. They happen on **every single MCP server** that uses `JSON.stringify()` — which is all of them, except those built with Vurb.ts.
+These aren't edge cases. They happen on **every single MCP server** that uses `JSON.stringify()` — which is all of them, except those built with MCP Fusion.
 
 ---
 
 ## Architecture Deep Dive: Why Raw MCP Servers Fail in Production {#architecture-deep-dive}
 
-Let's trace a real request through a raw MCP server and a Vurb.ts server to see the difference.
+Let's trace a real request through a raw MCP server and a MCP mcpfusion server to see the difference.
 
 ### Raw MCP Server
 
@@ -372,7 +372,7 @@ Let's trace a real request through a raw MCP server and a Vurb.ts server to see 
 7. No error recovery if the ID is wrong
 ```
 
-### Vurb.ts with MVA
+### MCP Fusion with MVA
 
 ```
 1. Agent calls 'billing.get_invoice' with { id: 'inv_123' }
@@ -449,7 +449,7 @@ The Presenter is **defined once and reused everywhere**. Every tool that returns
 
 ## Anti-Hallucination Mechanisms: A Technical Breakdown {#anti-hallucination}
 
-Vurb.ts implements **eight compounding anti-hallucination mechanisms** — none of which exist in any other MCP framework:
+MCP Fusion implements **eight compounding anti-hallucination mechanisms** — none of which exist in any other MCP framework:
 
 | # | Mechanism | What It Does | Token Impact |
 |---|---|---|---|
@@ -466,7 +466,7 @@ Each mechanism compounds. Fewer tokens → less noise → better accuracy → fe
 
 ### Real-World Cost Comparison
 
-| Scenario | Raw MCP Server | Vurb.ts |
+| Scenario | Raw MCP Server | MCP Fusion |
 |---|---|---|
 | 10,000 user rows | ~$2.40 per call (5M tokens) | ~$0.02 per call (25K tokens) |
 | 50 registered tools | ~5,000 prompt tokens | ~500 prompt tokens (consolidated) |
@@ -477,7 +477,7 @@ Each mechanism compounds. Fewer tokens → less noise → better accuracy → fe
 
 ## Code Generation: From OpenAPI, Prisma, and n8n to MCP {#code-generation}
 
-Hand-coding every MCP tool doesn't scale when you already have an API surface. Vurb.ts automates the boring parts:
+Hand-coding every MCP tool doesn't scale when you already have an API surface. MCP Fusion automates the boring parts:
 
 ### OpenAPI → MCP in One Command
 
@@ -491,16 +491,16 @@ Generates typed models (Zod `.strict()`), Presenters, tool definitions, and a se
 
 ```prisma
 generator mcp {
-  provider = "vurb-prisma-gen"
+  provider = "fusion-prisma-gen"
   output   = "../src/tools/database"
 }
 
 model User {
   id           String @id @default(uuid())
   email        String @unique
-  passwordHash String /// @vurb.hide
-  stripeToken  String /// @vurb.hide
-  tenantId     String /// @vurb.tenantKey
+  passwordHash String /// @fusion.hide
+  stripeToken  String /// @fusion.hide
+  tenantId     String /// @fusion.tenantKey
 }
 ```
 
@@ -517,7 +517,7 @@ const n8n = await createN8nConnector({
 });
 ```
 
-n8n handles Stripe, Salesforce, and webhook logic. Vurb.ts adds typing, Presenters, and access control. No other MCP framework has anything like this.
+n8n handles Stripe, Salesforce, and webhook logic. MCP Fusion adds typing, Presenters, and access control. No other MCP framework has anything like this.
 
 ---
 
@@ -532,8 +532,8 @@ n8n handles Stripe, Salesforce, and webhook logic. Vurb.ts adds typing, Presente
 Nine modules for SOC2-auditable AI deployments:
 
 ```bash
-vurb lock --server ./src/server.ts      # Generate lockfile
-vurb lock --check --server ./src/server.ts  # Gate CI builds
+fusion lock --server ./src/server.ts      # Generate lockfile
+fusion lock --check --server ./src/server.ts  # Gate CI builds
 ```
 
 - **Capability Lockfile** — Git-diffable artifact capturing every tool's behavioral contract
@@ -555,23 +555,23 @@ Four composable middlewares that replace regex-based defenses with LLM-as-Judge 
 
 ## Deployment: Serverless, Edge, and Beyond {#deployment}
 
-Every Vurb.ts tool is transport-agnostic. The same `ToolRegistry` runs on Stdio, SSE, and serverless:
+Every MCP Fusion tool is transport-agnostic. The same `ToolRegistry` runs on Stdio, SSE, and serverless:
 
 ```bash
 # Deploy to Vinkius Cloud — global edge, DLP, audit logging, managed MCP token
-vurb deploy
+mcpfusion deploy
 ```
 
 For self-hosted setups, one-line serverless adapters:
 
 ```typescript
 // Vercel Edge Functions
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 export const POST = vercelAdapter({ registry, contextFactory });
 export const runtime = 'edge';
 
 // Cloudflare Workers
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 export default cloudflareWorkersAdapter({ registry, contextFactory });
 ```
 
@@ -581,12 +581,12 @@ No other MCP framework provides one-command cloud deployment or one-line serverl
 
 ## Testing: The Death of Vibes-Based QA {#testing}
 
-The standard testing methodology for MCP servers today: start a Node.js server, open Claude Desktop, type a prompt, wait, squint at the output, and pray. Vurb.ts replaces this with **deterministic, in-memory pipeline testing**:
+The standard testing methodology for MCP servers today: start a Node.js server, open Claude Desktop, type a prompt, wait, squint at the output, and pray. MCP Fusion replaces this with **deterministic, in-memory pipeline testing**:
 
 ```typescript
-import { createVurbTester } from '@vurb/testing';
+import { createMCPFusionTester } from '@mcpfusion/testing';
 
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({ prisma: mockPrisma, tenantId: 't_42', role: 'ADMIN' }),
 });
 
@@ -623,35 +623,35 @@ Assert every MVA layer: `result.data` (egress firewall), `result.systemRules` (J
 | **Python-first team, quick prototype** | FastMCP |
 | **Class-based OOP preference, quick scaffold** | mcp-framework |
 | **Weekend project, handful of tools** | EasyMCP |
-| **Production server with >10 tools** | **Vurb.ts** |
-| **Enterprise with compliance requirements** | **Vurb.ts** |
-| **Need to protect PII from the LLM** | **Vurb.ts** (only option) |
-| **Multi-tenant SaaS MCP backend** | **Vurb.ts** |
-| **Existing REST API → MCP migration** | **Vurb.ts** (OpenAPI generator) |
-| **Prisma database → MCP tools** | **Vurb.ts** (Prisma generator) |
-| **Serverless / edge deployment** | **Vurb.ts** (Vercel / Cloudflare adapters) |
+| **Production server with >10 tools** | **MCP Fusion** |
+| **Enterprise with compliance requirements** | **MCP Fusion** |
+| **Need to protect PII from the LLM** | **MCP Fusion** (only option) |
+| **Multi-tenant SaaS MCP backend** | **MCP Fusion** |
+| **Existing REST API → MCP migration** | **MCP Fusion** (OpenAPI generator) |
+| **Prisma database → MCP tools** | **MCP Fusion** (Prisma generator) |
+| **Serverless / edge deployment** | **MCP Fusion** (Vercel / Cloudflare adapters) |
 
 ---
 
-## Getting Started with Vurb.ts in 30 Seconds {#getting-started}
+## Getting Started with MCP Fusion in 30 Seconds {#getting-started}
 
 ```bash
 # Scaffold a production-ready MCP server
-vurb create my-server
-cd my-server && vurb dev
+mcpfusion create my-server
+cd my-server && mcpfusion dev
 ```
 
 Choose a vector to match your use case:
 
 ```bash
 # Database-driven server with Presenter egress firewall
-vurb create my-api --vector prisma --transport sse --yes
+mcpfusion create my-api --vector prisma --transport sse --yes
 
 # REST API → MCP in one command
-vurb create petstore --vector openapi --yes
+mcpfusion create petstore --vector openapi --yes
 
 # Bridge n8n workflows to any MCP client
-vurb create ops-bridge --vector n8n --yes
+mcpfusion create ops-bridge --vector n8n --yes
 ```
 
 Drop a file in `src/tools/`, restart — it's a live MCP tool:
@@ -678,15 +678,15 @@ MCP is not a fad. It's the interface layer between AI agents and the real world 
 
 The frameworks that survive this transition will be the ones that tackle the **hard problems**: security, governance, token economics, and deterministic agent behavior. `JSON.stringify()` won't cut it when your AI agent handles customer PII, processes financial transactions, or runs critical infrastructure.
 
-Vurb.ts was built for that reality. Start building:
+MCP Fusion was built for that reality. Start building:
 
 ```bash
-npm install @vurb/core @modelcontextprotocol/sdk zod
+npm install @mcpfusion/core @modelcontextprotocol/sdk
 ```
 
-[**Read the full documentation →**](https://vurb.vinkius.com/)
+[**Read the full documentation →**](https://mcpfusion.vinkius.com/)
 
-[**GitHub Repository →**](https://github.com/vinkius-labs/vurb.ts)
+[**GitHub Repository →**](https://github.com/vinkius-labs/mcpfusion)
 
 ---
 

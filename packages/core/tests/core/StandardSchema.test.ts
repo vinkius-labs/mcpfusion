@@ -9,7 +9,7 @@ import {
     isStandardSchema,
     autoValidator,
     type StandardSchemaV1,
-    type VurbValidator,
+    type MCPFusionValidator,
 } from '../../src/core/StandardSchema.js';
 
 // ── Mock Standard Schema Implementation ──────────────────
@@ -80,7 +80,7 @@ describe('StandardSchema', () => {
     });
 
     describe('fromZodSchema', () => {
-        it('should wrap a Zod schema into a VurbValidator', () => {
+        it('should wrap a Zod schema into a MCPFusionValidator', () => {
             const schema = z.object({ name: z.string(), age: z.number() });
             const validator = fromZodSchema(schema);
 

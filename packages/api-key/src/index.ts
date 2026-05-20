@@ -1,13 +1,13 @@
 /**
- * @vurb/api-key — API Key Validation for MCP Servers
+ * @mcpfusion/api-key — API Key Validation for MCP Servers
  *
  * Timing-safe API key validation with SHA-256 hashing,
- * async validators, and vurb middleware integration.
+ * async validators, and MCP Fusion middleware integration.
  * Zero external dependencies — uses native Node.js crypto.
  *
  * @example
  * ```ts
- * import { ApiKeyManager, requireApiKey, createApiKeyTool } from '@vurb/api-key';
+ * import { ApiKeyManager, requireApiKey, createApiKeyTool } from '@mcpfusion/api-key';
  *
  * // Middleware
  * const projects = createTool('projects')
@@ -19,7 +19,7 @@
  * const result = await manager.validate('sk_live_abc123');
  * ```
  *
- * @module @vurb/api-key
+ * @module @mcpfusion/api-key
  * @author Vinkius Labs
  * @license Apache-2.0
  */

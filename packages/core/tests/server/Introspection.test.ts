@@ -106,7 +106,7 @@ describe('ManifestCompiler', () => {
         const manifest = compileManifest('test-server', registry.getBuilders());
 
         expect(manifest.server).toBe('test-server');
-        expect(manifest.vurb_version).toBe('1.1.0');
+        expect(manifest.MCPFUSION_VERSION).toBe('1.1.0');
         expect(manifest.architecture).toBe('MVA (Model-View-Agent)');
         expect(manifest.capabilities).toBeDefined();
     });
@@ -285,7 +285,7 @@ describe('cloneManifest', () => {
     it('should handle empty capabilities', () => {
         const manifest: ManifestPayload = {
             server: 'test',
-            vurb_version: '1.1.0',
+            MCPFUSION_VERSION: '1.1.0',
             architecture: 'MVA (Model-View-Agent)',
             capabilities: { tools: {}, presenters: {} },
         };
@@ -435,17 +435,17 @@ describe('IntrospectionConfig', () => {
         };
 
         expect(config.enabled).toBe(false);
-        expect(config.uri).toBeUndefined(); // defaults to vurb://manifest.json
+        expect(config.uri).toBeUndefined(); // defaults to mcpfusion://manifest.json
         expect(config.filter).toBeUndefined(); // no filter by default
     });
 
     it('configuring without filter should compile without errors', () => {
         const config: IntrospectionConfig<{ role: string }> = {
             enabled: true,
-            uri: 'vurb://custom.json',
+            uri: 'mcpfusion://custom.json',
         };
 
         expect(config.enabled).toBe(true);
-        expect(config.uri).toBe('vurb://custom.json');
+        expect(config.uri).toBe('mcpfusion://custom.json');
     });
 });

@@ -7,7 +7,7 @@ import type { N8nToolConfig, ParamDef } from './types.js';
 import type { SynthesizedTool, SynthesizedAction } from './ToolSynthesizer.js';
 
 /**
- * Manually define an n8n workflow as an Vurb tool.
+ * Manually define an n8n workflow as an MCP Fusion tool.
  *
  * For when architects need surgical control: strict Zod params,
  * custom annotations, specific middleware chains.

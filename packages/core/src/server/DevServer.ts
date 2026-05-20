@@ -1,7 +1,7 @@
 /**
  * DevServer — HMR-enabled MCP Development Server
  *
- * The "killer feature" for MCP DX: `vurb dev` starts a
+ * The "killer feature" for MCP DX: `mcpfusion dev` starts a
  * development server that watches for file changes and performs
  * automatic Hot Module Replacement without requiring the LLM client
  * (Claude Desktop, Cursor, etc.) to be restarted.
@@ -18,16 +18,16 @@
  *
  * ```bash
  * # Auto-detects src/server.ts
- * vurb dev
+ * mcpfusion dev
  *
  * # Explicit entrypoint + custom watch dir
- * vurb dev --server ./src/server.ts --dir ./src/tools
+ * mcpfusion dev --server ./src/server.ts --dir ./src/tools
  * ```
  *
  * @example
  * ```typescript
  * // Using the programmatic API
- * import { createDevServer } from 'vurb/dev';
+ * import { createDevServer } from '@mcpfusion/core/dev';
  *
  * const devServer = createDevServer({
  *   dir: './src/tools',
@@ -257,7 +257,7 @@ export function cacheBustUrl(filePath: string): string {
  *
  * @example
  * ```typescript
- * import { createDevServer, autoDiscover, ToolRegistry } from '@vurb/core';
+ * import { createDevServer, autoDiscover, ToolRegistry } from '@mcpfusion/core';
  *
  * const devServer = createDevServer({
  *   dir: './src/tools',
@@ -330,7 +330,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
         } catch (err) {
             const message = toErrorMessage(err);
              
-            console.error(`[vurb dev] Reload failed: ${message}`);
+            console.error(`[mcpfusion dev] Reload failed: ${message}`);
             return;
         }
 
@@ -342,8 +342,8 @@ export function createDevServer(config: DevServerConfig): DevServer {
             if (isEsm) {
                  
                 console.warn(
-                    '[vurb dev] ESM hot-reload requires cache-busted imports. ' +
-                    'Use the `cacheBustUrl` from the setup context or `cacheBustUrl()` from \'@vurb/core\' ' +
+                    '[mcpfusion dev] ESM hot-reload requires cache-busted imports. ' +
+                    'Use the `cacheBustUrl` from the setup context or `cacheBustUrl()` from \'@mcpfusion/core\' ' +
                     'when dynamically importing modules. Plain `import(\'./path\')` will use stale cache.',
                 );
                 esmWarningEmitted = true;
@@ -390,7 +390,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
             if (process.platform === 'linux' && parseInt(process.versions.node, 10) < 20) {
                  
                 console.warn(
-                    '[vurb dev] Warning: recursive fs.watch() is not fully supported on Linux with Node.js < 20. ' +
+                    '[mcpfusion dev] Warning: recursive fs.watch() is not fully supported on Linux with Node.js < 20. ' +
                     'File changes in subdirectories may not be detected. Consider upgrading to Node.js 20+.',
                 );
             }
@@ -415,11 +415,11 @@ export function createDevServer(config: DevServerConfig): DevServer {
 
             watcher.on('error', (err) => {
                  
-                console.error(`[vurb dev] Watcher error: ${toErrorMessage(err)}`);
+                console.error(`[mcpfusion dev] Watcher error: ${toErrorMessage(err)}`);
             });
 
              
-            console.log(`[vurb dev] Watching ${relative(process.cwd(), absoluteDir)} for changes...`);
+            console.log(`[mcpfusion dev] Watching ${relative(process.cwd(), absoluteDir)} for changes...`);
         },
 
         stop(): void {
@@ -427,7 +427,7 @@ export function createDevServer(config: DevServerConfig): DevServer {
             watcher?.close();
             watcher = undefined;
              
-            console.log(`[vurb dev] Stopped. ${reloadCount} reload(s) performed.`);
+            console.log(`[mcpfusion dev] Stopped. ${reloadCount} reload(s) performed.`);
         },
 
         async reload(reason?: string): Promise<void> {

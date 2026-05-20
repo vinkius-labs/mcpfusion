@@ -1,9 +1,9 @@
 ---
-title: "Anatomy of an AI Platform Breach: How Vurb.ts Would Have Defended Every Attack Vector"
+title: "Anatomy of an AI Platform Breach: How MCP Fusion Would Have Defended Every Attack Vector"
 date: 2026-03-13
 author: Renato Marinho
 authorUrl: https://github.com/renatomarinho
-description: A rigorous, line-by-line analysis of how Vurb.ts's security architecture — InputFirewall, PromptFirewall, AuditTrail, CapabilityLockfile, and SandboxEngine — would have prevented, detected, or mitigated each vulnerability exploited in a recent high-profile AI platform breach.
+description: A rigorous, line-by-line analysis of how MCP Fusion's security architecture — InputFirewall, PromptFirewall, AuditTrail, CapabilityLockfile, and SandboxEngine — would have prevented, detected, or mitigated each vulnerability exploited in a recent high-profile AI platform breach.
 tags:
   - security
   - architecture
@@ -23,7 +23,7 @@ On March 9, 2026, security research firm [CodeWall](https://codewall.ai/blog/how
 
 The platform had been running for two years. Internal scanners had found nothing. The root cause? SQL injection — one of the oldest vulnerability classes in existence — combined with unauthenticated API endpoints, IDOR, exposed API documentation, and zero integrity controls on the prompt layer.
 
-This post is not a retrospective critique. It is a forensic engineering analysis: **for each vulnerability vector exploited in the breach, exactly how would Vurb.ts have prevented, detected, or mitigated it?** Where Vurb.ts has a concrete defense, we show the exact mechanism with code. Where it does not, we say so clearly — along with what we are actively building to close the gap.
+This post is not a retrospective critique. It is a forensic engineering analysis: **for each vulnerability vector exploited in the breach, exactly how would MCP Fusion have prevented, detected, or mitigated it?** Where MCP Fusion has a concrete defense, we show the exact mechanism with code. Where it does not, we say so clearly — along with what we are actively building to close the gap.
 
 ---
 
@@ -31,15 +31,15 @@ This post is not a retrospective critique. It is a forensic engineering analysis
 
 > **For security leadership.** This section captures the key findings. The full technical analysis follows below.
 
-**Scope.** Nine vulnerability vectors extracted from six publicly disclosed finding categories (SQL injection, unauthenticated access, IDOR, prompt tampering, missing audit trail, rate limiting absence) were evaluated against Vurb.ts's production security architecture.
+**Scope.** Nine vulnerability vectors extracted from six publicly disclosed finding categories (SQL injection, unauthenticated access, IDOR, prompt tampering, missing audit trail, rate limiting absence) were evaluated against MCP Fusion's production security architecture.
 
 **Key findings:**
 
 - **7 of 9 vectors** are prevented or detected by built-in framework mechanisms that require no custom code — only configuration.
-- **2 of 9 vectors** are partially mitigated. Vurb.ts provides the infrastructure (identity, egress controls, audit), but the authorization and access-control logic requires correct application-level implementation.
+- **2 of 9 vectors** are partially mitigated. MCP Fusion provides the infrastructure (identity, egress controls, audit), but the authorization and access-control logic requires correct application-level implementation.
 - **5 known limitations** are documented transparently: database query safety, infrastructure configuration, RAG document-level permissions, LLM judge supply chain, and insider threats.
 
-**Architecture posture.** Vurb.ts enforces security through a **composable middleware pipeline** where authentication, rate limiting, input scanning, and auditing are declarative layers applied per-tool. The MCP transport eliminates the REST surface that enabled reconnaissance. System prompts are treated as immutable code artifacts — version-controlled, firewall-evaluated, and cryptographically fingerprinted.
+**Architecture posture.** MCP Fusion enforces security through a **composable middleware pipeline** where authentication, rate limiting, input scanning, and auditing are declarative layers applied per-tool. The MCP transport eliminates the REST surface that enabled reconnaissance. System prompts are treated as immutable code artifacts — version-controlled, firewall-evaluated, and cryptographically fingerprinted.
 
 **Residual risk.** The two primary residual risks are (1) application-level authorization logic in handlers, and (2) infrastructure misconfigurations outside the MCP server boundary. Both require organizational controls beyond the framework.
 
@@ -58,7 +58,7 @@ This post is not a retrospective critique. It is a forensic engineering analysis
 9. [V7 — RAG Knowledge Base Exposure](#v7-rag-knowledge-base-exposure)
 10. [V8 — Rate Limiting Absence](#v8-rate-limiting-absence)
 11. [V9 — Code Execution Without Isolation](#v9-code-execution-without-isolation)
-12. [Honest Assessment: What Vurb.ts Cannot Solve](#honest-assessment-what-vurb-ts-cannot-solve)
+12. [Honest Assessment: What MCP Fusion Cannot Solve](#honest-assessment-what-mcpfusion-cannot-solve)
 13. [Compliance Mapping](#compliance-mapping)
 14. [Recommended Security Posture](#recommended-security-posture)
 15. [Defense-in-Depth Summary](#defense-in-depth-summary)
@@ -67,11 +67,11 @@ This post is not a retrospective critique. It is a forensic engineering analysis
 
 ## Vulnerability Map
 
-Before diving into each vector, here is the full mapping between the attack vectors exploited in the breach and Vurb.ts's corresponding defense layers:
+Before diving into each vector, here is the full mapping between the attack vectors exploited in the breach and MCP Fusion's corresponding defense layers:
 
-| # | Attack Vector | Vurb.ts Defense | Verdict |
+| # | Attack Vector | MCP Fusion Defense | Verdict |
 |---|---|---|---|
-| V1 | Unauthenticated endpoints | `@vurb/jwt` + middleware pipeline | ✅ Prevented |
+| V1 | Unauthenticated endpoints | `@mcpfusion/jwt` + middleware pipeline | ✅ Prevented |
 | V2 | SQL injection (JSON keys) | `InputFirewall` (LLM-as-Judge) + Zod schema | ✅ Detected & blocked |
 | V3 | IDOR (cross-user access) | `requireJwt()` identity extraction + context scoping | ⚠️ Mitigated (app-level) |
 | V4 | System prompt write access | `PromptFirewall` + `CapabilityLockfile` | ✅ Prevented |
@@ -91,13 +91,13 @@ Before diving into each vector, here is the full mapping between the attack vect
 
 The breached platform exposed over 200 API endpoints via publicly accessible documentation. Twenty-two of those endpoints required no authentication. One of them — a search query endpoint — became the entry point for the entire attack.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
-Vurb.ts operates over the **Model Context Protocol (MCP)**, not REST. There is no HTTP router with 200+ endpoints. The entire surface is defined through tool registrations:
+MCP Fusion operates over the **Model Context Protocol (MCP)**, not REST. There is no HTTP router with 200+ endpoints. The entire surface is defined through tool registrations:
 
 ```typescript
-import { createTool, requireJwt } from '@vurb/core';
-import { JwtVerifier } from '@vurb/jwt';
+import { createTool, requireJwt } from '@mcpfusion/core';
+import { JwtVerifier } from '@mcpfusion/jwt';
 
 const verifier = new JwtVerifier({
     issuer: 'https://auth.company.com',
@@ -130,13 +130,13 @@ This was the critical vulnerability. The platform parameterized JSON **values** 
 
 The autonomous agent discovered the injection through error message reflection: when it sent malformed JSON keys, the database error messages revealed the query structure. After fifteen blind iterations, live production data started flowing back.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
-Vurb.ts provides **two layers** of defense against this class of attack:
+MCP Fusion provides **two layers** of defense against this class of attack:
 
 **Layer 1 — Zod Schema Validation (Structural)**
 
-Every tool action in Vurb.ts requires a Zod schema. Arguments that don't match the schema are rejected before the handler sees them:
+Every tool action in MCP Fusion requires a Zod schema. Arguments that don't match the schema are rejected before the handler sees them:
 
 ```typescript
 const search = createTool('search')
@@ -215,9 +215,9 @@ const chain = createJudgeChain({
 });
 ```
 
-### What Vurb.ts cannot solve here
+### What MCP Fusion cannot solve here
 
-Vurb.ts protects the **MCP tool arguments**. It does not generate SQL queries. If the application developer writes raw SQL with string concatenation in the handler, Vurb.ts cannot prevent that — just as a web framework cannot prevent SQL injection in application code.
+MCP Fusion protects the **MCP tool arguments**. It does not generate SQL queries. If the application developer writes raw SQL with string concatenation in the handler, MCP Fusion cannot prevent that — just as a web framework cannot prevent SQL injection in application code.
 
 However, the InputFirewall **would have detected** the SQL payloads before they reached the handler, creating a critical early-warning system even if the downstream code was vulnerable.
 
@@ -231,7 +231,7 @@ However, the InputFirewall **would have detected** the SQL payloads before they 
 
 The autonomous agent chained the SQL injection with an IDOR (Insecure Direct Object Reference) vulnerability to read individual employees' search histories. The platform did not enforce that a user could only access their own data.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
 The `requireJwt()` middleware extracts an authenticated identity into the context:
 
@@ -270,9 +270,9 @@ Every access attempt — successful or not — is logged with the authenticated 
 
 ### Honest limitation
 
-IDOR prevention is fundamentally an **application-level** concern. Vurb.ts provides the infrastructure — identity extraction, context scoping, audit logging — but the authorization logic (`ctx.auth.sub !== userId`) must be written by the developer. There is no way for a framework to automatically know which resources belong to which user.
+IDOR prevention is fundamentally an **application-level** concern. MCP Fusion provides the infrastructure — identity extraction, context scoping, audit logging — but the authorization logic (`ctx.auth.sub !== userId`) must be written by the developer. There is no way for a framework to automatically know which resources belong to which user.
 
-What Vurb.ts guarantees is that the **identity is always present and verified** before the handler executes, and that every access is **audited**. This turns silent data exfiltration into a detectable, attributable event.
+What MCP Fusion guarantees is that the **identity is always present and verified** before the handler executes, and that every access is **audited**. This turns silent data exfiltration into a detectable, attributable event.
 
 **Verdict: ⚠️ Mitigated.** Identity verification infrastructure is built-in. Authorization logic remains application-level. Audit trail ensures detectability.
 
@@ -290,9 +290,9 @@ The implications:
 - Guardrail removal enabling the AI to leak confidential data
 - Silent persistence — no file changes, no process anomalies
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
-Vurb.ts treats system prompts as **code, not data**. This is a fundamental architectural decision.
+MCP Fusion treats system prompts as **code, not data**. This is a fundamental architectural decision.
 
 **Defense 1 — Prompts are defined in code, not stored in databases:**
 
@@ -324,7 +324,7 @@ const InvoicePresenter = createPresenter('Invoice')
 
 The PromptFirewall sends each dynamically-generated rule to an LLM judge that scans for prompt injection. If tainted data (from a database, user input, or external API) has been injected into a dynamic rule, the firewall detects and strips it. Per-rule verdicts are emitted as `security.firewall` telemetry events.
 
-**Defense 3 — CapabilityLockfile (`vurb.lock`):**
+**Defense 3 — CapabilityLockfile (`fusion.lock`):**
 
 The lockfile captures a SHA-256 digest of every tool's behavioral surface, including system rules:
 
@@ -341,26 +341,26 @@ The lockfile captures a SHA-256 digest of every tool's behavioral surface, inclu
 }
 ```
 
-If a system rule changes — even a single character — the `integrityDigest` changes. The CI gate (`vurb lock --check`) fails, forcing a conscious review:
+If a system rule changes — even a single character — the `integrityDigest` changes. The CI gate (`fusion lock --check`) fails, forcing a conscious review:
 
 ```bash
-$ vurb lock --check
+$ fusion lock --check
 ✗ Lockfile is stale.
   tools changed: [billing]
-  Run `vurb lock` to update.
+  Run `fusion lock` to update.
 ```
 
 The lockfile is committed alongside the code. Pull request diffs show exactly which behavioral surfaces changed.
 
 ### Why this matters
 
-In the breached platform, prompts were stored in a database — mutable, unversioned, unmonitored. Vurb.ts inverts this: prompts are **immutable code artifacts** protected by three independent mechanisms:
+In the breached platform, prompts were stored in a database — mutable, unversioned, unmonitored. MCP Fusion inverts this: prompts are **immutable code artifacts** protected by three independent mechanisms:
 
 1. **Source control** — prompts exist in `.ts` files, not database rows
 2. **PromptFirewall** — dynamic interpolation is evaluated by an independent LLM judge
 3. **Lockfile** — behavioral integrity is cryptographically verified in CI
 
-To modify a system prompt in Vurb.ts, an attacker would need to compromise the source code repository, pass code review, and update the lockfile — not simply execute a SQL query.
+To modify a system prompt in MCP Fusion, an attacker would need to compromise the source code repository, pass code review, and update the lockfile — not simply execute a SQL query.
 
 **Verdict: ✅ Prevented.** The prompt layer is not a database table. It is code, defended by code review, a runtime firewall, and cryptographic integrity verification.
 
@@ -372,7 +372,7 @@ To modify a system prompt in Vurb.ts, an attacker would need to compromise the s
 
 The breach report noted: *"A modified prompt leaves no log trail. No file changes. No process anomalies. The AI just starts behaving differently, and nobody notices until the damage is done."*
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
 The `AuditTrail` middleware logs every tool invocation with:
 
@@ -425,13 +425,13 @@ A spike in `passed: false` events with `firewallType: 'input'` is a clear signal
 
 The platform's API documentation was publicly accessible — over 200 endpoints, fully documented, with authentication requirements visible. This gave the autonomous agent a complete map of the attack surface.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
-Vurb.ts operates over MCP, not REST. There is no OpenAPI spec, no Swagger UI, no `/docs` endpoint. The tool surface is discovered through the MCP `tools/list` method, which is itself an authenticated RPC call — not a publicly browsable web page.
+MCP Fusion operates over MCP, not REST. There is no OpenAPI spec, no Swagger UI, no `/docs` endpoint. The tool surface is discovered through the MCP `tools/list` method, which is itself an authenticated RPC call — not a publicly browsable web page.
 
 The MCP architecture eliminates the concept of URL-based endpoint enumeration:
 
-| REST Platform | Vurb.ts (MCP) |
+| REST Platform | MCP Fusion (MCP) |
 |---|---|
 | 200+ HTTP endpoints | 1 transport (stdio/SSE) |
 | `/api/v2/users/:id/search` | `tools/call { name: "search", action: "query" }` |
@@ -450,9 +450,9 @@ An attacker scanning for endpoints would find a single transport channel that re
 
 The attacker accessed 3.68 million RAG document chunks — the entire knowledge base feeding the AI — including S3 storage paths and internal file metadata. This represented decades of proprietary research, frameworks, and methodologies.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
-The `Presenter` layer in Vurb.ts controls what data the AI agent sees. Presenters implement **egress guardrails** that define the maximum output surface:
+The `Presenter` layer in MCP Fusion controls what data the AI agent sees. Presenters implement **egress guardrails** that define the maximum output surface:
 
 ```typescript
 const ResearchPresenter = createPresenter('Research')
@@ -475,11 +475,11 @@ Additionally, cognitive guardrails (`agentLimitMax`, `egressMaxBytes`) prevent u
 
 ### Honest limitation
 
-Vurb.ts controls the **MCP tool output**. If the RAG knowledge base is exposed through a separate vector (direct database access, a different API, or an S3 bucket misconfiguration), Vurb.ts cannot protect it. The Presenter guardrails only apply to data that flows through the MCP server.
+MCP Fusion controls the **MCP tool output**. If the RAG knowledge base is exposed through a separate vector (direct database access, a different API, or an S3 bucket misconfiguration), MCP Fusion cannot protect it. The Presenter guardrails only apply to data that flows through the MCP server.
 
-Furthermore, **Vurb.ts does not currently provide a built-in RAG integration with access control**. The developer is responsible for implementing document-level permissions in their RAG pipeline. Vurb.ts provides the identity context (via `requireJwt()`) and the egress controls (via `Presenter`), but the query scoping logic — "user X can only access documents in department Y" — remains application-level.
+Furthermore, **MCP Fusion does not currently provide a built-in RAG integration with access control**. The developer is responsible for implementing document-level permissions in their RAG pipeline. MCP Fusion provides the identity context (via `requireJwt()`) and the egress controls (via `Presenter`), but the query scoping logic — "user X can only access documents in department Y" — remains application-level.
 
-We are actively studying patterns for RAG access control that could be integrated into the Presenter pipeline in a future release. This is an open problem across the industry, not unique to Vurb.ts.
+We are actively studying patterns for RAG access control that could be integrated into the Presenter pipeline in a future release. This is an open problem across the industry, not unique to MCP Fusion.
 
 **Verdict: ⚠️ Partially mitigated.** Egress schema prevents metadata leakage. Cognitive guardrails prevent bulk extraction. But document-level access control in RAG requires application-level implementation.
 
@@ -491,7 +491,7 @@ We are actively studying patterns for RAG access control that could be integrate
 
 The autonomous agent ran fifteen blind SQL injection iterations and then enumerated millions of database records. There was no rate limiting to slow the enumeration or trigger alerts.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
 The `rateLimit()` middleware provides per-key sliding window rate limiting:
 
@@ -530,7 +530,7 @@ The rate limiter is designed with an important subtlety: **rejected requests do 
 
 ### Honest limitation
 
-The default `InMemoryStore` is single-process only. In multi-instance deployments, each instance maintains its own counter — an attacker effectively gets `max × instanceCount` requests. For distributed rate limiting, the developer must implement the `RateLimitStore` interface with a shared backend (Redis, Valkey). Vurb.ts documents this requirement clearly but does not provide a built-in distributed store since the dependency on a specific cache would violate the framework's principle of no hidden infrastructure dependencies.
+The default `InMemoryStore` is single-process only. In multi-instance deployments, each instance maintains its own counter — an attacker effectively gets `max × instanceCount` requests. For distributed rate limiting, the developer must implement the `RateLimitStore` interface with a shared backend (Redis, Valkey). MCP Fusion documents this requirement clearly but does not provide a built-in distributed store since the dependency on a specific cache would violate the framework's principle of no hidden infrastructure dependencies.
 
 **Verdict: ✅ Slowed enumeration.** Per-user sliding window + alerting callback turns bulk enumeration into a detectable, throttled activity.
 
@@ -542,7 +542,7 @@ The default `InMemoryStore` is single-process only. In multi-instance deployment
 
 While not explicitly part of the disclosed attack chain, the breached platform exposed AI model configurations and allowed the AI to execute operations on production data. The prompt layer — once compromised — could have been used to instruct the AI to perform arbitrary operations.
 
-### How Vurb.ts defends
+### How MCP Fusion defends
 
 The `SandboxEngine` provides a zero-trust V8 isolate for any computation delegation:
 
@@ -578,25 +578,25 @@ The `SandboxGuard` performs fail-fast validation before code reaches the isolate
 
 ---
 
-## Honest Assessment: What Vurb.ts Cannot Solve
+## Honest Assessment: What MCP Fusion Cannot Solve
 
-Integrity demands acknowledging the boundaries. The following are areas where Vurb.ts provides infrastructure but **cannot guarantee protection** without correct application-level implementation:
+Integrity demands acknowledging the boundaries. The following are areas where MCP Fusion provides infrastructure but **cannot guarantee protection** without correct application-level implementation:
 
 ### 1. Database Security
 
-Vurb.ts does not generate SQL queries. If the developer writes `db.query(\`SELECT * FROM users WHERE name = '\${input}'\`)` inside a handler, Vurb.ts cannot prevent the injection — though the `InputFirewall` would have already rejected the malicious input before it reached the handler.
+MCP Fusion does not generate SQL queries. If the developer writes `db.query(\`SELECT * FROM users WHERE name = '\${input}'\`)` inside a handler, MCP Fusion cannot prevent the injection — though the `InputFirewall` would have already rejected the malicious input before it reached the handler.
 
 **Recommendation:** Always use parameterized queries. The `InputFirewall` is a defense-in-depth layer, not a replacement for secure database access.
 
 ### 2. Infrastructure Configuration
 
-S3 bucket policies, database network exposure, API gateway misconfigurations — these are infrastructure concerns outside Vurb.ts's scope. The breached platform had its API documentation publicly exposed through infrastructure misconfiguration.
+S3 bucket policies, database network exposure, API gateway misconfigurations — these are infrastructure concerns outside MCP Fusion's scope. The breached platform had its API documentation publicly exposed through infrastructure misconfiguration.
 
-**What we are studying:** We are exploring an `infra-scan` module that would validate common misconfigurations (public S3 buckets, open database ports) as part of the `vurb lock --check` CI gate. This is not yet implemented.
+**What we are studying:** We are exploring an `infra-scan` module that would validate common misconfigurations (public S3 buckets, open database ports) as part of the `fusion lock --check` CI gate. This is not yet implemented.
 
 ### 3. RAG Document-Level Permissions
 
-The breached platform exposed 3.68 million RAG document chunks. Implementing "user X can only access documents from department Y" requires application-level logic that Vurb.ts cannot automate.
+The breached platform exposed 3.68 million RAG document chunks. Implementing "user X can only access documents from department Y" requires application-level logic that MCP Fusion cannot automate.
 
 **What we provide:** Identity context (`requireJwt()`), egress projection (`Presenter`), and cognitive guardrails (`agentLimitMax`). The permission query logic is the developer's responsibility.
 
@@ -608,7 +608,7 @@ The `InputFirewall` and `PromptFirewall` rely on LLM judges. If the LLM provider
 
 ### 5. Insider Threats
 
-If a developer with commit access modifies a system rule and updates the lockfile through a legitimate pull request, Vurb.ts treats this as a valid change. The lockfile enables code review visibility, but it cannot enforce that reviewers actually scrutinize the behavioral diff.
+If a developer with commit access modifies a system rule and updates the lockfile through a legitimate pull request, MCP Fusion treats this as a valid change. The lockfile enables code review visibility, but it cannot enforce that reviewers actually scrutinize the behavioral diff.
 
 **What we provide:** The lockfile makes behavioral changes **visible** in pull request diffs. Combined with branch protection rules and mandatory reviewers, this creates a human-in-the-loop verification point.
 
@@ -616,11 +616,11 @@ If a developer with commit access modifies a system rule and updates the lockfil
 
 ## Compliance Mapping
 
-For organizations subject to regulatory and framework compliance requirements, the following table maps Vurb.ts modules to specific control objectives:
+For organizations subject to regulatory and framework compliance requirements, the following table maps MCP Fusion modules to specific control objectives:
 
-| Control Framework | Control ID | Requirement | Vurb.ts Module | Coverage |
+| Control Framework | Control ID | Requirement | MCP Fusion Module | Coverage |
 |---|---|---|---|---|
-| **SOC 2** | CC6.1 | Logical Access Controls | `requireJwt()`, `@vurb/jwt` | Identity verification before handler execution |
+| **SOC 2** | CC6.1 | Logical Access Controls | `requireJwt()`, `@mcpfusion/jwt` | Identity verification before handler execution |
 | **SOC 2** | CC6.3 | Role-Based Access | `requireJwt()` + handler logic | JWT claims extraction; authorization is app-level |
 | **SOC 2** | CC7.2 | System Monitoring | `AuditTrail`, telemetry events | Every invocation logged with identity, status, duration |
 | **SOC 2** | CC7.3 | Change Detection | `CapabilityLockfile` | SHA-256 behavioral digest; CI gate on drift |
@@ -640,7 +640,7 @@ For organizations subject to regulatory and framework compliance requirements, t
 
 ## Recommended Security Posture
 
-For teams adopting Vurb.ts in production, the following implementation sequence provides maximum defense coverage with minimal configuration overhead. Priorities are ordered by impact-to-effort ratio:
+For teams adopting MCP Fusion in production, the following implementation sequence provides maximum defense coverage with minimal configuration overhead. Priorities are ordered by impact-to-effort ratio:
 
 ### Priority 1 — Mandatory (Day One)
 
@@ -668,7 +668,7 @@ These modules add semantic defense and enumeration protection:
 |---|---|---|
 | `inputFirewall({ adapter })` | ~5 lines (LLM adapter) | V2 (semantic) |
 | `rateLimit({ windowMs, max })` | ~5 lines | V8 |
-| `CapabilityLockfile` | CLI command (`vurb lock`) | V4, V5 |
+| `CapabilityLockfile` | CLI command (`fusion lock`) | V4, V5 |
 
 ### Priority 3 — Advanced (Sprint Planning)
 
@@ -686,7 +686,7 @@ These modules address the remaining attack surface:
 These require process and policy changes beyond the framework:
 
 - **Branch protection** with mandatory reviewers for files touching Presenters and system rules
-- **Lockfile diff review** — train reviewers to scrutinize `vurb.lock` changes in PRs
+- **Lockfile diff review** — train reviewers to scrutinize `fusion.lock` changes in PRs
 - **Parameterized queries** — enforce via linting rules (e.g., `no-string-concatenation-in-sql`)
 - **Infrastructure hardening** — private S3 buckets, VPC-scoped database access, no public API docs
 
@@ -694,7 +694,7 @@ These require process and policy changes beyond the framework:
 
 ## Defense-in-Depth Summary
 
-The following diagram illustrates how Vurb.ts layers its defenses. Each layer operates independently — compromising one does not bypass the others:
+The following diagram illustrates how MCP Fusion layers its defenses. Each layer operates independently — compromising one does not bypass the others:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -736,12 +736,12 @@ The following diagram illustrates how Vurb.ts layers its defenses. Each layer op
 
 The breach exposed a truth that the industry has been slow to internalize: **the prompt layer is the new Crown Jewel asset**. Prompts are stored in databases, passed through APIs, cached in config files. They rarely have access controls, version history, or integrity monitoring. Yet they control the output that employees trust, that clients receive, and that decisions are built on.
 
-Vurb.ts was designed with this principle from day one. System rules are code, not data. Prompt integrity is cryptographically verified. Every access is audited. Every input is semantically evaluated. And when we don't have a complete answer — RAG permissions, infrastructure security, supply chain integrity — we say so openly and document what we are working on.
+MCP Fusion was designed with this principle from day one. System rules are code, not data. Prompt integrity is cryptographically verified. Every access is audited. Every input is semantically evaluated. And when we don't have a complete answer — RAG permissions, infrastructure security, supply chain integrity — we say so openly and document what we are working on.
 
-Security is not a feature checklist. It is an architectural decision made at every layer — transport, authentication, validation, evaluation, auditing, and deployment. The breach demonstrated what happens when these layers are treated as afterthoughts. Vurb.ts demonstrates what happens when they are treated as the foundation.
+Security is not a feature checklist. It is an architectural decision made at every layer — transport, authentication, validation, evaluation, auditing, and deployment. The breach demonstrated what happens when these layers are treated as afterthoughts. MCP Fusion demonstrates what happens when they are treated as the foundation.
 
 ---
 
-*This analysis is based on the [publicly disclosed findings](https://codewall.ai/blog/how-we-hacked-mckinseys-ai-platform) and on the actual source code of Vurb.ts's security modules. All code examples reflect real APIs available in the framework.*
+*This analysis is based on the [publicly disclosed findings](https://codewall.ai/blog/how-we-hacked-mckinseys-ai-platform) and on the actual source code of MCP Fusion's security modules. All code examples reflect real APIs available in the framework.*
 
-*Follow the project on [GitHub](https://github.com/vinkius-labs/vurb.ts).*
+*Follow the project on [GitHub](https://github.com/vinkius-labs/mcpfusion).*

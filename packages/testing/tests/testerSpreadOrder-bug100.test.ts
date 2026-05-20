@@ -1,5 +1,5 @@
 /**
- * Bug #100 — VurbTester spread-order: action must come AFTER user args
+ * Bug #100 — MCPFusionTester spread-order: action must come AFTER user args
  *
  * Verifies that user-provided `action` in args does NOT override the
  * discriminator injected by callAction().
@@ -12,10 +12,10 @@ import {
     createTool,
     ToolRegistry,
     success,
-} from '@vurb/core';
-import { VurbTester } from '../src/index.js';
+} from '@mcpfusion/core';
+import { MCPFusionTester } from '../src/index.js';
 
-describe('Bug #100 — VurbTester spread-order (action after spread)', () => {
+describe('Bug #100 — MCPFusionTester spread-order (action after spread)', () => {
     it('discriminator is NOT overridden by user args containing action key', async () => {
         const listSpy = vi.fn();
         const createSpy = vi.fn();
@@ -44,7 +44,7 @@ describe('Bug #100 — VurbTester spread-order (action after spread)', () => {
 
         registry.registerAll(tool);
 
-        const tester = new VurbTester(registry, {
+        const tester = new MCPFusionTester(registry, {
             contextFactory: async () => ({}) as never,
         });
 
@@ -72,7 +72,7 @@ describe('Bug #100 — VurbTester spread-order (action after spread)', () => {
 
         registry.registerAll(tool);
 
-        const tester = new VurbTester(registry, {
+        const tester = new MCPFusionTester(registry, {
             contextFactory: async () => ({}) as never,
         });
 

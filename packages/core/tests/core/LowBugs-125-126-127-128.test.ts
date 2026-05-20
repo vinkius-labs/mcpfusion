@@ -111,7 +111,7 @@ describe('Bug #127 — ToolResponse brand prevents false positives', () => {
         expect(Object.keys(resp)).not.toContain(TOOL_RESPONSE_BRAND.toString());
         // JSON.stringify should not include the brand
         const json = JSON.stringify(resp);
-        expect(json).not.toContain('vurb');
+        expect(json).not.toContain('mcpfusion');
     });
 
     it('should NOT wrap branded response with success() in handler', async () => {

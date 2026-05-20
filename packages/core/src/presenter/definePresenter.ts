@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { definePresenter, ui } from '@vurb/core';
+ * import { definePresenter, ui } from '@mcpfusion/core';
  * import { z } from 'zod';
  *
  * export const InvoicePresenter = definePresenter({

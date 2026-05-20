@@ -1,7 +1,7 @@
 /**
  * createAuthTool Tests
  *
- * Validates the auth tool factory that creates a complete vurb tool
+ * Validates the auth tool factory that creates a complete MCP Fusion tool
  * with login, complete, status, and logout actions.
  *
  * Uses real createTool builder with mock fetch for DeviceAuthenticator.

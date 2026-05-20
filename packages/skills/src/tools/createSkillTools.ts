@@ -6,7 +6,7 @@
  *   2. `load`   — Load full instructions (Layer 2: instructions)
  *   3. `read_file` — Read auxiliary files (Layer 3: resources)
  *
- * Built using Vurb's `defineTool()` grouped builder to ensure a single
+ * Built using MCP Fusion's `defineTool()` grouped builder to ensure a single
  * `ToolRegistry` entry (avoids duplicate-name registration errors).
  *
  * @module
@@ -17,7 +17,7 @@ import { type SkillRegistry } from '../registry/SkillRegistry.js';
 // ── Types ────────────────────────────────────────────────
 
 /**
- * Duck-typed `defineTool()` factory — avoids hard coupling to `@vurb/core` internals.
+ * Duck-typed `defineTool()` factory — avoids hard coupling to `@mcpfusion/core` internals.
  */
 type DefineToolFn = (name: string, config: DefineToolConfig) => ToolBuilderResult;
 
@@ -70,17 +70,17 @@ export interface CreateSkillToolsOptions {
  * Returns ONE `GroupedToolBuilder` with three actions (`search`, `load`, `read_file`).
  * Register it once with `registry.register(skillsTool)`.
  *
- * @param defineTool - The `defineTool` factory from `@vurb/core`
+ * @param defineTool - The `defineTool` factory from `@mcpfusion/core`
  * @param registry - SkillRegistry with skills already loaded
  * @param options - Tool configuration
  * @returns A single tool builder with all skill actions
  *
  * @example
  * ```typescript
- * import { initVurb, ToolRegistry, defineTool } from '@vurb/core';
- * import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@vurb/skills';
+ * import { initMCPFusion, ToolRegistry, defineTool } from '@mcpfusion/core';
+ * import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@mcpfusion/skills';
  *
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  * const skills = new SkillRegistry();
  * await autoDiscoverSkills(skills, './skills');
  *

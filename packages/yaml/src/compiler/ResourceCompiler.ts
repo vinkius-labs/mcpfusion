@@ -11,7 +11,7 @@
  *
  * @module
  */
-import type { YamlResourceDef } from '../schema/VurbYamlSpec.js';
+import type { YamlResourceDef } from '../schema/MCPFusionYamlSpec.js';
 import type { ResolvedConnection } from './ConnectionResolver.js';
 import { interpolateSecrets } from '../schema/SecretInterpolator.js';
 

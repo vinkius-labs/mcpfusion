@@ -22,13 +22,13 @@ export function readme(config: ProjectConfig): string {
 
     return `# ${config.name}
 
-MCP Server built with [Vurb.ts](https://vurb.vinkius.com/) — the TypeScript framework for MCP servers.
+MCP Server built with [mcpfusion](https://mcpfusion.vinkius.com/) — the TypeScript framework for MCP servers.
 
 ## Quick Start
 
 \`\`\`bash
 npm install
-vurb dev
+mcpfusion dev
 \`\`\`
 ${config.testing ? `
 ## Testing
@@ -41,7 +41,7 @@ npm test
 
 \`\`\`
 src/
-├── vurb.ts          # initVurb<AppContext>() — context center
+├── mcpfusion.ts          # initMCPFusion<AppContext>() — context center
 ├── context.ts         # AppContext type + factory
 ├── server.ts          # Bootstrap with autoDiscover
 ├── tools/             # Drop a file → it's a tool (autoDiscover)
@@ -80,7 +80,7 @@ Create a new file in \`src/tools/\`. It's automatically discovered:
 
 \`\`\`typescript
 // src/tools/my-domain/my-tool.ts
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 
 export default f.query('my_domain.my_tool')
     .describe('What this tool does')
@@ -94,10 +94,10 @@ No registration needed. The \`autoDiscover()\` system picks it up automatically.
 
 ## Documentation
 
-- [Vurb Docs](https://vurb.vinkius.com/)
-- [Presenter — Egress Firewall](https://vurb.vinkius.com/presenter)
-- [DX Guide — initVurb()](https://vurb.vinkius.com/dx-guide)
-- [Testing](https://vurb.vinkius.com/testing)
+- [MCP Fusion Docs](https://mcpfusion.vinkius.com/)
+- [Presenter — Egress Firewall](https://mcpfusion.vinkius.com/presenter)
+- [DX Guide — initMCPFusion()](https://mcpfusion.vinkius.com/dx-guide)
+- [Testing](https://mcpfusion.vinkius.com/testing)
 `;
 }
 
@@ -115,7 +115,7 @@ function vectorReadmeSection(config: ProjectConfig): string {
 
 2. Edit \`prisma/schema.prisma\` to define your models
 
-3. Generate the Prisma client and Vurb tools:
+3. Generate the Prisma client and MCP Fusion tools:
    \`\`\`bash
    npm run db:generate
    \`\`\`
@@ -125,7 +125,7 @@ function vectorReadmeSection(config: ProjectConfig): string {
    npm run db:push
    \`\`\`
 
-Use \`/// @vurb.hide\` on sensitive fields to strip them from the Egress Firewall.
+Use \`/// @mcpfusion.hide\` on sensitive fields to strip them from the Egress Firewall.
 `;
         case 'n8n':
             return `
@@ -148,7 +148,7 @@ Use \`/// @vurb.hide\` on sensitive fields to strip them from the Egress Firewal
 
 2. Generate the MCP server from the spec:
    \`\`\`bash
-   npx @vurb/openapi-gen ./openapi.yaml --outDir ./src/generated
+   npx @mcpfusion/openapi-gen ./openapi.yaml --outDir ./src/generated
    \`\`\`
 
 3. Import and register the generated tools in \`src/server.ts\`

@@ -9,7 +9,7 @@ export function openapiYaml(config: ProjectConfig): string {
     return `# OpenAPI 3.0 Specification — Sample
 #
 # Replace this with your actual API spec, then run:
-#   npx @vurb/openapi-gen ./openapi.yaml --outDir ./src/generated
+#   npx @mcpfusion/openapi-gen ./openapi.yaml --outDir ./src/generated
 #
 # The generator creates Presenters, Tools, Registry, and server
 # bootstrap — all configurable via YAML annotations.
@@ -18,7 +18,7 @@ openapi: '3.0.3'
 info:
   title: '${config.name} API'
   version: '0.1.0'
-  description: Sample API for Vurb OpenAPI generation
+  description: Sample API for MCP Fusion OpenAPI generation
 
 servers:
   - url: http://localhost:3000/api
@@ -91,7 +91,7 @@ This project is configured for the **Legacy API Proxy** ingestion vector.
 
 2. Generate the MCP server from the spec:
    \`\`\`bash
-   npx @vurb/openapi-gen ./openapi.yaml --outDir ./src/generated
+   npx @mcpfusion/openapi-gen ./openapi.yaml --outDir ./src/generated
    \`\`\`
 
 3. The generator creates:
@@ -107,6 +107,6 @@ This project is configured for the **Legacy API Proxy** ingestion vector.
 
 ## Documentation
 
-See: [OpenAPI Generator](https://vurb.vinkius.com/openapi-gen)
+See: [OpenAPI Generator](https://mcpfusion.vinkius.com/openapi-gen)
 `;
 }

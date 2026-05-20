@@ -7,7 +7,7 @@
  *
  * @module
  */
-import type { YamlToolDef } from '../schema/VurbYamlSpec.js';
+import type { YamlToolDef } from '../schema/MCPFusionYamlSpec.js';
 import { compileParameters, type CompiledInputSchema } from '../schema/ParameterCompiler.js';
 import type { ResolvedConnection } from './ConnectionResolver.js';
 

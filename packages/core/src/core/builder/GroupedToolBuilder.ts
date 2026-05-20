@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { createTool, success, error } from '@vurb/core';
+ * import { createTool, success, error } from '@mcpfusion/core';
  * import { z } from 'zod';
  *
  * const projects = createTool<AppContext>('projects')
@@ -59,7 +59,7 @@ import {
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
 import { type TelemetrySink } from '../../observability/TelemetryEvent.js';
 import { type MiddlewareDefinition, resolveMiddleware } from '../middleware/ContextDerivation.js';
-import { type VurbTracer } from '../../observability/Tracing.js';
+import { type MCPFusionTracer } from '../../observability/Tracing.js';
 import { getActionRequiredFields } from '../schema/SchemaUtils.js';
 import {
     parseDiscriminator, resolveAction, validateArgs, runChain,
@@ -174,7 +174,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
     private _selectEnabled = false;
     private _frozen = false;
     private _debug?: DebugObserverFn;
-    private _tracer?: VurbTracer;
+    private _tracer?: MCPFusionTracer;
     private _telemetry?: TelemetrySink;
     private _concurrencyGuard?: ConcurrencyGuard;
     private _egressMaxBytes?: number;
@@ -899,7 +899,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      *
      * @example
      * ```typescript
-     * import { createTool, createDebugObserver, success } from '@vurb/core';
+     * import { createTool, createDebugObserver, success } from '@mcpfusion/core';
      *
      * const debug = createDebugObserver();
      *
@@ -942,7 +942,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      *
      * **Zero overhead** when disabled — the fast path has no conditionals.
      *
-     * **OTel direct pass-through**: The `VurbTracer` interface is a
+     * **OTel direct pass-through**: The `MCPFusionTracer` interface is a
      * structural subtype of OTel's `Tracer`, so you can pass an OTel
      * tracer directly without any adapter:
      *
@@ -950,7 +950,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      * import { trace } from '@opentelemetry/api';
      *
      * const tool = createTool<AppContext>('projects')
-     *     .tracing(trace.getTracer('vurb'))
+     *     .tracing(trace.getTracer('mcpfusion'))
      *     .action({ name: 'list', handler: listProjects });
      * ```
      *
@@ -958,18 +958,18 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      * - Validation failures → `SpanStatusCode.UNSET` + `mcp.error_type` attribute
      * - Handler exceptions → `SpanStatusCode.ERROR` + `recordException()`
      *
-     * **Context propagation limitation**: Since Vurb does not depend
+     * **Context propagation limitation**: Since MCP Fusion does not depend
      * on `@opentelemetry/api`, it cannot call `context.with(trace.setSpan(...))`.
      * Auto-instrumented downstream calls (Prisma, HTTP, Redis) inside handlers
      * will appear as siblings, not children, of the MCP span.
      *
-     * @param tracer - A {@link VurbTracer} (or OTel `Tracer`) instance
+     * @param tracer - A {@link MCPFusionTracer} (or OTel `Tracer`) instance
      * @returns `this` for chaining
      *
-     * @see {@link VurbTracer} for the interface contract
+     * @see {@link MCPFusionTracer} for the interface contract
      * @see {@link SpanStatusCode} for status code semantics
      */
-    tracing(tracer: VurbTracer): this {
+    tracing(tracer: MCPFusionTracer): this {
         // No frozen check — tracing is safe to attach after build (like debug)
         this._tracer = tracer;
         return this;
@@ -1200,7 +1200,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      * Build telemetry hooks: Shadow Socket event emission for Inspector TUI.
      *
      * Emits `validate`, `middleware`, and `execute` TelemetryEvents
-     * to the IPC sink so that `vurb inspect` shows real pipeline data.
+     * to the IPC sink so that `mcpfusion inspect` shows real pipeline data.
      */
     private _buildTelemetryHooks(): PipelineHooks {
         return buildTelemetryHooks(this._telemetry!, this._hookContext());

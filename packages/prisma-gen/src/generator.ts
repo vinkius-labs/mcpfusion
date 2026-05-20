@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * Prisma Generator Entry Point — vurb-prisma-gen
+ * Prisma Generator Entry Point — @mcpfusion/prisma-gen
  *
- * Intercepts `npx prisma generate` and emits Vurb Presenters
+ * Intercepts `npx prisma generate` and emits MCP Fusion Presenters
  * and ToolBuilders with field-level security, tenant isolation, and
  * OOM protection.
  *
  * Usage in schema.prisma:
  * ```prisma
  * generator mcp {
- *   provider = "vurb-prisma-gen"
+ *   provider = "@mcpfusion/prisma-gen"
  *   output   = "../src/tools/database"
  * }
  * ```
@@ -30,7 +30,7 @@ import type { DMMFModel } from './parser/AnnotationParser.js';
 generatorHandler({
     onManifest() {
         return {
-            prettyName: 'Vurb Prisma Generator',
+            prettyName: 'MCPFusion Prisma Generator',
             defaultOutput: './generated',
         };
     },
@@ -78,7 +78,7 @@ generatorHandler({
 function emitBarrel(modelNames: string[]): { path: string; content: string } {
     const lines: string[] = [];
     lines.push(`/**`);
-    lines.push(` * Generated barrel export — vurb-prisma-gen`);
+    lines.push(` * Generated barrel export — @mcpfusion/prisma-gen`);
     lines.push(` * @generated`);
     lines.push(` */`);
 
@@ -87,9 +87,9 @@ function emitBarrel(modelNames: string[]): { path: string; content: string } {
         const prismaModel = name.charAt(0).toLowerCase() + name.slice(1);
         lines.push(`export { ${name}Presenter, ${name}ResponseSchema } from './${prismaModel}Presenter.js';`);
         lines.push(`export { ${prismaModel}Tools } from './${prismaModel}Tools.js';`);
-        // Export PrismaVurbContext only from the first model to avoid duplicate identifiers
+        // Export PrismaFusionContext only from the first model to avoid duplicate identifiers
         if (isFirst) {
-            lines.push(`export type { PrismaVurbContext } from './${prismaModel}Tools.js';`);
+            lines.push(`export type { PrismaFusionContext } from './${prismaModel}Tools.js';`);
             isFirst = false;
         }
     }

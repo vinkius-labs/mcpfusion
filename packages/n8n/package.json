@@ -1,6 +1,6 @@
 {
-  "name": "@vurb/n8n",
-  "description": "n8n connector for Vurb. Auto-discovers webhook workflows and produces ToolBuilders — so AI agents can call your automations natively.",
+  "name": "@mcpfusion/n8n",
+  "description": "n8n connector for MCP Fusion. Auto-discovers webhook workflows and produces ToolBuilders — so AI agents can call your automations natively.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
   "keywords": [
     "mcp",
     "n8n",
-    "vurb",
+    "mcpfusion",
     "workflow",
     "automation",
     "ai",
@@ -28,13 +28,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/n8n"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -46,7 +46,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6"
+    "@mcpfusion/core": "^4.0.0"
   },
   "peerDependencies": {
     "zod": "^3.25.1 || ^4.0.0"
@@ -55,5 +55,5 @@
     "@types/node": "^25.3.0"
   },
   "license": "Apache-2.0",
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

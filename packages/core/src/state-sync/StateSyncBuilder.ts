@@ -46,7 +46,7 @@ export class PolicyBuilder {
 /**
  * Fluent builder for centralized State Sync configuration.
  * 
- * Typically accessed via `f.stateSync()` in the `initVurb` instance.
+ * Typically accessed via `f.stateSync()` in the `initMCPFusion` instance.
  */
 export class StateSyncBuilder {
     private _policies: SyncPolicy[] = [];

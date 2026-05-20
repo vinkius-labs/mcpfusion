@@ -1,7 +1,7 @@
 # Tracing
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -9,7 +9,7 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 - [Error Classification](#errors)
 - [Span Attributes](#attributes)
 - [Pipeline Events](#pipeline)
-- [VurbTracer Interface](#interface)
+- [MCPFusionTracer Interface](#interface)
 - [Coexistence with Debug](#coexistence)
 - [Span Lifecycle](#lifecycle)
 - [Context Propagation](#propagation)
@@ -19,20 +19,20 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 When an MCP tool call fails in production, you need to know exactly where and why — was it a validation error, a middleware guard, or a handler exception? Standard logging gives you `"error occurred"`. OpenTelemetry tracing gives you the full pipeline: route → validate → middleware → execute, with durations, attributes, and semantic error classification.
 
-Vurb.ts produces OpenTelemetry-compatible spans with **zero dependencies** — structural subtyping, not `import @opentelemetry/api`. Zero overhead when disabled — a completely separate code path runs.
+MCP Fusion produces OpenTelemetry-compatible spans with **zero dependencies** — structural subtyping, not `import @opentelemetry/api`. Zero overhead when disabled — a completely separate code path runs.
 
 ## Quick Start {#quickstart}
 
 ```typescript
 import { trace } from '@opentelemetry/api';
-import { ToolRegistry } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
 
 const registry = new ToolRegistry<AppContext>();
 registry.registerAll(projectsTool, billingTool, usersTool);
 
 registry.attachToServer(server, {
   contextFactory: createAppContext,
-  tracing: trace.getTracer('Vurb.ts'),
+  tracing: trace.getTracer('MCP Fusion'),
 });
 ```
 
@@ -55,7 +55,7 @@ Only an unhandled exception sets `ERROR`. Everything else uses `UNSET` — the A
 
 ```
 # PagerDuty: only infra failures
-SpanStatusCode:ERROR service:Vurb.ts
+SpanStatusCode:ERROR service:MCP Fusion
 
 # Datadog: AI error rate
 count(mcp.error_type:validation_failed) / count(*) > 0.5
@@ -69,7 +69,7 @@ count(mcp.error_type:handler_returned_error) / count(*) > 0.3
 
 ## Span Attributes {#attributes}
 
-Every span includes: `mcp.system` ("Vurb.ts"), `mcp.tool` (tool name), `mcp.durationMs` (total execution time), `mcp.isError` (boolean), `mcp.response_size` (response text length).
+Every span includes: `mcp.system` ("MCP Fusion"), `mcp.tool` (tool name), `mcp.durationMs` (total execution time), `mcp.isError` (boolean), `mcp.response_size` (response text length).
 
 Routing attributes: `mcp.action` (resolved action), `mcp.error_type` (classification label).
 
@@ -77,7 +77,7 @@ Conditional attributes: `mcp.tags` (string[], when configured), `mcp.description
 
 ```
 # Datadog: PCI-scoped calls
-mcp.tags:pci service:Vurb.ts
+mcp.tags:pci service:MCP Fusion
 
 # Grafana: admin tools only
 {mcp_tags=~".*admin.*"}
@@ -95,18 +95,18 @@ Each span contains structured events tracing internal execution:
 
 Events use optional chaining (`addEvent?.()`), so tracers that don't implement `addEvent` work fine.
 
-## VurbTracer Interface {#interface}
+## MCPFusionTracer Interface {#interface}
 
 Any object with the right shape works. The real `@opentelemetry/api` `Tracer` satisfies this automatically:
 
 ```typescript
-interface VurbTracer {
+interface MCPFusionTracer {
   startSpan(name: string, options?: {
     attributes?: Record<string, string | number | boolean | ReadonlyArray<string>>;
-  }): VurbSpan;
+  }): MCPFusionSpan;
 }
 
-interface VurbSpan {
+interface MCPFusionSpan {
   setAttribute(key: string, value: string | number | boolean | ReadonlyArray<string>): void;
   setStatus(status: { code: number; message?: string }): void;
   end(): void;
@@ -115,7 +115,7 @@ interface VurbSpan {
 }
 ```
 
-`SpanStatusCode` constants: `UNSET` (0), `OK` (1), `ERROR` (2) — exported from `Vurb.ts`.
+`SpanStatusCode` constants: `UNSET` (0), `OK` (1), `ERROR` (2) — exported from `@mcpfusion/core`.
 
 ## Coexistence with Debug {#coexistence}
 
@@ -147,7 +147,7 @@ The `finally` block guarantees no span leaks — duration and response size reco
 
 ## Context Propagation {#propagation}
 
-Vurb.ts doesn't depend on `@opentelemetry/api`, so it cannot inject span context automatically. Auto-instrumented downstream calls (Prisma, HTTP, Redis) appear as sibling spans, not children. For manual propagation:
+MCP Fusion doesn't depend on `@opentelemetry/api`, so it cannot inject span context automatically. Auto-instrumented downstream calls (Prisma, HTTP, Redis) appear as sibling spans, not children. For manual propagation:
 
 ```typescript
 import { context, trace } from '@opentelemetry/api';
@@ -170,7 +170,7 @@ const dbQuery = f.query('db.query')
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { trace } from '@opentelemetry/api';
-import { ToolRegistry } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
 
 const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({
@@ -180,7 +180,7 @@ const sdk = new NodeSDK({
 });
 sdk.start();
 
-const tracer = trace.getTracer('Vurb.ts', '1.0.0');
+const tracer = trace.getTracer('MCP Fusion', '1.0.0');
 
 const registry = new ToolRegistry<AppContext>();
 registry.registerAll(projectsTool, billingTool, usersTool);

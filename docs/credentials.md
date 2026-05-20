@@ -21,7 +21,7 @@ Your server declares what it needs. The marketplace prompts the buyer. The runti
 Use `defineCredentials()` to declare your server's requirements. The marketplace reads this at deploy/introspect time:
 
 ```typescript
-import { defineCredentials } from '@vurb/core'
+import { defineCredentials } from '@mcpfusion/core'
 
 export const credentials = defineCredentials({
   openai_key: {
@@ -87,7 +87,7 @@ interface CredentialSchema {
 Use `requireCredential()` inside your tool handlers:
 
 ```typescript
-import { requireCredential } from '@vurb/core'
+import { requireCredential } from '@mcpfusion/core'
 import OpenAI from 'openai'
 
 const summarize = f.action('content.summarize')
@@ -138,7 +138,7 @@ if (webhookSecret) {
 
 ## Local Development
 
-During local development (`vurb dev`), credentials are read from environment variables. Create a `.env` file:
+During local development (`mcpfusion dev`), credentials are read from environment variables. Create a `.env` file:
 
 ```dotenv
 # maps to credential name 'openai_key'
@@ -165,7 +165,7 @@ registry.attachToServer(server, {
 ## Security Architecture
 
 - **Zero-knowledge** — Your seller code never receives raw buyer credentials during marketplace execution. The runtime isolates them.
-- **Server-side enforcement** — `vurb deploy` runs a static analysis scan on the bundle. Any attempt to intercept `__vinkius_secrets`, dump `globalThis`, or read `process.env` is rejected with HTTP 422 and a structured violations list.
+- **Server-side enforcement** — `mcpfusion deploy` runs a static analysis scan on the bundle. Any attempt to intercept `__vinkius_secrets`, dump `globalThis`, or read `process.env` is rejected with HTTP 422 and a structured violations list.
 - **Sensitive by default** — All `api_key`, `token`, `password`, `connection_string`, `uri`, `certificate`, and `json_config` types are `sensitive: true` by default — masked in the UI and excluded from logs.
 - **Per-request isolation** — Each runtime request gets its own credential scope. Credentials from one buyer are never visible to another.
 
@@ -175,7 +175,7 @@ registry.attachToServer(server, {
 ## Full Example
 
 ```typescript
-import { defineCredentials, requireCredential, initVurb } from '@vurb/core'
+import { defineCredentials, requireCredential, initMCPFusion } from '@mcpfusion/core'
 import Stripe from 'stripe'
 
 // 1. Declare what the server needs
@@ -194,7 +194,7 @@ export const credentials = defineCredentials({
   },
 })
 
-const f = initVurb()
+const f = initMCPFusion()
 
 // 2. Use the credential inside handlers
 const listPayments = f.query('payments.list')
@@ -215,6 +215,6 @@ const listPayments = f.query('payments.list')
 
 ## Publishing to the Marketplace
 
-When you run `vurb deploy`, the introspection system reads `defineCredentials()` and includes the schema in the deploy manifest. The Vinkius marketplace uses this to display a credential configuration form to buyers before activating your server.
+When you run `mcpfusion deploy`, the introspection system reads `defineCredentials()` and includes the schema in the deploy manifest. The Vinkius marketplace uses this to display a credential configuration form to buyers before activating your server.
 
 Buyers fill in their own secrets → the marketplace stores them encrypted → the runtime injects them on every tool call. Your code stays clean.

@@ -1,12 +1,12 @@
 /** Client Bounded Context — Barrel Export */
-export { createVurbClient, VurbClientError } from './VurbClient.js';
+export { createMCPFusionClient, MCPFusionClientError } from './MCPFusionClient.js';
 export type {
-    VurbClient,
-    VurbTransport,
+    MCPFusionClient,
+    MCPFusionTransport,
     RouterMap,
     FluentProxy,
     ClientMiddleware,
-    VurbClientOptions,
-} from './VurbClient.js';
+    MCPFusionClientOptions,
+} from './MCPFusionClient.js';
 export { createTypedRegistry } from './createTypedRegistry.js';
 export type { InferRouter, TypedToolRegistry } from './InferRouter.js';

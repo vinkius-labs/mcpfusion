@@ -4,7 +4,7 @@
  * The single place where all parsed skills are registered and where
  * incoming MCP tool calls (search, load, read_file) are routed.
  *
- * Modeled after Vurb's ToolRegistry pattern.
+ * Modeled after MCP Fusion's ToolRegistry pattern.
  *
  * @module
  */
@@ -345,6 +345,6 @@ export class SkillRegistry {
 function defaultValidationHandler(skillId: string, result: ValidationResult): void {
     const lines = formatValidationIssues(skillId, result);
     for (const line of lines) {
-        console.warn(`[vurb/skills] ${line}`);
+        console.warn(`[mcpfusion/skills] ${line}`);
     }
 }

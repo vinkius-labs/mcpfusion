@@ -1,10 +1,10 @@
 /**
- * `vurb doctor` — Unit Tests
+ * `mcpfusion doctor` — Unit Tests
  *
  * Covers:
  *   - parseArgs: recognizes `doctor` command
  *   - Node.js version check: pass on v18+, warn on < v18
- *   - .vurbrc detection: missing, empty, configured
+ *   - .MCPFusionrc detection: missing, empty, configured
  *   - Token validation: no token, API reachable, API unreachable, expired token
  *   - Entrypoint detection: found, not found
  *   - esbuild detection: installed, missing
@@ -17,7 +17,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseArgs } from '../../src/cli/vurb.js';
+import { parseArgs } from '../../src/cli/mcpfusion.js';
 import { commandDoctor } from '../../src/cli/commands/doctor.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ function captureStderr(fn: () => Promise<void>): Promise<string> {
 }
 
 function makeTmp(): string {
-    const dir = join(tmpdir(), `vurb-doc-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = join(tmpdir(), `mcpfusion-doc-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(dir, { recursive: true });
     return dir;
 }
@@ -47,7 +47,7 @@ function makeTmp(): string {
 
 describe('parseArgs recognizes doctor command', () => {
     it('parses "doctor" command', () => {
-        expect(parseArgs(['node', 'vurb', 'doctor']).command).toBe('doctor');
+        expect(parseArgs(['node', 'mcpfusion', 'doctor']).command).toBe('doctor');
     });
 });
 
@@ -64,7 +64,7 @@ describe('commandDoctor', () => {
         tmpDir = makeTmp();
         // Block all external calls
         globalThis.fetch = vi.fn().mockRejectedValue(new Error('blocked')) as unknown as typeof fetch;
-        delete process.env['VURB_DEPLOY_TOKEN'];
+        delete process.env['MCPFUSION_DEPLOY_TOKEN'];
     });
 
     afterEach(() => {
@@ -73,11 +73,11 @@ describe('commandDoctor', () => {
         process.env = { ...originalEnv };
     });
 
-    it('prints header "Vurb Doctor"', async () => {
+    it('prints header "mcpfusion doctor"', async () => {
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
         );
-        expect(output).toContain('Vurb Doctor');
+        expect(output).toContain('mcpfusion doctor');
     });
 
     it('checks Node.js version (passes on current runtime)', async () => {
@@ -88,23 +88,23 @@ describe('commandDoctor', () => {
         expect(output).toContain(process.version);
     });
 
-    it('checks @vurb/core version', async () => {
+    it('checks @mcpfusion/core version', async () => {
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
         );
-        expect(output).toContain('@vurb/core');
+        expect(output).toContain('@mcpfusion/core');
     });
 
-    it('warns when .vurbrc is missing', async () => {
+    it('warns when .MCPFusionrc is missing', async () => {
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
         );
-        expect(output).toContain('.vurbrc');
+        expect(output).toContain('.MCPFusionrc');
         expect(output).toContain('not found');
     });
 
-    it('passes when .vurbrc is configured', async () => {
-        writeFileSync(join(tmpDir, '.vurbrc'), JSON.stringify({
+    it('passes when .MCPFusionrc is configured', async () => {
+        writeFileSync(join(tmpDir, '.MCPFusionrc'), JSON.stringify({
             token: 'vk_live_test',
             remote: 'https://api.vinkius.com',
         }));
@@ -117,8 +117,8 @@ describe('commandDoctor', () => {
         expect(output).toContain('remote');
     });
 
-    it('warns when .vurbrc exists but is empty object', async () => {
-        writeFileSync(join(tmpDir, '.vurbrc'), '{}');
+    it('warns when .MCPFusionrc exists but is empty object', async () => {
+        writeFileSync(join(tmpDir, '.MCPFusionrc'), '{}');
 
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
@@ -134,7 +134,7 @@ describe('commandDoctor', () => {
     });
 
     it('handles API unreachable for token validation', async () => {
-        writeFileSync(join(tmpDir, '.vurbrc'), JSON.stringify({
+        writeFileSync(join(tmpDir, '.MCPFusionrc'), JSON.stringify({
             token: 'vk_live_test123',
             remote: 'https://unreachable.invalid',
         }));
@@ -150,7 +150,7 @@ describe('commandDoctor', () => {
     });
 
     it('reports expired/invalid token from API', async () => {
-        writeFileSync(join(tmpDir, '.vurbrc'), JSON.stringify({
+        writeFileSync(join(tmpDir, '.MCPFusionrc'), JSON.stringify({
             token: 'vk_live_expired',
             remote: 'https://api.vinkius.com',
         }));
@@ -167,7 +167,7 @@ describe('commandDoctor', () => {
     });
 
     it('reports valid token from API', async () => {
-        writeFileSync(join(tmpDir, '.vurbrc'), JSON.stringify({
+        writeFileSync(join(tmpDir, '.MCPFusionrc'), JSON.stringify({
             token: 'vk_live_valid',
             remote: 'https://api.vinkius.com',
         }));
@@ -184,8 +184,8 @@ describe('commandDoctor', () => {
         expect(output).toContain('my-server');
     });
 
-    it('detects token from VURB_DEPLOY_TOKEN env var', async () => {
-        process.env['VURB_DEPLOY_TOKEN'] = 'vk_env_token';
+    it('detects token from MCPFUSION_DEPLOY_TOKEN env var', async () => {
+        process.env['MCPFUSION_DEPLOY_TOKEN'] = 'vk_env_token';
 
         globalThis.fetch = vi.fn().mockResolvedValue({
             ok: true,
@@ -235,21 +235,21 @@ describe('commandDoctor', () => {
         expect(output).toContain('0.20.2');
     });
 
-    it('warns when vurb.lock is missing', async () => {
+    it('warns when mcpfusion.lock is missing', async () => {
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
         );
-        expect(output).toContain('vurb.lock');
+        expect(output).toContain('mcpfusion.lock');
         expect(output).toContain('missing');
     });
 
-    it('passes when vurb.lock is present', async () => {
-        writeFileSync(join(tmpDir, 'vurb.lock'), '{}');
+    it('passes when mcpfusion.lock is present', async () => {
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), '{}');
 
         const output = await captureStderr(() =>
             commandDoctor({ command: 'doctor', cwd: tmpDir, check: false, help: false }),
         );
-        expect(output).toContain('vurb.lock');
+        expect(output).toContain('mcpfusion.lock');
         expect(output).toContain('present');
     });
 

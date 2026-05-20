@@ -1,5 +1,5 @@
 /**
- * CLI `vurb create` — End-to-End Tests
+ * CLI `mcpfusion create` — End-to-End Tests
  *
  * Simulates the FULL create pipeline:
  *   parseArgs → collectConfig → scaffold → filesystem verification
@@ -18,8 +18,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, readFileSync, mkdirSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseArgs, collectConfig, commandCreate } from '../../src/cli/vurb.js';
-import type { CliArgs } from '../../src/cli/vurb.js';
+import { parseArgs, collectConfig, commandCreate } from '../../src/cli/mcpfusion.js';
+import type { CliArgs } from '../../src/cli/mcpfusion.js';
 import { scaffold } from '../../src/cli/scaffold.js';
 import type { ProjectConfig, IngestionVector, TransportLayer } from '../../src/cli/types.js';
 
@@ -28,7 +28,7 @@ import type { ProjectConfig, IngestionVector, TransportLayer } from '../../src/c
 // ============================================================================
 
 function tempDir(): string {
-    const dir = join(tmpdir(), `vurb-e2e-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = join(tmpdir(), `mcpfusion-e2e-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(dir, { recursive: true });
     return dir;
 }
@@ -130,7 +130,7 @@ describe('E2E: Full Pipeline (args → config → scaffold → verify)', () => {
         expect(existsSync(join(projectDir, 'README.md'))).toBe(true);
         expect(existsSync(join(projectDir, '.cursor', 'mcp.json'))).toBe(true);
         expect(existsSync(join(projectDir, 'vitest.config.ts'))).toBe(true);
-        expect(existsSync(join(projectDir, 'src', 'vurb.ts'))).toBe(true);
+        expect(existsSync(join(projectDir, 'src', 'mcpfusion.ts'))).toBe(true);
         expect(existsSync(join(projectDir, 'src', 'context.ts'))).toBe(true);
         expect(existsSync(join(projectDir, 'src', 'server.ts'))).toBe(true);
         expect(existsSync(join(projectDir, 'src', 'tools', 'system', 'health.ts'))).toBe(true);
@@ -147,7 +147,7 @@ describe('E2E: Full Pipeline (args → config → scaffold → verify)', () => {
 
     it('E2E: parseArgs feeds collectConfig correctly', async () => {
         const parsed = parseArgs([
-            'node', 'vurb', 'create', 'my-parsed-proj',
+            'node', 'mcpfusion', 'create', 'my-parsed-proj',
             '--transport', 'sse',
             '--vector', 'prisma',
             '--no-testing',
@@ -215,7 +215,7 @@ describe('E2E: Full Pipeline (args → config → scaffold → verify)', () => {
 
         // n8n deps
         const pkg = JSON.parse(readProjectFile(projectDir, 'package.json'));
-        expect(pkg.dependencies['@vurb/n8n']).toBeDefined();
+        expect(pkg.dependencies['@mcpfusion/n8n']).toBeDefined();
 
         // NO database or openapi files
         expect(existsSync(join(projectDir, 'prisma', 'schema.prisma'))).toBe(false);
@@ -240,12 +240,12 @@ describe('E2E: Full Pipeline (args → config → scaffold → verify)', () => {
 
         // SETUP.md has instructions
         const setup = readProjectFile(projectDir, 'SETUP.md');
-        expect(setup).toContain('@vurb/openapi-gen');
+        expect(setup).toContain('@mcpfusion/openapi-gen');
         expect(setup).toContain('--outDir');
 
         // OpenAPI deps
         const pkg = JSON.parse(readProjectFile(projectDir, 'package.json'));
-        expect(pkg.dependencies['@vurb/openapi-gen']).toBeDefined();
+        expect(pkg.dependencies['@mcpfusion/openapi-gen']).toBeDefined();
 
         // NO database or workflow files
         expect(existsSync(join(projectDir, 'prisma'))).toBe(false);
@@ -264,7 +264,7 @@ describe('E2E: Import graph — every local import resolves to an existing file'
     afterEach(() => { try { rmSync(tmpDir, { recursive: true, force: true }); } catch { /* ignore */ } });
 
     const tsFiles = [
-        'src/vurb.ts',
+        'src/mcpfusion.ts',
         'src/context.ts',
         'src/server.ts',
         'src/tools/system/health.ts',
@@ -478,11 +478,11 @@ describe('E2E: Generated TypeScript files — syntactic markers', () => {
         expect(missingDefault).toEqual([]);
     });
 
-    it('vurb.ts exports `f` constant', async () => {
+    it('mcpfusion.ts exports `f` constant', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
-        const content = readProjectFile(projectDir, 'src/vurb.ts');
+        const content = readProjectFile(projectDir, 'src/mcpfusion.ts');
         expect(content).toContain('export const f');
-        expect(content).toContain('initVurb');
+        expect(content).toContain('initMCPFusion');
     });
 
     it('context.ts exports both interface and factory function', async () => {
@@ -496,8 +496,8 @@ describe('E2E: Generated TypeScript files — syntactic markers', () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
         const content = readProjectFile(projectDir, 'src/server.ts');
 
-        // Must import from vurb.js
-        expect(content).toContain("from './vurb.js'");
+        // Must import from mcpfusion.js
+        expect(content).toContain("from './mcpfusion.js'");
         // Must import context
         expect(content).toContain("from './context.js'");
         // Must create registry
@@ -617,33 +617,33 @@ describe('E2E: Cross-file consistency — contracts between generated files', ()
         expect(existsSync(join(projectDir, 'src', 'presenters', 'SystemPresenter.ts'))).toBe(true);
     });
 
-    it('health.ts imports vurb.ts that exists', async () => {
+    it('health.ts imports mcpfusion.ts that exists', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const health = readProjectFile(projectDir, 'src/tools/system/health.ts');
-        expect(health).toContain("from '../../vurb.js'");
-        expect(existsSync(join(projectDir, 'src', 'vurb.ts'))).toBe(true);
+        expect(health).toContain("from '../../mcpfusion.js'");
+        expect(existsSync(join(projectDir, 'src', 'mcpfusion.ts'))).toBe(true);
     });
 
-    it('echo.ts imports vurb.ts that exists', async () => {
+    it('echo.ts imports mcpfusion.ts that exists', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const echo = readProjectFile(projectDir, 'src/tools/system/echo.ts');
-        expect(echo).toContain("from '../../vurb.js'");
+        expect(echo).toContain("from '../../mcpfusion.js'");
     });
 
-    it('greet.ts imports vurb.ts that exists', async () => {
+    it('greet.ts imports mcpfusion.ts that exists', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const greet = readProjectFile(projectDir, 'src/prompts/greet.ts');
-        expect(greet).toContain("from '../vurb.js'");
+        expect(greet).toContain("from '../mcpfusion.js'");
     });
 
-    it('auth.ts imports vurb.js for f.middleware()', async () => {
+    it('auth.ts imports mcpfusion.js for f.middleware()', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const auth = readProjectFile(projectDir, 'src/middleware/auth.ts');
-        expect(auth).toContain("from '../vurb.js'");
+        expect(auth).toContain("from '../mcpfusion.js'");
         expect(existsSync(join(projectDir, 'src', 'context.ts'))).toBe(true);
     });
 
@@ -651,15 +651,15 @@ describe('E2E: Cross-file consistency — contracts between generated files', ()
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const server = readProjectFile(projectDir, 'src/server.ts');
-        expect(server).toContain("from './vurb.js'");
+        expect(server).toContain("from './mcpfusion.js'");
         expect(server).toContain("from './context.js'");
     });
 
-    it('test setup.ts references src/tools and src/vurb', async () => {
+    it('test setup.ts references src/tools and src/mcpfusion', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir, { testing: true });
 
         const setup = readProjectFile(projectDir, 'tests/setup.ts');
-        expect(setup).toContain('../src/vurb.js');
+        expect(setup).toContain('../src/mcpfusion.js');
         expect(setup).toContain('../src/tools');
     });
 
@@ -670,11 +670,11 @@ describe('E2E: Cross-file consistency — contracts between generated files', ()
         expect(test).toContain("from './setup.js'");
     });
 
-    it('db/users.ts imports from vurb.ts (database vector)', async () => {
+    it('db/users.ts imports from mcpfusion.ts (database vector)', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir, { vector: 'prisma' });
 
         const users = readProjectFile(projectDir, 'src/tools/db/users.ts');
-        expect(users).toContain("from '../../vurb.js'");
+        expect(users).toContain("from '../../mcpfusion.js'");
     });
 
     it('env vars in .env.example match what server.ts reads (SSE)', async () => {
@@ -755,7 +755,7 @@ describe('E2E: Config matrix — all 16 combinations', () => {
                     expect(existsSync(join(projectDir, 'package.json'))).toBe(true);
                     expect(existsSync(join(projectDir, 'tsconfig.json'))).toBe(true);
                     expect(existsSync(join(projectDir, '.cursor', 'mcp.json'))).toBe(true);
-                    expect(existsSync(join(projectDir, 'src', 'vurb.ts'))).toBe(true);
+                    expect(existsSync(join(projectDir, 'src', 'mcpfusion.ts'))).toBe(true);
                     expect(existsSync(join(projectDir, 'src', 'context.ts'))).toBe(true);
                     expect(existsSync(join(projectDir, 'src', 'server.ts'))).toBe(true);
 
@@ -874,12 +874,12 @@ describe('E2E: Egress Firewall — security design contract', () => {
         expect(model).not.toContain('tenant');
     });
 
-    it('prisma schema marks password with @vurb.hide', async () => {
+    it('prisma schema marks password with @mcpfusion.hide', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir, { vector: 'prisma' });
 
         const schema = readProjectFile(projectDir, 'prisma/schema.prisma');
-        // @vurb.hide applied to password field
-        expect(schema).toContain('@vurb.hide');
+        // @mcpfusion.hide applied to password field
+        expect(schema).toContain('@mcpfusion.hide');
         expect(schema).toContain('password');
     });
 
@@ -926,7 +926,7 @@ describe('E2E: RBAC Middleware — design contract', () => {
         expect(context).toContain("'USER'");
         expect(context).toContain("'GUEST'");
 
-        // Auth uses f.middleware() from vurb.js (context type is inferred)
+        // Auth uses f.middleware() from mcpfusion.js (context type is inferred)
         expect(auth).toContain('f.middleware(');
     });
 });
@@ -947,7 +947,7 @@ describe('E2E: README — content accuracy across configs', () => {
         const readme = readProjectFile(projectDir, 'README.md');
         expect(readme).toContain('DATABASE_URL');
         expect(readme).toContain('prisma');
-        expect(readme).toContain('@vurb.hide');
+        expect(readme).toContain('@mcpfusion.hide');
     });
 
     it('README for workflow vector includes n8n setup', async () => {
@@ -963,7 +963,7 @@ describe('E2E: README — content accuracy across configs', () => {
 
         const readme = readProjectFile(projectDir, 'README.md');
         expect(readme).toContain('openapi.yaml');
-        expect(readme).toContain('@vurb/openapi-gen');
+        expect(readme).toContain('@mcpfusion/openapi-gen');
     });
 
     it('README mentions Cursor zero-click integration', async () => {
@@ -1262,7 +1262,7 @@ describe('E2E: Architecture invariants', () => {
     it('core files are at src/ root level (not nested)', async () => {
         const { files } = await runE2EPipeline(tmpDir);
 
-        const coreFiles = ['src/vurb.ts', 'src/context.ts', 'src/server.ts'];
+        const coreFiles = ['src/mcpfusion.ts', 'src/context.ts', 'src/server.ts'];
         for (const core of coreFiles) {
             expect(files).toContain(core);
         }
@@ -1311,15 +1311,15 @@ describe('E2E: autoDiscover contract', () => {
         expect(server).toContain('tools');
     });
 
-    it('all tool files import f from the central vurb.ts', async () => {
+    it('all tool files import f from the central mcpfusion.ts', async () => {
         const { projectDir, files } = await runE2EPipeline(tmpDir, { vector: 'prisma' });
 
         const toolFiles = files.filter(f => f.startsWith('src/tools/') && f.endsWith('.ts'));
 
         for (const toolFile of toolFiles) {
             const content = readProjectFile(projectDir, toolFile);
-            // Should import { f } from some relative path to vurb.js
-            expect(content).toMatch(/import\s+\{\s*f\s*\}\s+from\s+'[^']*vurb\.js'/);
+            // Should import { f } from some relative path to mcpfusion.js
+            expect(content).toMatch(/import\s+\{\s*f\s*\}\s+from\s+'[^']*mcpfusion\.js'/);
         }
     });
 
@@ -1554,11 +1554,11 @@ describe('E2E: package.json — security & npm best practices', () => {
         expect(pkg.type).toBe('module');
     });
 
-    it('dev script uses vurb dev CLI', async () => {
+    it('dev script uses mcpfusion dev CLI', async () => {
         const { projectDir } = await runE2EPipeline(tmpDir);
 
         const pkg = JSON.parse(readProjectFile(projectDir, 'package.json'));
-        expect(pkg.scripts.dev).toBe('vurb dev');
+        expect(pkg.scripts.dev).toBe('mcpfusion dev');
     });
 
     it('database vector includes db:generate and db:push scripts', async () => {
@@ -1669,7 +1669,7 @@ describe('E2E: Prisma schema — deep validation', () => {
 
         const schema = readProjectFile(projectDir, 'prisma/schema.prisma');
         expect(schema).toContain('generator client');
-        expect(schema).toContain('generator vurb');
+        expect(schema).toContain('generator mcpfusion');
     });
 
     it('schema uses postgresql datasource', async () => {
@@ -1688,7 +1688,7 @@ describe('E2E: Prisma schema — deep validation', () => {
         expect(schema).toContain('email');
         expect(schema).toContain('@unique');
         expect(schema).toContain('password');
-        expect(schema).toContain('@vurb.hide');
+        expect(schema).toContain('@mcpfusion.hide');
     });
 
     it('Post model has all expected fields with relations', async () => {

@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { response, ui } from '@vurb/core';
+ * import { response, ui } from '@mcpfusion/core';
  *
  * // Simple data response (equivalent to success())
  * return response({ id: '123', amount: 4500 }).build();
@@ -42,7 +42,7 @@ export interface ActionSuggestion {
 
 // ── Brand ────────────────────────────────────────────────
 
-const RESPONSE_BUILDER_BRAND = 'VurbResponseBuilder' as const;
+const RESPONSE_BUILDER_BRAND = 'MCPFusionResponseBuilder' as const;
 
 /**
  * Check if a value is a {@link ResponseBuilder} instance.
@@ -372,7 +372,7 @@ export class ResponseBuilder {
 
         // ── MVA Meta Backdoor (Testing) ──────────────────
         // Attach structured MVA layers via Symbol — invisible to
-        // JSON.stringify (MCP transport), readable by VurbTester.
+        // JSON.stringify (MCP transport), readable by MCPFusionTester.
         let parsedData: unknown;
         try { parsedData = JSON.parse(this._data); } catch { parsedData = this._data; }
         (response as unknown as Record<symbol, unknown>)[MVA_META_SYMBOL] = {
@@ -402,7 +402,7 @@ export class ResponseBuilder {
  *
  * @example
  * ```typescript
- * import { response, ui } from '@vurb/core';
+ * import { response, ui } from '@mcpfusion/core';
  *
  * // Simple (equivalent to success())
  * return response('Task created').build();

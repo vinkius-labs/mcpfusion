@@ -9,7 +9,7 @@
 
 ## Introduction {#introduction}
 
-Understanding the internal structure helps you make informed decisions about tool design, performance tuning, and debugging. Vurb.ts is built on a two-layer architecture: a domain model for MCP primitives and a build-time strategy engine that pre-compiles everything for O(1) runtime execution.
+Understanding the internal structure helps you make informed decisions about tool design, performance tuning, and debugging. MCP Fusion is built on a two-layer architecture: a domain model for MCP primitives and a build-time strategy engine that pre-compiles everything for O(1) runtime execution.
 
 ## Two-Layer Design {#two-layers}
 

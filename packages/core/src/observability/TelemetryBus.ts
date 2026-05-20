@@ -3,7 +3,7 @@
  *
  * Fire-and-forget out-of-band telemetry transport. Creates a Named Pipe
  * (Windows) or Unix Domain Socket (POSIX) that streams NDJSON events
- * to connected `vurb top` / `inspector` TUI clients.
+ * to connected `mcpfusion top` / `inspector` TUI clients.
  *
  * Architecture:
  *   ┌─────────────────────────────────────────────────────┐
@@ -46,7 +46,7 @@ const MAX_CLIENT_BUFFER_BYTES = 65_536; // 64KB
 const HEARTBEAT_INTERVAL_MS = 5_000;
 
 /** Registry directory for cross-platform server discovery */
-const REGISTRY_DIR = join(tmpdir(), 'vurb-registry');
+const REGISTRY_DIR = join(tmpdir(), 'mcpfusion-registry');
 
 // ============================================================================
 // Path Convention — Deterministic Socket Paths
@@ -74,8 +74,8 @@ function cwdFingerprint(): string {
  * socket path remains stable across server restarts. This enables
  * the Inspector TUI to reconnect automatically without PID tracking.
  *
- * - Windows: `\\.\pipe\vurb-{fingerprint}` (Named Pipe, auto-cleaned by OS)
- * - POSIX:   `/tmp/vurb-{fingerprint}.sock` (Unix Domain Socket)
+ * - Windows: `\\.\pipe\MCP Fusion-{fingerprint}` (Named Pipe, auto-cleaned by OS)
+ * - POSIX:   `/tm./mcpfusion-{fingerprint}.sock` (Unix Domain Socket)
  *
  * @param fingerprint - Custom fingerprint (defaults to SHA-256 of cwd)
  * @returns The IPC path string
@@ -83,9 +83,9 @@ function cwdFingerprint(): string {
 export function getTelemetryPath(fingerprint?: string): string {
     const id = fingerprint ?? cwdFingerprint();
     if (platform() === 'win32') {
-        return `\\\\.\\pipe\\vurb-${id}`;
+        return `\\\\.\\pipe\\mcpfusion-${id}`;
     }
-    return `/tmp/vurb-${id}.sock`;
+    return `/tm./mcpfusion-${id}.sock`;
 }
 
 // ============================================================================
@@ -194,7 +194,7 @@ export function discoverSockets(): Array<{ pid: number; path: string; cwd?: stri
         try {
             const files = readdirSync('/tmp');
             for (const file of files) {
-                const match = file.match(/^vurb-([a-f0-9]+)\.sock$/);
+                const match = file.match(/^mcpfusion-([a-f0-9]+)\.sock$/);
                 if (match) {
                     const idStr = match[1]!;
                     const pid = /^\d+$/.test(idStr) ? parseInt(idStr, 10) : 0;
@@ -313,7 +313,7 @@ export interface TelemetryBusInstance {
 }
 
 /**
- * Create an out-of-band telemetry bus for Vurb.
+ * Create an out-of-band telemetry bus for MCP Fusion.
  *
  * The returned `emit` function is the {@link TelemetrySink} to pass
  * to `AttachOptions.telemetry`. It broadcasts events as NDJSON
@@ -326,7 +326,7 @@ export interface TelemetryBusInstance {
  *
  * @example
  * ```typescript
- * import { createTelemetryBus } from 'vurb/observability';
+ * import { createTelemetryBus } from '@mcpfusion/core/observability';
  *
  * const bus = await createTelemetryBus();
  *
@@ -379,7 +379,7 @@ export async function createTelemetryBus(config?: TelemetryBusConfig): Promise<T
                 chmodSync(socketPath, 0o600);
             } catch {
                 process.stderr.write(
-                    '[vurb] Warning: Could not restrict socket permissions.\n',
+                    '[mcpfusion] Warning: Could not restrict socket permissions.\n',
                 );
             }
         }
@@ -403,7 +403,7 @@ export async function createTelemetryBus(config?: TelemetryBusConfig): Promise<T
     });
 
     // ── Registry: announce this server for auto-discovery ──
-    writeRegistryFile(process.pid, config?.path ? undefined : 'vurb');
+    writeRegistryFile(process.pid, config?.path ? undefined : 'mcpfusion');
 
     // ── Heartbeat Timer ───────────────────────────────────
     const heartbeatTimer = setInterval(() => {

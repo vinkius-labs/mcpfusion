@@ -1,7 +1,7 @@
 # Self-Healing Errors
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -13,18 +13,18 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-When an AI agent hits an error, the default behavior is to give up or hallucinate a workaround. Vurb.ts flips this by making errors **self-healing** — every error carries structured recovery instructions that tell the agent exactly what to do next.
+When an AI agent hits an error, the default behavior is to give up or hallucinate a workaround. MCP Fusion flips this by making errors **self-healing** — every error carries structured recovery instructions that tell the agent exactly what to do next.
 
-Instead of a generic `"Invoice not found"` message that leaves the AI guessing, Vurb.ts produces machine-readable XML with a recovery path. The result: agents that fix their own mistakes on the first retry.
+Instead of a generic `"Invoice not found"` message that leaves the AI guessing, MCP Fusion produces machine-readable XML with a recovery path. The result: agents that fix their own mistakes on the first retry.
 
 ## Simple Errors {#simple}
 
 For straightforward failures, use the `error()` helper. It wraps your message in the standard MCP `isError: true` response:
 
 ```typescript
-import { initVurb, error, success } from '@vurb/core';
+import { initMCPFusion, error, success } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const getProject = f.query('projects.get')
   .describe('Get a project by ID')
@@ -43,9 +43,9 @@ This works, but the AI only sees a text message. It doesn't know *what to try ne
 `toolError()` creates a rich error envelope with everything the AI needs to self-correct:
 
 ```typescript
-import { initVurb, toolError, success } from '@vurb/core';
+import { initMCPFusion, toolError, success } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const getInvoice = f.query('billing.get_invoice')
   .describe('Get an invoice by its ID')

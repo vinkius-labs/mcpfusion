@@ -11,7 +11,7 @@ import { removeFromArray } from './utils.js';
  *
  * @example
  * ```typescript
- * import { Prompt, PromptArgument } from '@vurb/core';
+ * import { Prompt, PromptArgument } from '@mcpfusion/core';
  *
  * const prompt = new Prompt('generate_summary');
  * prompt.description = 'Generate a summary of the given text';

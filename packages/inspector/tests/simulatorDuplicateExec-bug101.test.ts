@@ -9,7 +9,7 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { connect } from 'node:net';
-import type { TelemetryEvent } from '@vurb/core';
+import type { TelemetryEvent } from '@mcpfusion/core';
 import { startSimulator } from '../src/Simulator.js';
 import { platform } from 'node:os';
 
@@ -54,8 +54,8 @@ describe('Bug #101 — Simulator single execute event per pipeline', () => {
     it('emits exactly one execute event per pipeline (no duplicates)', async () => {
         const isWin = platform() === 'win32';
         const pipeName = isWin
-            ? `\\\\.\\pipe\\vurb-bug101-${Date.now()}`
-            : `/tmp/vurb-bug101-${Date.now()}.sock`;
+            ? `\\\\.\\pipe\\mcpfusion-bug101-${Date.now()}`
+            : `/tm./mcpfusion-bug101-${Date.now()}.sock`;
 
         const sim = await startSimulator({
             ipcPath: pipeName,

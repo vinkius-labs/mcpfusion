@@ -1,7 +1,7 @@
 # State & Context
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -13,23 +13,23 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 ## Introduction {#introduction}
 
-Every tool handler in Vurb.ts receives two arguments: `input` (the validated parameters from the LLM) and `ctx` (the application context). The context carries shared state — database connections, tenant IDs, user sessions, permissions — that every handler needs without manual wiring.
+Every tool handler in MCP Fusion receives two arguments: `input` (the validated parameters from the LLM) and `ctx` (the application context). The context carries shared state — database connections, tenant IDs, user sessions, permissions — that every handler needs without manual wiring.
 
 Define it once. Use it everywhere. Fully typed, zero annotations.
 
 ## Defining Context {#define}
 
-Pass a generic to `initVurb()` and every tool, middleware, and Presenter inherits the type:
+Pass a generic to `initMCPFusion()` and every tool, middleware, and Presenter inherits the type:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   userId: string;
   db: PrismaClient;
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 ```
 
 Handlers receive `ctx` fully typed — no annotations, no casting:
@@ -44,7 +44,7 @@ const tasks = f.query('tasks.list')
 ```
 
 > [!TIP]
-> Define `f` in a shared file (e.g. `src/vurb.ts`) and import it across your tool files. The generic parameter flows through every builder — zero annotations needed downstream.
+> Define `f` in a shared file (e.g. `src/MCP Fusion`) and import it across your tool files. The generic parameter flows through every builder — zero annotations needed downstream.
 
 ## The Context Factory {#factory}
 
@@ -108,7 +108,7 @@ After this middleware runs, handlers see `ctx.role` and `ctx.email` alongside th
 Context flows through to Presenter callbacks — `.rules()`, `.suggest()`, and `.ui()` all receive `ctx` as their second argument:
 
 ```typescript
-import { createPresenter, t, suggest } from '@vurb/core';
+import { createPresenter, t, suggest } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
   .schema({

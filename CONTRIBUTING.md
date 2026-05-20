@@ -1,6 +1,6 @@
-# Contributing to Vurb.ts
+# Contributing to MCP Fusion
 
-Thank you for your interest in contributing to Vurb.ts! This document provides guidelines and information about contributing.
+Thank you for your interest in contributing to MCP Fusion! This document provides guidelines and information about contributing.
 
 ## Code of Conduct
 
@@ -12,7 +12,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 Before submitting a bug report:
 
-1. Check the [existing issues](https://github.com/vinkius-labs/vurb.ts/issues) to avoid duplicates
+1. Check the [existing issues](https://github.com/vinkius-labs/MCP Fusion/issues) to avoid duplicates
 2. Collect information about the bug:
    - Stack trace
    - Node.js version (`node --version`)
@@ -20,7 +20,7 @@ Before submitting a bug report:
    - Package version
    - Steps to reproduce
 
-Then [open a new issue](https://github.com/vinkius-labs/vurb.ts/issues/new?template=bug_report.md) with the bug report template.
+Then [open a new issue](https://github.com/vinkius-labs/MCP Fusion/issues/new?template=bug_report.md) with the bug report template.
 
 ### Suggesting Features
 
@@ -29,7 +29,7 @@ Feature requests are welcome! Please:
 1. Check existing issues and discussions first
 2. Describe the use case clearly
 3. Explain why existing features don't solve your problem
-4. [Open a feature request](https://github.com/vinkius-labs/vurb.ts/issues/new?template=feature_request.md)
+4. [Open a feature request](https://github.com/vinkius-labs/MCP Fusion/issues/new?template=feature_request.md)
 
 ### Pull Requests
 
@@ -54,8 +54,8 @@ Feature requests are welcome! Please:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/vurb.git
-cd Vurb.ts
+git clone https://github.com/YOUR_USERNAME/MCP Fusion.git
+cd MCP Fusion
 
 # Install dependencies
 npm install
@@ -97,12 +97,12 @@ npm run build
 This project is a **monorepo** using npm workspaces:
 
 ```
-Vurb.ts/                          ← Framework root (private, not published)
+MCP Fusion/                          ← Framework root (private, not published)
 ├── packages/
-│   ├── core/                        ← Vurb.ts (published)
+│   ├── core/                        ← MCP Fusion (published)
 │   │   ├── src/
 │   │   │   ├── core/                # Builder, Registry, Execution, Middleware, Schema
-│   │   │   ├── client/              # tRPC-style VurbClient
+│   │   │   ├── client/              # tRPC-style MCPFusionClient
 │   │   │   ├── observability/       # Debug Observer, OpenTelemetry Tracing
 │   │   │   ├── presenter/           # MVA (Model-View-Agent) View Layer
 │   │   │   ├── prompt/              # Prompt Engine
@@ -116,7 +116,7 @@ Vurb.ts/                          ← Framework root (private, not published)
 │   │   ├── tests/                   # All framework tests
 │   │   ├── package.json
 │   │   └── tsconfig.json
-│   └── testing/                     ← @vurb/testing (published)
+│   └── testing/                     ← @MCP Fusion/testing (published)
 │       ├── src/
 │       ├── package.json
 │       └── tsconfig.json
@@ -127,7 +127,7 @@ Vurb.ts/                          ← Framework root (private, not published)
 
 ## Questions?
 
-Feel free to [open a discussion](https://github.com/vinkius-labs/vurb.ts/discussions) for questions or ideas.
+Feel free to [open a discussion](https://github.com/vinkius-labs/MCP Fusion/discussions) for questions or ideas.
 
 ## License
 

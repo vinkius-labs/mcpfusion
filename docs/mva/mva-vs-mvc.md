@@ -31,7 +31,7 @@ const User = prisma.defineModel({
 });
 
 // MVA Model — protects the database AND the agent
-import { defineModel } from '@vurb/core';
+import { defineModel } from '@mcpfusion/core';
 
 const UserModel = defineModel('User', m => {
     m.casts({
@@ -155,7 +155,7 @@ Modern products increasingly need both architectures simultaneously:
 
 ```typescript
 // Shared domain model
-import { defineModel } from '@vurb/core';
+import { defineModel } from '@mcpfusion/core';
 
 const InvoiceModel = defineModel('Invoice', m => {
     m.casts({
@@ -173,7 +173,7 @@ app.get('/api/invoices/:id', async (req, res) => {
 });
 
 // MVA: Agent-facing API (returns structured perception package)
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const getInvoice = f.query('billing.get_invoice')
     .describe('Get an invoice by ID')

@@ -29,7 +29,7 @@ import { createPresenter, ui } from '../../src/presenter/index.js';
 import { definePrompt } from '../../src/prompt/index.js';
 import { PromptRegistry } from '../../src/prompt/PromptRegistry.js';
 import type { DebugEvent } from '../../src/observability/DebugObserver.js';
-import type { VurbTracer, VurbSpan, VurbAttributeValue } from '../../src/observability/Tracing.js';
+import type { MCPFusionTracer, MCPFusionSpan, MCPFusionAttributeValue } from '../../src/observability/Tracing.js';
 import type { StateSyncConfig } from '../../src/state-sync/index.js';
 
 // ============================================================================
@@ -79,16 +79,16 @@ function createMockServer() {
 
 interface MockSpanData {
     name: string;
-    attributes: Map<string, VurbAttributeValue>;
-    events: Array<{ name: string; attributes?: Record<string, VurbAttributeValue> }>;
+    attributes: Map<string, MCPFusionAttributeValue>;
+    events: Array<{ name: string; attributes?: Record<string, MCPFusionAttributeValue> }>;
     status: { code: number; message?: string } | null;
     exceptions: Array<Error | string>;
     ended: boolean;
 }
 
-function createMockTracer(): { tracer: VurbTracer; spans: MockSpanData[] } {
+function createMockTracer(): { tracer: MCPFusionTracer; spans: MockSpanData[] } {
     const spans: MockSpanData[] = [];
-    const tracer: VurbTracer = {
+    const tracer: MCPFusionTracer = {
         startSpan(name, options) {
             const data: MockSpanData = {
                 name,
@@ -98,7 +98,7 @@ function createMockTracer(): { tracer: VurbTracer; spans: MockSpanData[] } {
                 exceptions: [],
                 ended: false,
             };
-            const span: VurbSpan = {
+            const span: MCPFusionSpan = {
                 setAttribute(key, value) { data.attributes.set(key, value); },
                 setStatus(status) { data.status = status; },
                 addEvent(eventName, attrs) { data.events.push({ name: eventName, attributes: attrs }); },

@@ -1,11 +1,11 @@
 {
-  "name": "@vurb/prisma-gen",
-  "description": "Prisma Generator for Vurb. Reads schema annotations (@vurb.hide, @vurb.describe, @vurb.tenantKey) and emits hardened Presenters and ToolBuilders with field-level security, tenant isolation, and OOM protection.",
+  "name": "@mcpfusion/prisma-gen",
+  "description": "Prisma Generator for MCP Fusion. Reads schema annotations (@fusion.hide, @fusion.describe, @fusion.tenantKey) and emits hardened Presenters and ToolBuilders with field-level security, tenant isolation, and OOM protection.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "vurb-prisma-gen": "./dist/generator.js"
+    "fusion-prisma-gen": "./dist/generator.js"
   },
   "exports": {
     ".": {
@@ -22,7 +22,7 @@
     "mcp",
     "prisma",
     "generator",
-    "vurb",
+    "mcpfusion",
     "zod",
     "mva",
     "presenter",
@@ -34,13 +34,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/prisma-gen"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@prisma/generator-helper": "^6.0.0",
-    "@vurb/core": "^3.19.6"
+    "@mcpfusion/core": "^4.0.0"
   },
   "peerDependencies": {
     "zod": "^3.25.1 || ^4.0.0"
@@ -62,5 +62,5 @@
     "@types/node": "^25.3.0"
   },
   "license": "Apache-2.0",
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

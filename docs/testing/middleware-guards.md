@@ -5,11 +5,11 @@ description: "Test RBAC, authentication gates, and context-derived authorization
 
 # Middleware Guards
 
-Middleware in **Vurb.ts** runs before the handler — it can block unauthorized calls, derive context, or transform arguments. Testing middleware is critical because it enforces **who** can access **what**.
+Middleware in **MCP Fusion** runs before the handler — it can block unauthorized calls, derive context, or transform arguments. Testing middleware is critical because it enforces **who** can access **what**.
 
 ## The `overrideContext` Pattern
 
-The `VurbTester` provides `overrideContext` as the fourth argument to `callAction()`. It shallow-merges with the base context from `contextFactory`, letting you simulate different users, roles, or tenants in each test — without creating separate tester instances.
+The `MCPFusionTester` provides `overrideContext` as the fourth argument to `callAction()`. It shallow-merges with the base context from `contextFactory`, letting you simulate different users, roles, or tenants in each test — without creating separate tester instances.
 
 ```typescript
 // Default context: role = 'ADMIN' (from contextFactory)
@@ -105,7 +105,7 @@ describe('Context Isolation', () => {
 
     it('does not mutate the original context object', async () => {
         const originalCtx = createMockContext();
-        const isolatedTester = createVurbTester(registry, {
+        const isolatedTester = createMCPFusionTester(registry, {
             contextFactory: () => originalCtx,
         });
 

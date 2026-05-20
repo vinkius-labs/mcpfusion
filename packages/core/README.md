@@ -12,14 +12,14 @@ The TypeScript framework for MCP Servers.
 **Presenters shape perception.**<br>
 A typed layer between your data and the AI agent — strips undeclared fields, redacts PII, gates tools by workflow state, and deploys to any edge.
 
-[![npm version](https://img.shields.io/npm/v/@vurb/core.svg?color=0ea5e9)](https://www.npmjs.com/package/@vurb/core)
-[![Downloads](https://img.shields.io/npm/dw/@vurb/core)](https://www.npmjs.com/package/@vurb/core)
+[![npm version](https://img.shields.io/npm/v/@mcpfusion/core.svg?color=0ea5e9)](https://www.npmjs.com/package/@mcpfusion/core)
+[![Downloads](https://img.shields.io/npm/dw/@mcpfusion/core)](https://www.npmjs.com/package/@mcpfusion/core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![MCP Standard](https://img.shields.io/badge/MCP-Standard-purple)](https://modelcontextprotocol.io/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-green)](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
-[![llms.txt](https://img.shields.io/badge/llms.txt-AI_Ready-8b5cf6)](https://vurb.vinkius.com/llms.txt)
+[![License](https://img.shields.io/badge/License-Apache_2.0-green)](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)
+[![llms.txt](https://img.shields.io/badge/llms.txt-AI_Ready-8b5cf6)](https://mcpfusion.vinkius.com/llms.txt)
 
-[Documentation](https://vurb.vinkius.com/) · [Quick Start](https://vurb.vinkius.com/quickstart-lightspeed) · [API Reference](https://vurb.vinkius.com/api/) · [llms.txt](https://vurb.vinkius.com/llms.txt)
+[Documentation](https://mcpfusion.vinkius.com/) · [Quick Start](https://mcpfusion.vinkius.com/quickstart-lightspeed) · [API Reference](https://mcpfusion.vinkius.com/api/) · [llms.txt](https://mcpfusion.vinkius.com/llms.txt)
 
 
 
@@ -27,18 +27,18 @@ A typed layer between your data and the AI agent — strips undeclared fields, r
 
 </div>
 
-## Why Vurb.ts?
+## Why MCP Fusion?
 
 Every raw MCP server does the same thing: `JSON.stringify()` the database row and ships it to the LLM. The AI receives `password_hash`, `customer_ssn`, `internal_margin` — every column. No governance. No rules. No perception control.
 
-Vurb.ts gives you three ways to fix this — pick the one that fits your team:
+MCP Fusion gives you three ways to fix this — pick the one that fits your team:
 
 ### Path 1: Declarative YAML — zero code
 
-Define your entire MCP server in a single `vurb.yaml`. No TypeScript. No build step.
+Define your entire MCP server in a single `mcpfusion.yaml`. No TypeScript. No build step.
 
 ```yaml
-# vurb.yaml — a complete MCP server
+# mcpfusion.yaml — a complete MCP server
 version: "1.0"
 server:
   name: "github-tools"
@@ -69,7 +69,7 @@ tools:
 ```
 
 ```bash
-vurb yaml dev   # MCP server running — zero TypeScript
+mcpfusion yaml dev   # MCP server running — zero TypeScript
 ```
 
 ### Path 2: Presenter flow — control what the agent perceives
@@ -89,7 +89,7 @@ Handler (raw data)         Presenter                    Agent (LLM)
 ```
 
 ```typescript
-import { createPresenter, f, t } from '@vurb/core';
+import { createPresenter, f, t } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
     .schema({ id: t.string, amount_cents: t.number, status: t.enum('paid', 'pending') })
@@ -140,7 +140,7 @@ export default f.mutation('cart.pay')
 ## Get Started
 
 ```bash
-npx @vurb/core create my-server
+npx @mcpfusion/core create my-server
 cd my-server && npm run dev
 ```
 
@@ -160,7 +160,7 @@ src/tools/
 Same code, any platform. Zero changes:
 
 ```bash
-vurb deploy                  # Vinkius Edge (default)
+mcpfusion deploy                  # Vinkius Edge (default)
 vercel deploy                # Vercel Functions
 wrangler deploy              # Cloudflare Workers
 ```
@@ -168,19 +168,19 @@ wrangler deploy              # Cloudflare Workers
 ### Scaffold Options
 
 ```bash
-vurb create my-server                           # Vanilla — file-based routing
-vurb create my-api --vector prisma              # Prisma — CRUD with field-level security
-vurb create ops-bridge --vector n8n             # n8n — workflow bridge
-vurb create petstore --vector openapi           # OpenAPI → MCP in one command
-vurb create my-server --target vercel --yes     # Vercel Functions target
-vurb create my-server --target cloudflare --yes # Cloudflare Workers target
+mcpfusion create my-server                           # Vanilla — file-based routing
+mcpfusion create my-api --vector prisma              # Prisma — CRUD with field-level security
+mcpfusion create ops-bridge --vector n8n             # n8n — workflow bridge
+mcpfusion create petstore --vector openapi           # OpenAPI → MCP in one command
+mcpfusion create my-server --target vercel --yes     # Vercel Functions target
+mcpfusion create my-server --target cloudflare --yes # Cloudflare Workers target
 ```
 
 ---
 
 ## Zero Learning Curve
 
-Vurb.ts ships a [SKILL.md](https://agentskills.io) — a machine-readable architectural contract. Your AI agent reads the spec and writes the entire server. First pass, no corrections.
+MCP Fusion ships a [SKILL.md](https://agentskills.io) — a machine-readable architectural contract. Your AI agent reads the spec and writes the entire server. First pass, no corrections.
 
 Open your project in **Cursor**, **Claude Code**, **GitHub Copilot**, or **Windsurf** and prompt:
 
@@ -188,15 +188,15 @@ Open your project in **Cursor**, **Claude Code**, **GitHub Copilot**, or **Winds
 
 The agent reads the spec, produces correct Presenters, middleware, FSM gating, and file-based routing. You review the PR.
 
-> 📄 **Machine-readable spec:** [vurb.vinkius.com/llms.txt](https://vurb.vinkius.com/llms.txt) — optimized for LLM consumption.
+> 📄 **Machine-readable spec:** [mcpfusion.vinkius.com/llms.txt](https://mcpfusion.vinkius.com/llms.txt) — optimized for LLM consumption.
 
 ---
 
 ## Key Features
 
-Egress Firewall (Presenter schema allowlist) · PII Redaction with Late Guillotine · FSM State Gate (tools disappear by state) · A2A Protocol Bridge (`@vurb/a2a` — expose MCP servers as A2A-compliant agents with Agent Cards and task delegation) · Multi-Agent Swarm (`@vurb/swarm` — HMAC-SHA256 delegation, namespace isolation, W3C tracing) · Middleware (pre-compiled, zero-allocation) · tRPC-style typed client · Self-healing errors · State Sync (RFC 7234 cache signals) · Zero-trust Sandbox (V8 isolate) · Prompt Engine · Agent Skills · Capability Governance (SHA-256 lockfile) · Inspector (real-time TUI dashboard) · Declarative YAML engine (`@vurb/yaml`)
+Egress Firewall (Presenter schema allowlist) · PII Redaction with Late Guillotine · FSM State Gate (tools disappear by state) · A2A Protocol Bridge (`@mcpfusion/a2a` — expose MCP servers as A2A-compliant agents with Agent Cards and task delegation) · Multi-Agent Swarm (`@mcpfusion/swarm` — HMAC-SHA256 delegation, namespace isolation, W3C tracing) · Middleware (pre-compiled, zero-allocation) · tRPC-style typed client · Self-healing errors · State Sync (RFC 7234 cache signals) · Zero-trust Sandbox (V8 isolate) · Prompt Engine · Agent Skills · Capability Governance (SHA-256 lockfile) · Inspector (real-time TUI dashboard) · Declarative YAML engine (`@mcpfusion/yaml`)
 
-→ **[Full documentation](https://vurb.vinkius.com/)**
+→ **[Full documentation](https://mcpfusion.vinkius.com/)**
 
 ---
 
@@ -209,7 +209,7 @@ Turn existing infrastructure into MCP servers:
 npx openapi-gen generate -i ./petstore.yaml -o ./generated
 
 # Prisma → CRUD tools with field-level security
-npx prisma generate   # uses vurb-prisma-gen
+npx prisma generate   # uses @mcpfusion/prisma-gen
 
 # n8n → auto-discover webhook workflows
 const n8n = await createN8nConnector({ url, apiKey, includeTags: ['ai-enabled'] });
@@ -223,37 +223,37 @@ const n8n = await createN8nConnector({ url, apiKey, includeTags: ['ai-enabled'] 
 
 | Package | Purpose |
 |---|---|
-| [`@vurb/core`](https://www.npmjs.com/package/@vurb/core) | Framework core — Presenters, Fluent API, middleware, routing |
-| [`@vurb/yaml`](https://www.npmjs.com/package/@vurb/yaml) | Declarative YAML engine — define MCP servers without code |
-| [`@vurb/swarm`](https://github.com/vinkius-labs/vurb.ts/tree/main/packages/swarm) | Multi-agent orchestration — Federated Handoff Protocol |
-| [`@vurb/a2a`](https://github.com/vinkius-labs/vurb.ts/tree/main/packages/a2a) | A2A Protocol Bridge — Agent Cards, task delegation, structured message exchange |
-| [`@vurb/testing`](https://vurb.vinkius.com/testing) | In-memory pipeline testing with MVA layer assertions |
-| [`@vurb/inspector`](https://vurb.vinkius.com/inspector) | Real-time terminal dashboard via Shadow Socket |
+| [`@mcpfusion/core`](https://www.npmjs.com/package/@mcpfusion/core) | Framework core — Presenters, Fluent API, middleware, routing |
+| [`@mcpfusion/yaml`](https://www.npmjs.com/package/@mcpfusion/yaml) | Declarative YAML engine — define MCP servers without code |
+| [`@mcpfusion/swarm`](https://github.com/vinkius-labs/mcpfusion/tree/main/packages/swarm) | Multi-agent orchestration — Federated Handoff Protocol |
+| [`@mcpfusion/a2a`](https://github.com/vinkius-labs/mcpfusion/tree/main/packages/a2a) | A2A Protocol Bridge — Agent Cards, task delegation, structured message exchange |
+| [`@mcpfusion/testing`](https://mcpfusion.vinkius.com/testing) | In-memory pipeline testing with MVA layer assertions |
+| [`@mcpfusion/inspector`](https://mcpfusion.vinkius.com/inspector) | Real-time terminal dashboard via Shadow Socket |
 
 ### Adapters
 
 | Package | Target |
 |---|---|
-| [`@vurb/vercel`](https://vurb.vinkius.com/vercel-adapter) | Vercel Functions (Edge / Node.js) |
-| [`@vurb/cloudflare`](https://vurb.vinkius.com/cloudflare-adapter) | Cloudflare Workers |
+| [`@mcpfusion/vercel`](https://mcpfusion.vinkius.com/vercel-adapter) | Vercel Functions (Edge / Node.js) |
+| [`@mcpfusion/cloudflare`](https://mcpfusion.vinkius.com/cloudflare-adapter) | Cloudflare Workers |
 
 ### Generators & Connectors
 
 | Package | Purpose |
 |---|---|
-| [`@vurb/openapi-gen`](https://vurb.vinkius.com/openapi-gen) | OpenAPI 3.x / Swagger 2.0 → MCP tools |
-| [`@vurb/prisma-gen`](https://vurb.vinkius.com/prisma-gen) | Prisma schema → CRUD tools with field-level security |
-| [`@vurb/n8n`](https://vurb.vinkius.com/n8n-connector) | n8n workflows → MCP tools |
-| [`@vurb/aws`](https://vurb.vinkius.com/aws-connector) | AWS Lambda & Step Functions → MCP tools |
-| [`@vurb/skills`](https://vurb.vinkius.com/skills) | Progressive instruction distribution for agents |
+| [`@mcpfusion/openapi-gen`](https://mcpfusion.vinkius.com/openapi-gen) | OpenAPI 3.x / Swagger 2.0 → MCP tools |
+| [`@mcpfusion/prisma-gen`](https://mcpfusion.vinkius.com/prisma-gen) | Prisma schema → CRUD tools with field-level security |
+| [`@mcpfusion/n8n`](https://mcpfusion.vinkius.com/n8n-connector) | n8n workflows → MCP tools |
+| [`@mcpfusion/aws`](https://mcpfusion.vinkius.com/aws-connector) | AWS Lambda & Step Functions → MCP tools |
+| [`@mcpfusion/skills`](https://mcpfusion.vinkius.com/skills) | Progressive instruction distribution for agents |
 
 ### Security & Auth
 
 | Package | Purpose |
 |---|---|
-| [`@vurb/oauth`](https://vurb.vinkius.com/oauth) | RFC 8628 Device Flow |
-| [`@vurb/jwt`](https://vurb.vinkius.com/jwt) | JWT verification — HS256 / RS256 / ES256 + JWKS |
-| [`@vurb/api-key`](https://vurb.vinkius.com/api-key) | API key validation with timing-safe comparison |
+| [`@mcpfusion/oauth`](https://mcpfusion.vinkius.com/oauth) | RFC 8628 Device Flow |
+| [`@mcpfusion/jwt`](https://mcpfusion.vinkius.com/jwt) | JWT verification — HS256 / RS256 / ES256 + JWKS |
+| [`@mcpfusion/api-key`](https://mcpfusion.vinkius.com/api-key) | API key validation with timing-safe comparison |
 
 ---
 
@@ -261,16 +261,16 @@ const n8n = await createN8nConnector({ url, apiKey, includeTags: ['ai-enabled'] 
 
 Full guides, API reference, and cookbook recipes:
 
-**[vurb.vinkius.com](https://vurb.vinkius.com/)** · **[llms.txt](https://vurb.vinkius.com/llms.txt)** *(AI-optimized spec)*
+**[mcpfusion.vinkius.com](https://mcpfusion.vinkius.com/)** · **[llms.txt](https://mcpfusion.vinkius.com/llms.txt)** *(AI-optimized spec)*
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/vinkius-labs/vurb.ts/blob/main/CONTRIBUTING.md) for development setup and guidelines.
+See [CONTRIBUTING.md](https://github.com/vinkius-labs/mcpfusion/blob/main/CONTRIBUTING.md) for development setup and guidelines.
 
 ## Security
 
-See [SECURITY.md](https://github.com/vinkius-labs/vurb.ts/blob/main/SECURITY.md) for reporting vulnerabilities.
+See [SECURITY.md](https://github.com/vinkius-labs/mcpfusion/blob/main/SECURITY.md) for reporting vulnerabilities.
 
 ## License
 
-[Apache 2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache 2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

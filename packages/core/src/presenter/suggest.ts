@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { suggest } from '@vurb/core';
+ * import { suggest } from '@mcpfusion/core';
  *
  * .suggest((invoice) => [
  *     suggest('invoices.get', 'View invoice details'),

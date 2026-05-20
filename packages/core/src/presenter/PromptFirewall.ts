@@ -16,7 +16,7 @@
  *
  * @example
  * ```typescript
- * import { createPresenter } from '@vurb/core';
+ * import { createPresenter } from '@mcpfusion/core';
  *
  * const InvoicePresenter = createPresenter('Invoice')
  *     .schema(invoiceSchema)
@@ -400,7 +400,7 @@ function resolveChain(config: PromptFirewallConfig): JudgeChain {
 
     if (!config.adapter) {
         throw new Error(
-            '[vurb] PromptFirewall requires either an `adapter` or a `chain`. ' +
+            '[mcpfusion] PromptFirewall requires either an `adapter` or a `chain`. ' +
             'Provide at least one LLM judge for rule evaluation.',
         );
     }

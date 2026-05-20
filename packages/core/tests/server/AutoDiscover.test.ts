@@ -11,7 +11,7 @@ describe('autoDiscover', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-        tempDir = join(tmpdir(), `vurb-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        tempDir = join(tmpdir(), `mcpfusion-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
         await fs.mkdir(tempDir, { recursive: true });
     });
 

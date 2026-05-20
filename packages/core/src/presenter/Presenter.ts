@@ -18,7 +18,7 @@
  *
  * @example
  * ```typescript
- * import { createPresenter, ui } from '@vurb/core';
+ * import { createPresenter, ui } from '@mcpfusion/core';
  * import { z } from 'zod';
  *
  * export const InvoicePresenter = createPresenter('Invoice')
@@ -76,7 +76,7 @@ import { evaluateRules, type PromptFirewallConfig } from './PromptFirewall.js';
 
 // ── Brand ────────────────────────────────────────────────
 
-const PRESENTER_BRAND = 'VurbPresenter' as const;
+const PRESENTER_BRAND = 'MCPFusionPresenter' as const;
 
 /**
  * Check if a value is a {@link Presenter} instance.
@@ -254,7 +254,7 @@ export class Presenter<T> {
      *
      * @example
      * ```typescript
-     * import { createPresenter, t } from '@vurb/core';
+     * import { createPresenter, t } from '@mcpfusion/core';
      *
      * createPresenter('Invoice')
      *     .schema({
@@ -469,7 +469,7 @@ export class Presenter<T> {
      *
      * @example
      * ```typescript
-     * import { suggest } from '@vurb/core';
+     * import { suggest } from '@mcpfusion/core';
      *
      * .suggest((inv) => [
      *     suggest('invoices.get', 'View details'),
@@ -1056,7 +1056,7 @@ export class Presenter<T> {
  *
  * @example
  * ```typescript
- * import { createPresenter, ui } from '@vurb/core';
+ * import { createPresenter, ui } from '@mcpfusion/core';
  *
  * export const TaskPresenter = createPresenter('Task')
  *     .schema(taskSchema)

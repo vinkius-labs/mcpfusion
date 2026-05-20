@@ -7,9 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { handoff, isHandoffResponse } from '../../src/handoff/index.js';
 
 describe('handoff() — factory', () => {
-    it('should produce _vurb_handoff: true', () => {
+    it('should produce _MCPFUSION_handoff: true', () => {
         const r = handoff('finance');
-        expect(r._vurb_handoff).toBe(true);
+        expect(r._MCPFUSION_handoff).toBe(true);
     });
 
     it('should have isHandoff: true', () => {
@@ -53,12 +53,12 @@ describe('isHandoffResponse() — type guard', () => {
         expect(isHandoffResponse('finance')).toBe(false);
     });
 
-    it('should return false for an object missing _vurb_handoff', () => {
+    it('should return false for an object missing _MCPFUSION_handoff', () => {
         expect(isHandoffResponse({ isHandoff: true })).toBe(false);
     });
 
     it('should return false for an object missing isHandoff', () => {
-        expect(isHandoffResponse({ _vurb_handoff: true })).toBe(false);
+        expect(isHandoffResponse({ _MCPFUSION_handoff: true })).toBe(false);
     });
 
     it('should return false for a regular ToolResponse', () => {

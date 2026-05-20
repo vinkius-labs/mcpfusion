@@ -13,7 +13,7 @@ image: https://site-assets.vinkius.com/vk/icon-v-black-min.png
 
 For decades, **MVC (Model-View-Controller)** has been the default architecture for web applications. It provides a clean separation of concerns between data, presentation, and user interaction. But AI agents are not users — and treating them as such leads to fragile, inefficient, and unpredictable systems.
 
-This article explores **MVA (Model-View-Agent)**, the architectural pattern at the heart of Vurb.ts, and explains why it's purpose-built for the agentic era.
+This article explores **MVA (Model-View-Agent)**, the architectural pattern at the heart of MCP Fusion, and explains why it's purpose-built for the agentic era.
 
 ## The problem with MVC for agents
 
@@ -100,10 +100,10 @@ The MVA pattern makes MCP servers:
 
 ## Getting started with Presenters
 
-Vurb.ts makes it easy to adopt the MVA pattern:
+MCP Fusion makes it easy to adopt the MVA pattern:
 
 ```typescript
-import { createPresenter } from 'mcp-fusion';
+import { createPresenter } from 'mcpfusion';
 
 export const orderPresenter = createPresenter('order', {
   perceive({ data, ui }) {
@@ -123,4 +123,4 @@ Read the full [Presenter Guide](/presenter) for a complete walkthrough.
 
 ---
 
-*This is part of our series on Vurb.ts architecture. Next up: "Context Tree-Shaking — Minimizing Token Costs in Agentic Workflows."*
+*This is part of our series on MCP Fusion architecture. Next up: "Context Tree-Shaking — Minimizing Token Costs in Agentic Workflows."*

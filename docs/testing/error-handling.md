@@ -109,7 +109,7 @@ describe('Error Messages', () => {
 
 ## Error vs Exception
 
-Important distinction: `isError: true` means the pipeline **handled** the error gracefully. The VurbTester returned a structured result. This is different from an unhandled exception (which would throw).
+Important distinction: `isError: true` means the pipeline **handled** the error gracefully. The MCPFusionTester returned a structured result. This is different from an unhandled exception (which would throw).
 
 ```typescript
 it('validation errors are handled, not thrown', async () => {

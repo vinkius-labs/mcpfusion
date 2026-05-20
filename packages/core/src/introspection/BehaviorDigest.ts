@@ -7,7 +7,7 @@
  * tool name, and description remain identical.
  *
  * This is the foundation for the Capability Lockfile:
- * `vurb.lock` stores per-tool digests, and any change in
+ * `mcpfusion.lock` stores per-tool digests, and any change in
  * any digest triggers a lockfile update.
  *
  * **Content-addressed**: Two tools with identical behavior will

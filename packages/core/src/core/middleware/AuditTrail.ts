@@ -16,7 +16,7 @@
  *
  * @example
  * ```typescript
- * import { auditTrail } from '@vurb/core';
+ * import { auditTrail } from '@mcpfusion/core';
  *
  * const billing = createTool('billing')
  *     .use(auditTrail({

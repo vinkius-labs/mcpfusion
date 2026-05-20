@@ -49,7 +49,7 @@ function freshNow(): number {
 describe('JwtVerifier — Security Attacks', () => {
     const verifier = new JwtVerifier({ secret: SECRET });
 
-    it('rejects alg:none token (algorithm convurb attack)', async () => {
+    it('rejects alg:none token (algorithm conversion attack)', async () => {
         const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url');
         const body = Buffer.from(JSON.stringify({ sub: 'admin', exp: freshNow() + 3600 })).toString('base64url');
         const noneToken = `${header}.${body}.`;

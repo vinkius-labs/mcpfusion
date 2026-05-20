@@ -10,9 +10,9 @@
  *
  * @example
  * ```typescript
- * import { createYamlMcpServer, loadYamlServer } from '@vurb/yaml';
+ * import { createYamlMcpServer, loadYamlServer } from '@mcpfusion/yaml';
  *
- * const compiled = await loadYamlServer(fs.readFileSync('vurb.yaml', 'utf-8'));
+ * const compiled = await loadYamlServer(fs.readFileSync('mcpfusion.yaml', 'utf-8'));
  * const { server, close } = await createYamlMcpServer(compiled);
  * // Server is now running on stdio — ready for Cursor, Claude Desktop, etc.
  * ```
@@ -390,13 +390,13 @@ export async function createYamlMcpServer(
                     res.writeHead(405).end();
                 }
             } catch (err) {
-                console.error('[vurb-yaml] HTTP error:', err);
+                console.error('[@mcpfusion/yaml] HTTP error:', err);
                 if (!res.headersSent) res.writeHead(500).end();
             }
         });
 
         httpServer.listen(port, () => {
-            process.stderr.write(`⚡ ${serverMeta.name} on http://localhost:${port}/mcp (vurb.yaml)\n`);
+            process.stderr.write(`⚡ ${serverMeta.name} on http://localhost:${port}/mcp (mcpfusion.yaml)\n`);
         });
 
         async function close(): Promise<void> {
@@ -413,7 +413,7 @@ export async function createYamlMcpServer(
     // ── Stdio Transport (default) ────────────────────────
     const stdioTransport = new StdioServerTransport();
     await server.connect(stdioTransport);
-    process.stderr.write(`⚡ ${serverMeta.name} running on stdio (vurb.yaml)\n`);
+    process.stderr.write(`⚡ ${serverMeta.name} running on stdio (mcpfusion.yaml)\n`);
 
     async function close(): Promise<void> {
         await server.close();

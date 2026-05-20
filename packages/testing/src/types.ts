@@ -8,7 +8,7 @@
  */
 
 /**
- * Configuration for the VurbTester.
+ * Configuration for the MCPFusionTester.
  *
  * @typeParam TContext - Application context type (same as your ToolRegistry)
  */
@@ -30,7 +30,7 @@ export interface TesterOptions<TContext> {
 }
 
 /**
- * Decomposed MVA response from the VurbTester.
+ * Decomposed MVA response from the MCPFusionTester.
  *
  * Each field maps to a specific MVA layer, allowing QA to assert
  * each pillar independently without parsing XML or JSON strings.
@@ -40,7 +40,7 @@ export interface TesterOptions<TContext> {
 export interface MvaTestResult<TData = unknown> {
     /**
      * Validated data AFTER the Egress Firewall (Presenter Zod schema).
-     * Hidden fields (`@vurb.hide`) are physically absent here.
+     * Hidden fields (`@mcpfusion.hide`) are physically absent here.
      */
     data: TData;
 

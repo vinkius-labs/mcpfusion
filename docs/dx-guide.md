@@ -1,32 +1,32 @@
 # Developer Experience Guide
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
-`initVurb()` for type inference, JSON descriptors instead of Zod imports, `autoDiscover()` for file-based routing, `createDevServer()` for hot reload, and Standard Schema support for any validator.
+`initMCPFusion()` for type inference, JSON descriptors instead of Zod imports, `autoDiscover()` for file-based routing, `createDevServer()` for hot reload, and Standard Schema support for any validator.
 
-## `initVurb()` — Define Context Once {#init-Vurb.ts}
+## `initMCPFusion()` — Define Context Once {#init-MCP Fusion}
 
 Define your context type once. Every `f.query()`, `f.mutation()`, `f.action()`, `f.presenter()`, `f.middleware()`, `f.prompt()` inherits it.
 
 ```typescript
-// src/vurb.ts
-import { initVurb } from '@vurb/core';
+// src/MCP Fusion
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   db: PrismaClient;
   user: { id: string; role: string };
 }
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 ```
 
 Every tool file becomes generic-free:
 
 ```typescript
 // src/tools/billing.ts
-import { f } from '../vurb';
+import { f } from '../MCP Fusion';
 
 export const getInvoice = f.query('billing.get_invoice')
   .describe('Retrieve an invoice by ID')
@@ -88,7 +88,7 @@ JSON descriptors don't support transforms, custom refinements, or deeply nested 
 Scans a directory and registers all exported builders automatically.
 
 ```typescript
-import { autoDiscover } from '@vurb/core';
+import { autoDiscover } from '@mcpfusion/core';
 
 const registry = f.registry();
 await autoDiscover(registry, './src/tools');
@@ -122,7 +122,7 @@ await autoDiscover(registry, './src/tools', {
 File changes hot-reload tools without dropping the MCP connection. No restart, no reconnect.
 
 ```typescript
-import { createDevServer, autoDiscover } from 'Vurb.ts/dev';
+import { createDevServer, autoDiscover } from '@mcpfusion/core/dev';
 
 const devServer = createDevServer({
   dir: './src/tools',
@@ -159,7 +159,7 @@ Any validator implementing [Standard Schema v1](https://github.com/standard-sche
 
 ```typescript
 import * as v from 'valibot';
-import { toStandardValidator } from 'Vurb.ts/schema';
+import { toStandardValidator } from '@mcpfusion/core/schema';
 
 const schema = v.object({ name: v.string(), age: v.number() });
 const validator = toStandardValidator(schema);
@@ -169,7 +169,7 @@ const result = validator.validate({ name: 'Alice', age: 30 });
 `autoValidator()` detects the schema type automatically — Standard Schema v1 first (checks `~standard`), then Zod-like (checks `.safeParse()`):
 
 ```typescript
-import { autoValidator } from 'Vurb.ts/schema';
+import { autoValidator } from '@mcpfusion/core/schema';
 const validator = autoValidator(anySchema); // Valibot, Zod, ArkType — all work
 ```
 
@@ -180,16 +180,16 @@ const validator = autoValidator(anySchema); // Valibot, Zod, ArkType — all wor
 Each subpath is independently tree-shakeable:
 
 ```typescript
-import { initVurb, defineTool }    from '@vurb/core';           // full framework
-import { createVurbClient }        from 'Vurb.ts/client';     // ~2kb
-import { ui }                        from 'Vurb.ts/ui';         // ~1kb
-import { definePresenter }           from 'Vurb.ts/presenter';  // ~4kb
-import { definePrompt, PromptMessage } from 'Vurb.ts/prompt';   // ~3kb
-import { autoValidator }             from 'Vurb.ts/schema';     // ~2kb
-import { createDebugObserver }       from 'Vurb.ts/observability';
-import { autoDiscover, createDevServer } from 'Vurb.ts/dev';
-import { StateSyncLayer }            from 'Vurb.ts/state-sync';
-import { createVurbTester }        from 'Vurb.ts/testing';
+import { initMCPFusion, defineTool }    from '@mcpfusion/core';           // full framework
+import { createMCPFusionClient }        from '@mcpfusion/core/client';     // ~2kb
+import { ui }                        from '@mcpfusion/core/ui';         // ~1kb
+import { definePresenter }           from '@mcpfusion/core/presenter';  // ~4kb
+import { definePrompt, PromptMessage } from '@mcpfusion/core/prompt';   // ~3kb
+import { autoValidator }             from '@mcpfusion/core/schema';     // ~2kb
+import { createDebugObserver }       from '@mcpfusion/core/observability';
+import { autoDiscover, createDevServer } from '@mcpfusion/core/dev';
+import { StateSyncLayer }            from '@mcpfusion/core/state-sync';
+import { createMCPFusionTester }        from '@mcpfusion/core/testing';
 ```
 
 ## Prompt Args — Same No-Zod Power {#prompt-args}

@@ -14,7 +14,7 @@ Before calling a tool, the AI sometimes needs to know *if* the operation is poss
 A Semantic Probe is a read-only companion to a mutation or action. It answers: "Can I do this? What are the constraints?" without actually doing it.
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 // The mutation (actual operation)
 export const deleteProject = f.mutation('projects.delete')

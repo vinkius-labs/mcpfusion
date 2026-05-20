@@ -79,7 +79,7 @@ export function wrapChain<TContext>(
             if (result === undefined && !_warnedMiddlewares.has(mw)) {
                 _warnedMiddlewares.add(mw);
                 console.warn(
-                    `[vurb] Middleware "${mw.name || '(anonymous)'}" returned undefined. ` +
+                    `[mcpfusion] Middleware "${mw.name || '(anonymous)'}" returned undefined. ` +
                     `Did you forget "return next()"? Without it, the handler never executes ` +
                     `and the tool silently returns an empty response.`,
                 );

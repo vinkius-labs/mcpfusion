@@ -1,7 +1,7 @@
 # Scaling
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -15,7 +15,7 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 Every tool definition in `tools/list` includes a name, description, and full JSON Schema. The LLM receives this entire payload as system context. As tool count grows, three failures cascade: context saturation (fewer tokens for reasoning), semantic collision (similar tool names confuse routing), and parameter confusion (overlapping field names like `id` or `status` cause cross-contamination).
 
-Vurb.ts provides four mechanisms to keep tool payloads manageable as your server scales — especially critical when using generators like [@vurb/prisma-gen](/prisma-gen), [@vurb/openapi-gen](/openapi-gen), or [@vurb/n8n](/n8n-connector) that can produce dozens of tools from a single schema.
+MCP Fusion provides four mechanisms to keep tool payloads manageable as your server scales — especially critical when using generators like [@mcpfusion/prisma-gen](/prisma-gen), [@mcpfusion/openapi-gen](/openapi-gen), or [@mcpfusion/n8n](/n8n-connector) that can produce dozens of tools from a single schema.
 
 ## Grouping Reduces Tool Count {#grouping}
 
@@ -47,15 +47,15 @@ One entry with all operations nested:
 ]
 ```
 
-The discriminator enum anchors the LLM to valid operations. If it sends an invalid action, Vurb.ts returns a structured error with the valid options.
+The discriminator enum anchors the LLM to valid operations. If it sends an invalid action, MCP Fusion returns a structured error with the valid options.
 
 ## Tag Filtering {#tag-filtering}
 
 `.tags()` on the Fluent API lets you classify tools, then filter which ones appear in `tools/list`:
 
 ```typescript
-import { initVurb } from '@vurb/core';
-const f = initVurb<AppContext>();
+import { initMCPFusion } from '@mcpfusion/core';
+const f = initMCPFusion<AppContext>();
 
 const usersTool = f.query('users.list')
   .describe('List users')
@@ -118,10 +118,10 @@ Token compression and tool grouping reduce cognitive load — but your MCP serve
 
 ### Vinkius Cloud — One Command Scale
 
-The fastest path to horizontal scaling. `vurb deploy` publishes your server to Vinkius Cloud's global edge — auto-scaling, built-in DLP, kill switch, audit logging, and a managed MCP token. No infrastructure to manage:
+The fastest path to horizontal scaling. `mcpfusion deploy` publishes your server to Vinkius Cloud's global edge — auto-scaling, built-in DLP, kill switch, audit logging, and a managed MCP token. No infrastructure to manage:
 
 ```bash
-vurb deploy
+mcpfusion deploy
 ```
 
 [Learn more about Vinkius Cloud →](https://docs.vinkius.com/getting-started)
@@ -131,12 +131,12 @@ vurb deploy
 
 ### Self-Hosted Alternatives
 
-Vurb.ts's adapters cache registry compilation at module scope — Zod reflection, Presenter compilation, schema generation — and execute warm requests as stateless JSON-RPC calls. No shared memory, no session affinity, no connection pooling.
+MCP Fusion's adapters cache registry compilation at module scope — Zod reflection, Presenter compilation, schema generation — and execute warm requests as stateless JSON-RPC calls. No shared memory, no session affinity, no connection pooling.
 
 #### Vercel — Auto-Scaling MCP Functions
 
 ```typescript
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 export const POST = vercelAdapter({ registry, contextFactory });
 export const runtime = 'edge';
 ```
@@ -144,7 +144,7 @@ export const runtime = 'edge';
 #### Cloudflare Workers — Isolate-per-Request Architecture
 
 ```typescript
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 export default cloudflareWorkersAdapter({ registry, contextFactory });
 ```
 

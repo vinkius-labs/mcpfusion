@@ -28,7 +28,7 @@ import {
  * Framework version injected into every manifest.
  * Imported at build time — zero runtime FS overhead.
  */
-const VURB_VERSION = '1.1.0';
+const MCPFUSION_VERSION = '1.1.0';
 
 // ── Public API ───────────────────────────────────────────
 
@@ -47,7 +47,7 @@ export function compileManifest<TContext>(
 
     return {
         server: serverName,
-        vurb_version: VURB_VERSION,
+        MCPFUSION_VERSION: MCPFUSION_VERSION,
         architecture: 'MVA (Model-View-Agent)',
         capabilities,
     };

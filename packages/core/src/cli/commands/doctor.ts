@@ -1,16 +1,16 @@
 /**
- * `vurb doctor` — environment diagnostics.
+ * `mcpfusion doctor` — environment diagnostics.
  *
- * Checks Node version, installed packages, .vurbrc config, token validity,
+ * Checks Node version, installed packages, .MCPFusionrc config, token validity,
  * entrypoint resolution, esbuild availability, and lockfile status.
  *
  * @module
  */
 import type { CliArgs } from '../args.js';
-import { ansi, VURB_VERSION, VINKIUS_CLOUD_URL } from '../constants.js';
-import { readVurbRc } from '../rc.js';
+import { ansi, MCPFUSION_VERSION, VINKIUS_CLOUD_URL } from '../constants.js';
+import { readMCPFusionrc } from '../rc.js';
 import { inferServerEntry } from '../utils.js';
-import { scanInstalledVurbPackages, enrichWithLatest } from '../npm-registry.js';
+import { scanInstalledFusionPackages, enrichWithLatest } from '../npm-registry.js';
 
 // ─── Diagnostic Helpers ──────────────────────────────────────────
 
@@ -49,11 +49,11 @@ function checkNode(): CheckResult {
 }
 
 function checkCore(): CheckResult {
-    return pass('@vurb/core', VURB_VERSION);
+    return pass('@mcpfusion/core', MCPFUSION_VERSION);
 }
 
 async function checkPackageVersions(cwd: string): Promise<CheckResult[]> {
-    const packages = scanInstalledVurbPackages(cwd);
+    const packages = scanInstalledFusionPackages(cwd);
     if (packages.length === 0) return [];
 
     const enriched = await enrichWithLatest(packages);
@@ -62,38 +62,38 @@ async function checkPackageVersions(cwd: string): Promise<CheckResult[]> {
         if (!pkg.latest || pkg.current === pkg.latest) {
             results.push(pass(pkg.name, `${pkg.current} ${ansi.dim('(latest)')}`));
         } else {
-            results.push(warn(pkg.name, `${pkg.current} → ${pkg.latest} ${ansi.dim('(run: vurb update)')}`));
+            results.push(warn(pkg.name, `${pkg.current} → ${pkg.latest} ${ansi.dim('(run: mcpfusion update)')}`));
         }
     }
     return results;
 }
 
-function checkVurbRc(cwd: string): CheckResult[] {
+function checkmcpfusionrc(cwd: string): CheckResult[] {
     const { existsSync } = require('node:fs') as typeof import('node:fs');
     const { resolve } = require('node:path') as typeof import('node:path');
-    const rcPath = resolve(cwd, '.vurbrc');
+    const rcPath = resolve(cwd, '.MCPFusionrc');
 
     if (!existsSync(rcPath)) {
-        return [warn('.vurbrc', 'not found — run: vurb remote <url>')];
+        return [warn('.MCPFusionrc', 'not found — run: mcpfusion remote <url>')];
     }
 
-    const config = readVurbRc(cwd);
+    const config = readMCPFusionrc(cwd);
     const parts: string[] = [];
     if (config.token) parts.push('token');
     if (config.remote) parts.push('remote');
     if (config.serverId) parts.push('serverId');
 
     if (parts.length === 0) {
-        return [warn('.vurbrc', 'exists but empty')];
+        return [warn('.MCPFusionrc', 'exists but empty')];
     }
-    return [pass('.vurbrc', `configured (${parts.join(' + ')})`)];
+    return [pass('.MCPFusionrc', `configured (${parts.join(' + ')})`)];
 }
 
 async function checkToken(cwd: string): Promise<CheckResult> {
-    const config = readVurbRc(cwd);
-    const token = config.token ?? process.env['VURB_DEPLOY_TOKEN'];
+    const config = readMCPFusionrc(cwd);
+    const token = config.token ?? process.env['MCPFUSION_DEPLOY_TOKEN'];
 
-    if (!token) return warn('Connection token', 'not set (run: vurb token <token>)');
+    if (!token) return warn('Connection token', 'not set (run: mcpfusion token <token>)');
 
     const remote = config.remote ?? VINKIUS_CLOUD_URL;
     try {
@@ -128,19 +128,19 @@ function checkEsbuild(cwd: string): CheckResult {
             const pkg = JSON.parse(readFileSync(esbuildPkg, 'utf-8'));
             return pass('esbuild', pkg.version);
         }
-        return warn('esbuild', 'not installed (required for vurb deploy)');
+        return warn('esbuild', 'not installed (required for mcpfusion deploy)');
     } catch {
-        return warn('esbuild', 'not installed (required for vurb deploy)');
+        return warn('esbuild', 'not installed (required for mcpfusion deploy)');
     }
 }
 
 function checkLockfile(cwd: string): CheckResult {
     const { existsSync } = require('node:fs') as typeof import('node:fs');
     const { resolve } = require('node:path') as typeof import('node:path');
-    if (existsSync(resolve(cwd, 'vurb.lock'))) {
-        return pass('vurb.lock', 'present');
+    if (existsSync(resolve(cwd, 'mcpfusion.lock'))) {
+        return pass('mcpfusion.lock', 'present');
     }
-    return warn('vurb.lock', 'missing (run: vurb lock)');
+    return warn('mcpfusion.lock', 'missing (run: mcpfusion lock)');
 }
 
 // ─── Command ─────────────────────────────────────────────────────
@@ -148,7 +148,7 @@ function checkLockfile(cwd: string): CheckResult {
 export async function commandDoctor(args: CliArgs): Promise<void> {
     const cwd = args.cwd;
 
-    process.stderr.write(`\n  ${ansi.bold('Vurb Doctor')}\n\n`);
+    process.stderr.write(`\n  ${ansi.bold('mcpfusion doctor')}\n\n`);
 
     const results: CheckResult[] = [];
 
@@ -163,7 +163,7 @@ export async function commandDoctor(args: CliArgs): Promise<void> {
     ]);
 
     results.push(...packageResults);
-    results.push(...checkVurbRc(cwd));
+    results.push(...checkmcpfusionrc(cwd));
     results.push(tokenResult);
     results.push(checkEntrypoint(cwd));
     results.push(checkEsbuild(cwd));

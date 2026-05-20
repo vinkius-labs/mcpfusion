@@ -8,7 +8,7 @@
 
 ## Introduction {#introduction}
 
-During development, debugging, and governance, you need to know what tools are registered, what their schemas look like, and what presenters are wired to them. Vurb.ts provides two introspection mechanisms:
+During development, debugging, and governance, you need to know what tools are registered, what their schemas look like, and what presenters are wired to them. MCP Fusion provides two introspection mechanisms:
 
 1. **Dynamic Manifest** — An MCP Resource that exposes a structured JSON manifest of all tools, actions, and presenters. Clients can read it via `resources/read`.
 2. **Registry API** — Direct programmatic access via `registry.getAllTools()`, `registry.getBuilders()`, and `registry.getTools(filter)`.
@@ -22,7 +22,7 @@ registry.attachToServer(server, {
   contextFactory: createContext,
   introspection: {
     enabled: process.env.NODE_ENV !== 'production',
-    uri: 'Vurb.ts://manifest.json',
+    uri: 'MCP Fusion://manifest.json',
   },
 });
 ```
@@ -41,7 +41,7 @@ registry.attachToServer(server, {
   contextFactory: createContext,
   introspection: {
     enabled: true,
-    uri: 'Vurb.ts://manifest.json',
+    uri: 'MCP Fusion://manifest.json',
     filter: (manifest, ctx) => {
       if (ctx.user.role !== 'admin') {
         // Remove admin-only tools from the manifest

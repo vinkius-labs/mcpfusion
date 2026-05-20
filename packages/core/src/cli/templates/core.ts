@@ -1,24 +1,24 @@
 /**
- * Core Templates — vurb.ts, context.ts, server.ts
+ * Core Templates — mcpfusion.ts, context.ts, server.ts
  *
  * The architectural spine of every scaffolded project.
  * @module
  */
 import type { ProjectConfig } from '../types.js';
 
-/** Generate `src/vurb.ts` — The one-file context center */
-export function vurbTs(): string {
+/** Generate `src/mcpfusion.ts` — The one-file context center */
+export function mcpfusionTs(): string {
     return `/**
- * Vurb Instance — Context Initialization
+ * MCP Fusion Instance — Context Initialization
  *
  * Define your context type ONCE. Every f.query(), f.mutation(),
  * f.presenter(), f.prompt(), and f.middleware() call inherits
  * AppContext — zero generic repetition anywhere in the codebase.
  */
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 import type { AppContext } from './context.js';
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 `;
 }
 
@@ -60,15 +60,15 @@ export function serverTs(config: ProjectConfig): string {
     if (config.transport === 'stdio') {
         // Simplified: one-liner bootstrap via startServer()
         return `/**
- * Server Bootstrap — Vurb
+ * Server Bootstrap — MCP Fusion
  *
  * Tools are auto-discovered from src/tools/.
  * Drop a file, it becomes a tool.
  */
 import { fileURLToPath } from 'node:url';
-import { autoDiscover, PromptRegistry, startServer } from '@vurb/core';
+import { autoDiscover, PromptRegistry, startServer } from '@mcpfusion/core';
 import { createContext } from './context.js';
-import { f } from './vurb.js';
+import { f } from './mcpfusion.js';
 import { GreetPrompt } from './prompts/greet.js';
 
 // ── Registry ─────────────────────────────────────────────
@@ -91,15 +91,15 @@ await startServer({
 
     // Streamable HTTP transport — startServer handles all HTTP plumbing
     return `/**
- * Server Bootstrap — Vurb with Streamable HTTP Transport
+ * Server Bootstrap — MCP Fusion with Streamable HTTP Transport
  *
  * Tools are auto-discovered from src/tools/.
  * Drop a file, it becomes a tool.
  */
 import { fileURLToPath } from 'node:url';
-import { autoDiscover, PromptRegistry, startServer } from '@vurb/core';
+import { autoDiscover, PromptRegistry, startServer } from '@mcpfusion/core';
 import { createContext } from './context.js';
-import { f } from './vurb.js';
+import { f } from './mcpfusion.js';
 import { GreetPrompt } from './prompts/greet.js';
 
 // ── Registry ─────────────────────────────────────────────

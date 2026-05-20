@@ -1,7 +1,7 @@
 /**
  * MarketplaceManifest — Listing Metadata from Code
  *
- * Reads `vurb.marketplace.json` from the project root and normalizes
+ * Reads `mcpfusion.marketplace.json` from the project root and normalizes
  * the data into a snake_case payload ready for the Vinkius Cloud API.
  *
  * Features:
@@ -20,7 +20,7 @@ import { existsSync, readFileSync } from 'node:fs';
 // ============================================================================
 
 /** Default manifest filename, committed alongside code (not gitignored). */
-export const MARKETPLACE_MANIFEST_FILE = 'vurb.marketplace.json' as const;
+export const MARKETPLACE_MANIFEST_FILE = 'mcpfusion.marketplace.json' as const;
 
 // ============================================================================
 // Types
@@ -164,7 +164,7 @@ export interface MarketplaceManifest {
 // ============================================================================
 
 /**
- * Read `vurb.marketplace.json` from the project root.
+ * Read `mcpfusion.marketplace.json` from the project root.
  *
  * - Returns `null` if the file doesn't exist (marketplace is optional).
  * - Resolves all `file:` references to actual file contents.

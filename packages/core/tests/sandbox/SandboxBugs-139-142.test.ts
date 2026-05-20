@@ -12,7 +12,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { validateSandboxCode } from '../../src/sandbox/SandboxGuard.js';
 import { SandboxEngine } from '../../src/sandbox/SandboxEngine.js';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 
 let ivmAvailable = false;
 try {
@@ -79,13 +79,13 @@ describe('Bug #139: Guard blocks eval() and new Function()', () => {
 
 describe('Bug #140: getSandboxConfig() is metadata-only', () => {
     it('should return undefined when sandbox() is not called', () => {
-        const f = initVurb<{}>('test-140');
+        const f = initMCPFusion<{}>('test-140');
         const grouped = f.defineTool('grouped-tool', {});
         expect(grouped.getSandboxConfig()).toBeUndefined();
     });
 
     it('should return stored config after sandbox() is called', () => {
-        const f = initVurb<{}>('test-140');
+        const f = initMCPFusion<{}>('test-140');
         const grouped = f.defineTool('grouped-tool', {});
         grouped.sandbox({ timeout: 3000, memoryLimit: 64 });
         const config = grouped.getSandboxConfig();
@@ -95,7 +95,7 @@ describe('Bug #140: getSandboxConfig() is metadata-only', () => {
     it('should not auto-create a SandboxEngine from the config', () => {
         // The config is metadata-only — it doesn't drive runtime behavior.
         // The developer must manually create a SandboxEngine.
-        const f = initVurb<{}>('test-140');
+        const f = initMCPFusion<{}>('test-140');
         const grouped = f.defineTool('grouped-tool', {});
         grouped.sandbox({ timeout: 3000 });
 
@@ -113,7 +113,7 @@ describe('Bug #140: getSandboxConfig() is metadata-only', () => {
 
 describeSandbox('Bug #141: f.sandbox() lifecycle tracking', () => {
     it('should create a working SandboxEngine via f.sandbox()', async () => {
-        const f = initVurb<{}>('test-141');
+        const f = initMCPFusion<{}>('test-141');
         const engine = f.sandbox({ timeout: 2000, memoryLimit: 32 });
         try {
             const result = await engine.execute('(data) => data + 1', 41);
@@ -127,7 +127,7 @@ describeSandbox('Bug #141: f.sandbox() lifecycle tracking', () => {
     });
 
     it('should still allow manual dispose() without errors', () => {
-        const f = initVurb<{}>('test-141');
+        const f = initMCPFusion<{}>('test-141');
         const engine = f.sandbox({ timeout: 1000, memoryLimit: 16 });
         // dispose() should work without throwing — FinalizationRegistry
         // unregisters the engine so no false warning fires
@@ -136,7 +136,7 @@ describeSandbox('Bug #141: f.sandbox() lifecycle tracking', () => {
     });
 
     it('should allow double-dispose without errors', () => {
-        const f = initVurb<{}>('test-141');
+        const f = initMCPFusion<{}>('test-141');
         const engine = f.sandbox({ timeout: 1000, memoryLimit: 16 });
         engine.dispose();
         expect(() => engine.dispose()).not.toThrow();

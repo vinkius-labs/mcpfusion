@@ -1,7 +1,7 @@
 /**
  * GeneratorConfig — Full Configuration for the OpenAPI-to-MCP Generator
  *
- * Controls every aspect of code generation: which Vurb features
+ * Controls every aspect of code generation: which MCP Fusion features
  * are enabled, naming conventions, tag filtering, server scaffolding,
  * and context injection.
  *
@@ -13,7 +13,7 @@
 // ── Feature Toggles ──────────────────────────────────────
 
 /**
- * Controls which Vurb features appear in generated code.
+ * Controls which MCP Fusion features appear in generated code.
  * All fields default to `true` for maximum fidelity.
  */
 export interface FeatureFlags {

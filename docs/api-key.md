@@ -1,18 +1,18 @@
 ---
 title: API Key Validation — Timing-Safe Key Management
-description: Drop-in API key validation middleware for MCP servers built with Vurb.ts. SHA-256 hashing, timing-safe comparison, async validators, and self-healing errors. Zero external dependencies.
+description: Drop-in API key validation middleware for MCP servers built with MCP Fusion. SHA-256 hashing, timing-safe comparison, async validators, and self-healing errors. Zero external dependencies.
 ---
-<a href="https://www.npmjs.com/package/@vurb/api-key"><img src="https://img.shields.io/npm/v/@vurb/api-key?color=blue" alt="npm" /></a>
+<a href="https://www.npmjs.com/package/@mcpfusion/api-key"><img src="https://img.shields.io/npm/v/@mcpfusion/api-key?color=blue" alt="npm" /></a>
 
 # API Key Validation
 
 Timing-safe API key validation for MCP servers. Supports static key sets, SHA-256 hash comparison, and async validators (database lookup). All comparisons use `crypto.timingSafeEqual` to prevent timing attacks. **Zero external dependencies** — uses native Node.js `crypto`.
 
 ```bash
-npm install @vurb/api-key
+npm install @mcpfusion/api-key
 ```
 
-Peer dependency: `Vurb.ts ^2.0.0`
+Peer dependency: `fusion ^2.0.0`
 
 ## Architecture
 
@@ -36,8 +36,8 @@ Request → Key Extraction → Format Checks → Validation Strategy → Handler
 ## Protect Tools with Middleware
 
 ```typescript
-import { requireApiKey } from '@vurb/api-key';
-import { createTool, success } from '@vurb/core';
+import { requireApiKey } from '@mcpfusion/api-key';
+import { createTool, success } from '@mcpfusion/core';
 
 const projects = createTool<AppContext>('projects')
     .use(requireApiKey({
@@ -59,7 +59,7 @@ When no valid key is found, `requireApiKey()` returns a structured `toolError('A
 ## Create the API Key Auth Tool
 
 ```typescript
-import { createApiKeyTool } from '@vurb/api-key';
+import { createApiKeyTool } from '@mcpfusion/api-key';
 
 const apiKeyTool = createApiKeyTool<AppContext>({
     keys: [process.env.API_KEY!],
@@ -82,7 +82,7 @@ The API key auth tool exposes 2 actions:
 Plaintext keys are pre-hashed at construction time. Validation uses timing-safe SHA-256 comparison:
 
 ```typescript
-import { ApiKeyManager } from '@vurb/api-key';
+import { ApiKeyManager } from '@mcpfusion/api-key';
 
 const manager = new ApiKeyManager({
     keys: ['sk_live_abc123def456', 'sk_live_xyz789uvw012'],
@@ -134,7 +134,7 @@ const manager = new ApiKeyManager({
 ## Key Management Utilities
 
 ```typescript
-import { ApiKeyManager } from '@vurb/api-key';
+import { ApiKeyManager } from '@mcpfusion/api-key';
 
 // Generate random API key
 const key = ApiKeyManager.generateKey({ prefix: 'sk_live_', length: 32 });
@@ -192,7 +192,7 @@ requireApiKey({
 
 ### `requireApiKey(options)`
 
-Returns a Vurb.ts middleware function.
+Returns a MCP Fusion middleware function.
 
 **Options:**
 

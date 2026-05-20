@@ -18,7 +18,7 @@ export class NamespaceError extends Error {
         public readonly expectedPrefix: string,
     ) {
         super(
-            `[vurb/swarm] Tool "${toolName}" does not match active upstream prefix "${expectedPrefix}". ` +
+            `[mcpfusion/swarm] Tool "${toolName}" does not match active upstream prefix "${expectedPrefix}". ` +
             'This may indicate a stale tools/list cache on the client side.',
         );
         this.name = 'NamespaceError';

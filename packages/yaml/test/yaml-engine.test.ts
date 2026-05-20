@@ -1,5 +1,5 @@
 /**
- * @vurb/yaml — Comprehensive Test Suite
+ * @mcpfusion/yaml — Comprehensive Test Suite
  *
  * Tests the full YAML engine pipeline: parse → validate → compile → execute.
  * Uses vitest with real YAML fixtures.
@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { parseVurbYaml, VurbYamlError } from '../src/parser/VurbYamlParser.js';
+import { parseMCPFusionYaml, MCPFusionYamlError } from '../src/parser/MCPFusionYamlParser.js';
 import { validateYamlSchema } from '../src/parser/SchemaValidator.js';
 import { validateCrossRefs } from '../src/parser/CrossRefValidator.js';
 import { resolveAllConnections } from '../src/compiler/ConnectionResolver.js';
@@ -29,43 +29,43 @@ const fixture = (name: string) => readFileSync(resolve(__dirname, 'fixtures', na
 // 1. Parser Tests
 // ════════════════════════════════════════════════════════════
 
-describe('VurbYamlParser', () => {
+describe('MCPFusionYamlParser', () => {
     it('parses a valid complete YAML manifest', () => {
-        const spec = parseVurbYaml(fixture('valid-complete.yaml'));
+        const spec = parseMCPFusionYaml(fixture('valid-complete.yaml'));
         expect(spec.version).toBe('1.0');
         expect(spec.server.name).toBe('test-rh-server');
         expect(spec.server.description).toBe('Test server for HR onboarding');
     });
 
     it('parses a minimal YAML manifest', () => {
-        const spec = parseVurbYaml(fixture('valid-minimal.yaml'));
+        const spec = parseMCPFusionYaml(fixture('valid-minimal.yaml'));
         expect(spec.version).toBe('1.0');
         expect(spec.server.name).toBe('minimal-server');
         expect(spec.tools).toHaveLength(1);
     });
 
-    it('throws VurbYamlError on invalid version', () => {
-        expect(() => parseVurbYaml(fixture('invalid-version.yaml'))).toThrow(VurbYamlError);
+    it('throws MCPFusionYamlError on invalid version', () => {
+        expect(() => parseMCPFusionYaml(fixture('invalid-version.yaml'))).toThrow(MCPFusionYamlError);
     });
 
-    it('throws VurbYamlError on broken cross-references', () => {
-        expect(() => parseVurbYaml(fixture('invalid-crossref.yaml'))).toThrow(VurbYamlError);
+    it('throws MCPFusionYamlError on broken cross-references', () => {
+        expect(() => parseMCPFusionYaml(fixture('invalid-crossref.yaml'))).toThrow(MCPFusionYamlError);
     });
 
-    it('throws VurbYamlError on duplicate tool names', () => {
-        expect(() => parseVurbYaml(fixture('invalid-duplicates.yaml'))).toThrow(VurbYamlError);
+    it('throws MCPFusionYamlError on duplicate tool names', () => {
+        expect(() => parseMCPFusionYaml(fixture('invalid-duplicates.yaml'))).toThrow(MCPFusionYamlError);
     });
 
     it('throws on empty input', () => {
-        expect(() => parseVurbYaml('')).toThrow();
+        expect(() => parseMCPFusionYaml('')).toThrow();
     });
 
     it('throws on pure garbage', () => {
-        expect(() => parseVurbYaml('not: {valid: [yaml manifest')).toThrow();
+        expect(() => parseMCPFusionYaml('not: {valid: [yaml manifest')).toThrow();
     });
 
     it('preserves all tool fields from complete manifest', () => {
-        const spec = parseVurbYaml(fixture('valid-complete.yaml'));
+        const spec = parseMCPFusionYaml(fixture('valid-complete.yaml'));
         const createTicket = spec.tools!.find(t => t.name === 'create_ticket');
         expect(createTicket).toBeDefined();
         expect(createTicket!.description).toContain('Jira ticket');
@@ -77,14 +77,14 @@ describe('VurbYamlParser', () => {
     });
 
     it('preserves all secrets', () => {
-        const spec = parseVurbYaml(fixture('valid-complete.yaml'));
+        const spec = parseMCPFusionYaml(fixture('valid-complete.yaml'));
         expect(spec.secrets).toBeDefined();
         expect(Object.keys(spec.secrets!)).toEqual(['API_TOKEN', 'JIRA_EMAIL', 'JIRA_TOKEN']);
         expect(spec.secrets!['API_TOKEN'].sensitive).toBe(true);
     });
 
     it('preserves all connections', () => {
-        const spec = parseVurbYaml(fixture('valid-complete.yaml'));
+        const spec = parseMCPFusionYaml(fixture('valid-complete.yaml'));
         expect(spec.connections).toBeDefined();
         expect(Object.keys(spec.connections!)).toEqual(['intranet', 'jira']);
         expect(spec.connections!['jira'].auth?.type).toBe('basic');

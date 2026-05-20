@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { defineResource } from '@vurb/core';
+ * import { defineResource } from '@mcpfusion/core';
  *
  * const stockPrice = defineResource<AppContext>('stock_price', {
  *     uri: 'stock://prices/{symbol}',

@@ -5,11 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-05-20
+
+### Welcome to MCP Fusion
+
+MCP Fusion is the TypeScript framework for building secure MCP servers. Security is not bolted on as middleware — it is enforced at the architectural level, compiled into every tool handler before a single byte reaches the wire.
+
+This release marks the official public identity under the `@mcpfusion` npm scope. Every package in the ecosystem ships as `4.0.0`.
+
+### What changed
+
+- **Full rebrand from Vurb to MCP Fusion** — All source code, documentation, CLI output, workflows, and npm packages now use the `@mcpfusion` scope and `mcpfusion` naming convention. The project history below is preserved in full.
+- **Repository renamed** — `vinkius-labs/mcpfusion` on GitHub, `@mcpfusion/*` on npm.
+- **`mcpfusion deploy`** — Ship your MCP server to Vinkius Edge in one command. V8 isolate sandboxing, compiled-in PII redaction, and audit trails — all included by default.
+
+### Governance stack — what makes this framework different
+
+| Layer | What it does |
+|---|---|
+| **Presenters** | Typed egress firewalls. Undeclared fields are stripped in RAM before serialization. PII is redacted via V8-optimized compiled functions. |
+| **FSM State Gates** | Tools bound to FSM states are physically removed from `tools/list` when the current state forbids them. The LLM cannot call what does not exist. |
+| **Capability Lockfile** | `mcpfusion.lock` captures the behavioral contract of every tool as a SHA-256 snapshot. Git-diffable. CI gate via `mcpfusion lock --check`. |
+| **Crypto Attestation** | HMAC-SHA256 runtime verification. Fail-fast if the behavioral digest drifts from the lockfile. |
+| **Entitlement Scanner** | Static analysis of handler source for I/O capabilities (fs, network, subprocess, eval). |
+| **Prompt Firewall** | LLM-as-Judge that evaluates dynamically generated system rules for prompt injection. Fail-closed by default. |
+| **Sandbox Engine** | V8 isolate for LLM-provided JavaScript. No `process`, `require`, `fs`, or network. Memory-limited, timeout-enforced. |
+
+### Ecosystem — 16 packages
+
+| Package | Purpose |
+|---|---|
+| `@mcpfusion/core` | Framework core — Presenters, Fluent API, middleware, routing, governance |
+| `@mcpfusion/yaml` | Declarative YAML engine — zero TypeScript required |
+| `@mcpfusion/swarm` | Multi-agent orchestration with HMAC-SHA256 delegation |
+| `@mcpfusion/a2a` | A2A Protocol Bridge — Agent Cards and task delegation |
+| `@mcpfusion/skills` | Progressive SKILL.md disclosure |
+| `@mcpfusion/testing` | In-memory MVA pipeline testing |
+| `@mcpfusion/inspector` | Real-time TUI dashboard |
+| `@mcpfusion/vercel` | Vercel Functions adapter |
+| `@mcpfusion/cloudflare` | Cloudflare Workers adapter |
+| `@mcpfusion/openapi-gen` | OpenAPI 3.x / Swagger 2.0 → MCP tools |
+| `@mcpfusion/prisma-gen` | Prisma schema → CRUD tools |
+| `@mcpfusion/n8n` | n8n workflows → MCP tools |
+| `@mcpfusion/aws` | AWS Lambda & Step Functions → MCP tools |
+| `@mcpfusion/oauth` | RFC 8628 Device Flow |
+| `@mcpfusion/jwt` | JWT verification — HS256 / RS256 / ES256 + JWKS |
+| `@mcpfusion/api-key` | API key validation with timing-safe comparison |
+
+### Fixed
+
+- **Vercel scaffold path** — Fixed `src/mc./mcpfusion.ts` → `src/mcp/mcpfusion.ts`. The Vercel project template was generating a broken directory structure.
+
+### In production
+
+4,000+ MCP servers on [vinkius.com](https://vinkius.com) are built with MCP Fusion.
+
+---
+
 ## [3.19.6] - 2026-05-12
 
 ### Fixed
 
-#### `@vurb/core` — HTTP Transport Performance Optimizations
+#### `@mcpfusion/core` — HTTP Transport Performance Optimizations
 
 - **Session close O(n) → O(1) reverse-lookup** — The `onclose` handler for `StreamableHTTPServerTransport` used `[...sessions.entries()].find()` to locate the session ID for a closing transport — O(n) linear scan plus full array materialization on every session close. Replaced with a `WeakMap<Transport, string>` reverse index for O(1) lookup. At `maxSessions: 1000`, this eliminates 1,000 array copies per close event. The `WeakMap` entries are automatically released when the transport is garbage collected.
 
@@ -17,19 +74,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Reaper-integrated rate limiter pruning** — The session reaper allocated a fresh `new Set(sessions.keys())` on every tick (default: every 5 minutes) solely for `rateLimiter.prune()`. Now builds the active-session set incrementally during the reaper's own iteration loop — zero additional allocation.
 
-#### `@vurb/core` — Telemetry Timestamp Coherence
+#### `@mcpfusion/core` — Telemetry Timestamp Coherence
 
 - **Single `Date.now()` capture in telemetry emit** — The `execute` telemetry event in `ServerAttachment` called `Date.now()` twice — once for `durationMs` and once for `timestamp` — which could drift under load. Both values are now derived from a single captured timestamp, ensuring `timestamp - durationMs === t0` is always exact.
 
-#### `@vurb/core` — ESLint Hygiene
+#### `@mcpfusion/core` — ESLint Hygiene
 
 - **24 auto-fixable lint problems resolved** — Removed stale `eslint-disable` directives and unnecessary optional chains across 7 files: `FluentToolBuilder.ts`, `DevServer.ts`, `CryptoAttestation.ts`, `autoDiscover.ts`, `CursorCodec.ts`, `ServerAttachment.ts`, `registry.ts`. Reduced total lint surface from 103 → 79 problems.
 
 ### Added
 
-#### `@vurb/core` — SandboxEngine Native Memory Tracking
+#### `@mcpfusion/core` — SandboxEngine Native Memory Tracking
 
-- **`FinalizationRegistry`-based V8 Isolate leak detector** — `initVurb()` now tracks `SandboxEngine` instances via `FinalizationRegistry`. If a sandbox is garbage collected without calling `.dispose()`, a warning is emitted with the allocation label, alerting developers to native `isolated-vm` memory that is invisible to Node.js GC. Critical for long-running edge server processes where un-disposed Isolates silently accumulate native heap pressure.
+- **`FinalizationRegistry`-based V8 Isolate leak detector** — `initMCPFusion()` now tracks `SandboxEngine` instances via `FinalizationRegistry`. If a sandbox is garbage collected without calling `.dispose()`, a warning is emitted with the allocation label, alerting developers to native `isolated-vm` memory that is invisible to Node.js GC. Critical for long-running edge server processes where un-disposed Isolates silently accumulate native heap pressure.
 
 ### Test Suite
 
@@ -42,27 +99,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.19.6`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.19.6`** — Ensures consistent resolution across the monorepo.
 
 ## [3.19.5] - 2026-05-07
 
 ### Added
 
-- **`@vurb/core` README Update** — Simplified and realigned the core package README to match the new framework positioning, prioritizing "The TypeScript framework for MCP Servers", declarative YAML execution, and the Presenter MVA flow over internal documentation bloat.
+- **`@mcpfusion/core` README Update** — Simplified and realigned the core package README to match the new framework positioning, prioritizing "The TypeScript framework for MCP Servers", declarative YAML execution, and the Presenter MVA flow over internal documentation bloat.
 
 ## [3.19.4] - 2026-05-07
 
 ### Added
 
-- **`README.md` Overhaul** — Positioned Vurb.ts as "The TypeScript framework for MCP Servers", prominently featuring `@vurb/yaml` and `@vurb/a2a` ecosystems, emphasizing the value proposition of Presenters for data governance.
+- **`README.md` Overhaul** — Positioned MCP Fusion as "The TypeScript framework for MCP Servers", prominently featuring `@mcpfusion/yaml` and `@mcpfusion/a2a` ecosystems, emphasizing the value proposition of Presenters for data governance.
 
 ### Fixed
 
-#### `@vurb/core` — Server Introspection & Resources Capability
+#### `@mcpfusion/core` — Server Introspection & Resources Capability
 
 - **`Server does not support resources` runtime error** — Fixed an issue where the SDK threw a capability error when attaching `resources` or `introspection` handlers. The server initialization now dynamically includes `resources: {}` in the `capabilities` block if these handlers are attached.
 
-#### `@vurb/core` — FluentToolBuilder JSON Parameters
+#### `@mcpfusion/core` — FluentToolBuilder JSON Parameters
 
 - **`.addDictionary()` schema** — Changed the input schema definition from `z.record(z.unknown())` to `z.record(z.string(), z.any())` to align with expected schema types.
 
@@ -70,31 +127,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-#### `@vurb/core` — esbuild introspection fails when `isolated-vm` is in the resolution tree
+#### `@mcpfusion/core` — esbuild introspection fails when `isolated-vm` is in the resolution tree
 
-- **Native addon bundling crash** — `vurb validate` and `vurb deploy` introspection builds failed when `isolated-vm` (an optional peerDependency used by `SandboxEngine`) was present in the dependency tree (e.g., via `npm link` during development). esbuild cannot bundle `.node` native binaries. Added `external: ['isolated-vm']` to the introspection esbuild config in both `introspect.ts` and `deploy.ts`. This is not a breaking change — `isolated-vm` is lazy-loaded via `require()` with a try/catch fallback; the `external` directive simply tells esbuild to leave the import as-is for Node.js runtime resolution.
+- **Native addon bundling crash** — `fusion validate` and `mcpfusion deploy` introspection builds failed when `isolated-vm` (an optional peerDependency used by `SandboxEngine`) was present in the dependency tree (e.g., via `npm link` during development). esbuild cannot bundle `.node` native binaries. Added `external: ['isolated-vm']` to the introspection esbuild config in both `introspect.ts` and `deploy.ts`. This is not a breaking change — `isolated-vm` is lazy-loaded via `require()` with a try/catch fallback; the `external` directive simply tells esbuild to leave the import as-is for Node.js runtime resolution.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.19.3`**
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.19.3`**
 
 ## [3.19.2] - 2026-05-01
 
 ### Fixed
 
-#### `@vurb/core` — `autoDiscover()` fails during `vurb validate` and `vurb deploy` introspection
+#### `@mcpfusion/core` — `autoDiscover()` fails during `fusion validate` and `mcpfusion deploy` introspection
 
-- **Introspection bundle written to wrong directory** — `runIntrospection()` (used by both `vurb validate` and `vurb deploy`) wrote the esbuild bundle to `os.tmpdir()`. When the bundled server executed `autoDiscover(registry, new URL('./agents', import.meta.url))`, `import.meta.url` resolved to the temp directory (e.g., `C:\Users\...\AppData\Local\Temp\`), causing `./agents` to resolve to a non-existent path. The bundle is now written adjacent to the original entrypoint (`dirname(absEntry)/.vurb-introspect-{ts}.mjs`), preserving correct `import.meta.url`-relative resolution. Affected files: `introspect.ts`, `deploy.ts`.
+- **Introspection bundle written to wrong directory** — `runIntrospection()` (used by both `fusion validate` and `mcpfusion deploy`) wrote the esbuild bundle to `os.tmpdir()`. When the bundled server executed `autoDiscover(registry, new URL('./agents', import.meta.url))`, `import.meta.url` resolved to the temp directory (e.g., `C:\Users\...\AppData\Local\Temp\`), causing `./agents` to resolve to a non-existent path. The bundle is now written adjacent to the original entrypoint (`dirname(absEntry)/.fusion-introspect-{ts}.mjs`), preserving correct `import.meta.url`-relative resolution. Affected files: `introspect.ts`, `deploy.ts`.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.19.2`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.19.2`** — Ensures consistent resolution across the monorepo.
 
 ## [3.19.1] - 2026-05-01
 
 ### Fixed
 
-#### `@vurb/a2a` — A2A Protocol Audit: 8 Bug Fixes
+#### `@mcpfusion/a2a` — A2A Protocol Audit: 8 Bug Fixes
 
 Deep audit of the A2A protocol bridge identified and remediated 8 bugs across 6 source files, with 35 regression tests added to prevent reintroduction.
 
@@ -126,15 +183,15 @@ Deep audit of the A2A protocol bridge identified and remediated 8 bugs across 6 
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.19.1`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.19.1`** — Ensures consistent resolution across the monorepo.
 
 ## [3.19.0] - 2026-05-01
 
 ### Added
 
-#### `@vurb/a2a` — A2A Protocol Bridge: Agent-to-Agent Communication (NEW PACKAGE)
+#### `@mcpfusion/a2a` — A2A Protocol Bridge: Agent-to-Agent Communication (NEW PACKAGE)
 
-Spec-compliant A2A v1.0.0 bridge enabling Vurb.ts MCP servers to participate in multi-agent orchestration through standardized Agent Cards, JSON-RPC dispatch, and SSE streaming. First TypeScript MCP framework with native A2A interoperability.
+Spec-compliant A2A v1.0.0 bridge enabling MCP mcpfusion servers to participate in multi-agent orchestration through standardized Agent Cards, JSON-RPC dispatch, and SSE streaming. First TypeScript MCP framework with native A2A interoperability.
 
 - **`A2AHandler`** — Framework-agnostic JSON-RPC 2.0 dispatcher for all 11 A2A protocol methods. Accepts a `ToolExecutorLike` interface to decouple from MCP registry internals. Handles `message/send`, `tasks/get`, `tasks/list`, `tasks/cancel`, `message/stream`, `tasks/resubscribe`, push notification config CRUD, and `agent/getAuthenticatedExtendedCard`.
 - **`StreamableHttpTransport`** — HTTP transport layer supporting both synchronous JSON responses and SSE streaming. Returns a discriminated `TransportResult` union (`{ streaming: false, body }` | `{ streaming: true, headers, body: AsyncIterable<string> }`) so any framework (Express, Hono, Fastify) can consume it. Falls back to sync `message/send` when no `StreamingExecutorLike` is provided.
@@ -149,7 +206,7 @@ Spec-compliant A2A v1.0.0 bridge enabling Vurb.ts MCP servers to participate in 
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.19.0`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.19.0`** — Ensures consistent resolution across the monorepo.
 
 ### Documentation
 
@@ -170,7 +227,7 @@ Spec-compliant A2A v1.0.0 bridge enabling Vurb.ts MCP servers to participate in 
 
 ### Added
 
-#### `@vurb/core` — MCP Server Card: Auto-Discovery Endpoint (SEP-1649)
+#### `@mcpfusion/core` — MCP Server Card: Auto-Discovery Endpoint (SEP-1649)
 
 Standard `/.well-known/mcp/server-card.json` endpoint enabling AI clients (Claude, Cursor, ChatGPT) to automatically discover, inspect, and configure MCP servers — zero manual configuration required.
 
@@ -181,11 +238,11 @@ Standard `/.well-known/mcp/server-card.json` endpoint enabling AI clients (Claud
 - **`SERVER_CARD_PATH`** — Constant: `'/.well-known/mcp/server-card.json'`.
 - **`startServer({ serverCard })` integration** — Accepts `true` (auto-generate from name/version) or `Omit<ServerCardConfig, 'name' | 'version' | 'transport'>` (custom metadata). Pre-compiles the card once at startup as a static JSON string — zero per-request overhead. Served with `Content-Type: application/json`, `Cache-Control: public, max-age=300`, `X-Content-Type-Options: nosniff`, and `Access-Control-Allow-Origin: *`.
 - **Startup log indicator** — `🏷️ Server Card at http://localhost:{port}/.well-known/mcp/server-card.json` when active.
-- **Barrel exports** — All Server Card primitives exported from `@vurb/core` root and `@vurb/core/server` sub-path.
+- **Barrel exports** — All Server Card primitives exported from `@mcpfusion/core` root and `@mcpfusion/core/server` sub-path.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.18.0`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.18.0`** — Ensures consistent resolution across the monorepo.
 
 ### Documentation
 
@@ -206,52 +263,52 @@ Standard `/.well-known/mcp/server-card.json` endpoint enabling AI clients (Claud
 
 ### Fixed
 
-- **`@vurb/core` — Edge stub missing `AsyncLocalStorage` (V8 isolate boot crash)** — `edge-stub.ts` did not export `AsyncLocalStorage`, but `@vurb/core`'s own `ask.ts` executes `new AsyncLocalStorage()` at module load time (top-level). When esbuild compiled the server for edge deployment, `import { AsyncLocalStorage } from 'node:async_hooks'` was resolved to the edge-stub Proxy, which returned an arrow function (`(...args) => CRASH(prop)`) for the missing property. Arrow functions are not constructable in JavaScript — `new (arrow)()` throws `TypeError: is not a constructor`. Added `AsyncLocalStorage` as a Tier 1 structural stub (real class, synchronous stack-based store) alongside the existing `EventEmitter`, `Readable`, `Writable`, and `Server` stubs. The Proxy's `get` trap now finds `AsyncLocalStorage` via `prop in target` and returns the class directly, making `new AsyncLocalStorage()` succeed during bundle boot.
+- **`@mcpfusion/core` — Edge stub missing `AsyncLocalStorage` (V8 isolate boot crash)** — `edge-stub.ts` did not export `AsyncLocalStorage`, but `@mcpfusion/core`'s own `ask.ts` executes `new AsyncLocalStorage()` at module load time (top-level). When esbuild compiled the server for edge deployment, `import { AsyncLocalStorage } from 'node:async_hooks'` was resolved to the edge-stub Proxy, which returned an arrow function (`(...args) => CRASH(prop)`) for the missing property. Arrow functions are not constructable in JavaScript — `new (arrow)()` throws `TypeError: is not a constructor`. Added `AsyncLocalStorage` as a Tier 1 structural stub (real class, synchronous stack-based store) alongside the existing `EventEmitter`, `Readable`, `Writable`, and `Server` stubs. The Proxy's `get` trap now finds `AsyncLocalStorage` via `prop in target` and returns the class directly, making `new AsyncLocalStorage()` succeed during bundle boot.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.17.3`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.17.3`** — Ensures consistent resolution across the monorepo.
 
 ## [3.17.2] - 2026-04-23
 
 ### Added
 
-- **`@vurb/yaml`** — Exported `loadFromParsedSpec()` from the public API. Enterprise runtimes can now compile directly from a pre-parsed `VurbYamlSpec` (JSON), avoiding double-serialization overhead when the spec is already stored as structured data (e.g., fetched from a database or API).
+- **`@mcpfusion/yaml`** — Exported `loadFromParsedSpec()` from the public API. Enterprise runtimes can now compile directly from a pre-parsed `MCPFusionYamlSpec` (JSON), avoiding double-serialization overhead when the spec is already stored as structured data (e.g., fetched from a database or API).
 
 ### Fixed
 
-- **`@vurb/yaml`** — `interpolateParams()` now throws a descriptive `Error` when a required `{{param}}` placeholder is not provided by the LLM, instead of silently leaving the raw `{{param}}` token in the URL/body. This surfaces missing arguments immediately rather than producing cryptic upstream API errors.
-- **`@vurb/yaml`** — `applyResponseTransform()` multi-path extraction now uses the full dot-path (with dots replaced by underscores) as the result key, preventing key collisions when multiple extract paths share the same final segment (e.g., `user.name` and `org.name` no longer both map to `name`).
+- **`@mcpfusion/yaml`** — `interpolateParams()` now throws a descriptive `Error` when a required `{{param}}` placeholder is not provided by the LLM, instead of silently leaving the raw `{{param}}` token in the URL/body. This surfaces missing arguments immediately rather than producing cryptic upstream API errors.
+- **`@mcpfusion/yaml`** — `applyResponseTransform()` multi-path extraction now uses the full dot-path (with dots replaced by underscores) as the result key, preventing key collisions when multiple extract paths share the same final segment (e.g., `user.name` and `org.name` no longer both map to `name`).
 
 ### Changed
 
-- **`@vurb/yaml`** — `ResolvedConnection` now carries an optional `timeout_ms` field. When declared in `vurb.yaml`, connection-level timeouts are propagated to `executeYamlTool()` via `AbortSignal.timeout()` (default: 30 s). Prevents indefinite hangs on slow upstream APIs.
-- **All `@vurb/*` cross-dependencies updated to `^3.17.2`** — Ensures consistent resolution across the monorepo.
+- **`@mcpfusion/yaml`** — `ResolvedConnection` now carries an optional `timeout_ms` field. When declared in `mcpfusion.yaml`, connection-level timeouts are propagated to `executeYamlTool()` via `AbortSignal.timeout()` (default: 30 s). Prevents indefinite hangs on slow upstream APIs.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.17.2`** — Ensures consistent resolution across the monorepo.
 
 ## [3.17.1] - 2026-04-21
 
 ### Fixed
 
-- **`@vurb/yaml`** — Fixed `ReferenceError: crypto is not defined` in `BasicToolExecutor` and `YamlMcpServer` by importing `randomUUID` from `node:crypto` instead of using bare `globalThis.crypto`. This crashed test runners and Node.js environments where the global `crypto` object is not available.
+- **`@mcpfusion/yaml`** — Fixed `ReferenceError: crypto is not defined` in `BasicToolExecutor` and `YamlMcpServer` by importing `randomUUID` from `node:crypto` instead of using bare `globalThis.crypto`. This crashed test runners and Node.js environments where the global `crypto` object is not available.
 
 ### Added
 
-- **`@vurb/yaml`** — Exported reusable MCP handler helpers: `buildToolsList()`, `buildResourcesList()`, `buildPromptsList()`, and `readResourceContent()` from `YamlMcpServer.ts`. These are now available as public API for enterprise runtimes to reuse without reimplementing handler logic.
-- **`@vurb/core`** — Added `./cli` export path (`@vurb/core/cli`) exposing `readVurbRc()`, `writeVurbRc()`, `loadEnv()`, and `ensureGitignore()` for use by other packages in the monorepo.
+- **`@mcpfusion/yaml`** — Exported reusable MCP handler helpers: `buildToolsList()`, `buildResourcesList()`, `buildPromptsList()`, and `readResourceContent()` from `YamlMcpServer.ts`. These are now available as public API for enterprise runtimes to reuse without reimplementing handler logic.
+- **`@mcpfusion/core`** — Added `./cli` export path (`@mcpfusion/core/cli`) exposing `readMCPFusionrc()`, `writeMCPFusionrc()`, `loadEnv()`, and `ensureGitignore()` for use by other packages in the monorepo.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.17.0`** — Ensures consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.17.0`** — Ensures consistent resolution across the monorepo.
 
 ## [3.17.0] - 2026-04-21
 
 ### Added
 
-#### `@vurb/yaml` — Declarative MCP Server Engine (new package)
+#### `@mcpfusion/yaml` — Declarative MCP Server Engine (new package)
 
-A new first-class package that lets developers define complete MCP servers in a single `vurb.yaml` file — zero TypeScript required. Connections, tools, resources, prompts, and secrets are declared as YAML, compiled at startup, and served as a fully compliant MCP server.
+A new first-class package that lets developers define complete MCP servers in a single `mcpfusion.yaml` file — zero TypeScript required. Connections, tools, resources, prompts, and secrets are declared as YAML, compiled at startup, and served as a fully compliant MCP server.
 
-- **YAML Parser & Schema Validator** — Parses `vurb.yaml` manifests and validates against a strict Zod schema. Detects missing fields, invalid types, and unsupported versions with structured `VurbYamlError` containing `.details[]` arrays for actionable multi-line error messages.
+- **YAML Parser & Schema Validator** — Parses `mcpfusion.yaml` manifests and validates against a strict Zod schema. Detects missing fields, invalid types, and unsupported versions with structured `MCPFusionYamlError` containing `.details[]` arrays for actionable multi-line error messages.
 - **Cross-Reference Validator** — Ensures referential integrity: tools referencing nonexistent connections, `${SECRETS.X}` tokens referencing undeclared secrets, and resources referencing missing connections are all caught at parse time with specific error messages naming the offending tool/connection/secret.
 - **Connection Resolver** — Resolves named YAML connections into fetch-ready HTTP configurations with interpolated base URLs and auth headers. Supports `bearer`, `basic`, `custom_header`, and `none` auth types with secret interpolation.
 - **Tool Compiler** — Compiles declarative tool definitions into `CompiledTool` objects with JSON Schema input, HTTP execution config (method, path, query, body templates), and the full tool trichotomy (`description`, `instruction`, `rules`). Supports MCP tool annotations (`readOnlyHint`, `openWorldHint`, etc.).
@@ -262,22 +319,22 @@ A new first-class package that lets developers define complete MCP servers in a 
 - **Parameter Compiler** — Converts YAML parameter definitions to MCP-compliant JSON Schema (`type`, `required`, `enum`, `description`).
 - **Basic Tool Executor** — Executes compiled tools via plain `fetch()` with `{{param}}` interpolation for path, query, and body templates. Built-in variables: `__NOW_ISO__`, `__NOW_EPOCH__`, `__REQUEST_ID__`. Returns MCP-compliant `ToolCallResult` with `isError` flag.
 - **YAML MCP Server** — `createYamlMcpServer()` creates a real MCP SDK `Server` and registers all compiled tools, resources, and prompts as live MCP handlers. Supports dual transport: **stdio** (default, for Cursor/Claude Desktop) and **Streamable HTTP** (for browser-based dev tools). HTTP transport includes CORS, session management, and graceful shutdown.
-- **DX-First Error Handling** — Every pipeline step (`parse → secrets → connections → tools → resources → prompts`) is wrapped with context-rich `try/catch` blocks producing `VurbYamlError` with structured `.details[]` arrays. Runtime MCP handlers (`resources/read`, `prompts/get`) return actionable error messages listing available resources/prompts and required arguments instead of crashing the server.
+- **DX-First Error Handling** — Every pipeline step (`parse → secrets → connections → tools → resources → prompts`) is wrapped with context-rich `try/catch` blocks producing `MCPFusionYamlError` with structured `.details[]` arrays. Runtime MCP handlers (`resources/read`, `prompts/get`) return actionable error messages listing available resources/prompts and required arguments instead of crashing the server.
 
-#### `@vurb/core` — YAML CLI Plugin Architecture
+#### `@mcpfusion/core` — YAML CLI Plugin Architecture
 
-- **`vurb yaml` command group** — The core CLI now dynamically imports `@vurb/yaml` at runtime when the `yaml` subcommand is used. If the package is not installed, a helpful error message with `npm install @vurb/yaml` is shown.
-- **`vurb yaml validate [file]`** — Validates a `vurb.yaml` manifest and displays server metadata, tool count, resource count, and tool list on success. On failure, displays structured error details.
-- **`vurb yaml dev [file]`** — Starts a local MCP dev server from a YAML manifest. Supports `--transport stdio|http` and `--port` options.
-- **Command parser guard** — Fixed `parseArgs` to only accept the first command token, preventing `vurb yaml validate` from being incorrectly parsed as `validate`.
+- **`mcpfusion yaml` command group** — The core CLI now dynamically imports `@mcpfusion/yaml` at runtime when the `yaml` subcommand is used. If the package is not installed, a helpful error message with `npm install @mcpfusion/yaml` is shown.
+- **`mcpfusion yaml validate [file]`** — Validates a `mcpfusion.yaml` manifest and displays server metadata, tool count, resource count, and tool list on success. On failure, displays structured error details.
+- **`mcpfusion yaml dev [file]`** — Starts a local MCP dev server from a YAML manifest. Supports `--transport stdio|http` and `--port` options.
+- **Command parser guard** — Fixed `parseArgs` to only accept the first command token, preventing `mcpfusion yaml validate` from being incorrectly parsed as `validate`.
 
 #### Documentation
 
-- **`packages/yaml/README.md`** — Production-grade documentation covering the full YAML spec, CLI usage (`vurb yaml validate` / `vurb yaml dev`), programmatic API, architecture overview, and the open-core strategy.
+- **`packages/yaml/README.md`** — Production-grade documentation covering the full YAML spec, CLI usage (`mcpfusion yaml validate` / `mcpfusion yaml dev`), programmatic API, architecture overview, and the open-core strategy.
 
 ### Changed
 
-- **All `@vurb/*` cross-dependencies updated to `^3.17.0`** — All 14 satellite packages now reference `@vurb/core: ^3.17.0` in their dependencies, ensuring consistent resolution across the monorepo.
+- **All `@mcpfusion/*` cross-dependencies updated to `^3.17.0`** — All 14 satellite packages now reference `@mcpfusion/core: ^3.17.0` in their dependencies, ensuring consistent resolution across the monorepo.
 
 ### Test Suite
 
@@ -299,7 +356,7 @@ A new first-class package that lets developers define complete MCP servers in a 
 
 ### Added
 
-#### `@vurb/core` — MCP Elicitation: Human-in-the-Loop for Agentic Workflows
+#### `@mcpfusion/core` — MCP Elicitation: Human-in-the-Loop for Agentic Workflows
 
 A new first-class DSL that enables MCP tool handlers to pause execution, request user input via the MCP client, and resume with typed responses — zero boilerplate, full type inference.
 
@@ -333,28 +390,28 @@ A new first-class DSL that enables MCP tool handlers to pause execution, request
 
 #### All Satellite Packages — Standalone Installation
 
-- **`@vurb/core` promoted from `peerDependencies` to `dependencies`** — All 13 satellite packages (`@vurb/cloudflare`, `@vurb/vercel`, `@vurb/swarm`, `@vurb/testing`, `@vurb/inspector`, `@vurb/jwt`, `@vurb/api-key`, `@vurb/aws`, `@vurb/n8n`, `@vurb/openapi-gen`, `@vurb/prisma-gen`, `@vurb/skills`, `@vurb/oauth`) now declare `@vurb/core` as a real dependency instead of a peer dependency. Previously, running `npm install @vurb/inspector` (or any other satellite) without manually installing `@vurb/core` first would fail with unresolved peer dependency errors. Core is now auto-installed as a transitive dependency, matching the behavior of frameworks like `@trpc/server` and `@nestjs/core`.
+- **`@mcpfusion/core` promoted from `peerDependencies` to `dependencies`** — All 13 satellite packages (`@mcpfusion/cloudflare`, `@mcpfusion/vercel`, `@mcpfusion/swarm`, `@mcpfusion/testing`, `@mcpfusion/inspector`, `@mcpfusion/jwt`, `@mcpfusion/api-key`, `@mcpfusion/aws`, `@mcpfusion/n8n`, `@mcpfusion/openapi-gen`, `@mcpfusion/prisma-gen`, `@mcpfusion/skills`, `@mcpfusion/oauth`) now declare `@mcpfusion/core` as a real dependency instead of a peer dependency. Previously, running `npm install @mcpfusion/inspector` (or any other satellite) without manually installing `@mcpfusion/core` first would fail with unresolved peer dependency errors. Core is now auto-installed as a transitive dependency, matching the behavior of frameworks like `@trpc/server` and `@nestjs/core`.
 
 ### Added
 
 #### Ecosystem Health CI
 
-- **Scheduled smoke tests** — New `ecosystem-health.yml` workflow runs 4× daily (every 6 hours) across Node 18/20/22 × Ubuntu/macOS/Windows (9 matrix combinations). Installs all 14 `@vurb/*` packages from the npm registry and verifies ESM imports, catching publishing regressions (missing files, broken exports) before users do.
+- **Scheduled smoke tests** — New `ecosystem-health.yml` workflow runs 4× daily (every 6 hours) across Node 18/20/22 × Ubuntu/macOS/Windows (9 matrix combinations). Installs all 14 `@mcpfusion/*` packages from the npm registry and verifies ESM imports, catching publishing regressions (missing files, broken exports) before users do.
 - **Daily upstream regression check** — Existing CI workflow now runs on a daily schedule to detect breaking changes from upstream dependencies (`@modelcontextprotocol/sdk`, `zod`, etc.).
 
 ## [3.15.2] - 2026-04-11
 
 ### Added
 
-#### `@vurb/core` — Edge Deploy Listing Sync Control
+#### `@mcpfusion/core` — Edge Deploy Listing Sync Control
 
-- **`vurb deploy --no-marketplace`** — Added a new flag extending the deploy command to bypass reading and sending `vurb.marketplace.json`. This allows developers to deploy new code bundles, schemas, and introspected tool contracts without updating listing metadata like titles, descriptions, and FAQs.
+- **`mcpfusion deploy --no-marketplace`** — Added a new flag extending the deploy command to bypass reading and sending `MCP Fusion.marketplace.json`. This allows developers to deploy new code bundles, schemas, and introspected tool contracts without updating listing metadata like titles, descriptions, and FAQs.
 
 ## [3.15.1] - 2026-04-10
 
 ### Fixed
 
-#### `@vurb/core` — Unified Brand-Based `ToolResponse` Detection
+#### `@mcpfusion/core` — Unified Brand-Based `ToolResponse` Detection
 
 Three fixes eliminating latent architectural fragilities discovered during a deep audit of the core framework.
 
@@ -364,11 +421,11 @@ Three fixes eliminating latent architectural fragilities discovered during a dee
 
 - **`GroupedToolBuilder.invalidateCache()` — encapsulated cache reset** — `ToolRegistry.register()` used duck-type private field mutation (`mergeable._cachedTool = null; mergeable._frozen = false`) to invalidate build caches after merging actions from same-namespace builders. A field rename in `GroupedToolBuilder` would silently break this mechanism. Added a public `invalidateCache()` method to `GroupedToolBuilder` and the `ToolBuilder` interface. `ToolRegistry.register()` now calls `existing.invalidateCache()` via the interface contract, with no knowledge of internal field names.
 
-- **`TOOL_RESPONSE_BRAND` barrel export** — `TOOL_RESPONSE_BRAND` was not re-exported from `@vurb/core`'s public barrel, preventing satellite packages from stamping responses that need brand-based detection. Importing the symbol resolved to `undefined`, causing brand checks to silently fail. Now exported from `core/index.ts` → `index.ts`.
+- **`TOOL_RESPONSE_BRAND` barrel export** — `TOOL_RESPONSE_BRAND` was not re-exported from `@mcpfusion/core`'s public barrel, preventing satellite packages from stamping responses that need brand-based detection. Importing the symbol resolved to `undefined`, causing brand checks to silently fail. Now exported from `core/index.ts` → `index.ts`.
 
-#### `@vurb/oauth` — Branded Response Alignment
+#### `@mcpfusion/oauth` — Branded Response Alignment
 
-- **`createAuthTool` local helpers `ok()`/`fail()`** — The `ok()` and `fail()` helpers in `createAuthTool` constructed `ToolResponse` objects manually (`{ content: [...] }`) without the `TOOL_RESPONSE_BRAND` stamp. After the brand-based detection migration in `@vurb/core`, these unbranded responses were incorrectly re-wrapped by `PostProcessor` as raw data via `success()`, serializing the entire `ToolResponse` object (including `isError`, `content`) as nested JSON — destroying the response structure. Now `ok()` delegates to `success()` and `fail()` stamps the brand explicitly.
+- **`createAuthTool` local helpers `ok()`/`fail()`** — The `ok()` and `fail()` helpers in `createAuthTool` constructed `ToolResponse` objects manually (`{ content: [...] }`) without the `TOOL_RESPONSE_BRAND` stamp. After the brand-based detection migration in `@mcpfusion/core`, these unbranded responses were incorrectly re-wrapped by `PostProcessor` as raw data via `success()`, serializing the entire `ToolResponse` object (including `isError`, `content`) as nested JSON — destroying the response structure. Now `ok()` delegates to `success()` and `fail()` stamps the brand explicitly.
 
 ### Changed
 
@@ -378,7 +435,7 @@ Three fixes eliminating latent architectural fragilities discovered during a dee
 
 ### Added
 
-#### `@vurb/core` — JSON Object Parameters for FluentToolBuilder
+#### `@mcpfusion/core` — JSON Object Parameters for FluentToolBuilder
 
 Two new fluent parameter methods for tools that accept arbitrary structured JSON payloads, configuration maps, or filter sets — without forcing callers to serialize objects as strings.
 
@@ -413,7 +470,7 @@ f.action('reports.generate')
 
 ### Fixed
 
-#### `@vurb/core` — Zod 4 JSON Schema Compatibility
+#### `@mcpfusion/core` — Zod 4 JSON Schema Compatibility
 
 - **`zodToJsonSchema` silently returns empty schemas on Zod 4** — The `zod-to-json-schema` library (v3.x) is incompatible with Zod 4: it returns `{ "$schema": "..." }` with no `properties` or `required` fields, causing all MCP tool parameters to disappear from the `inputSchema` exposed to clients. This affected any MCP server installed with Zod 4 (e.g., `zod@^4.0.0`), making tools appear to accept no arguments even when parameters like `app_name` were correctly declared via `.withString()`.
 
@@ -432,13 +489,13 @@ f.action('reports.generate')
 
 ## [v3.14.6]
 ### Fixed
-- Fixed ReferenceError in `@vurb/core` within `isolated-vm` execution by replacing `performance.now()` with `Date.now()` for telemetry and duration calculation, ensuring V8 compatibility.
+- Fixed ReferenceError in `@mcpfusion/core` within `isolated-vm` execution by replacing `performance.now()` with `Date.now()` for telemetry and duration calculation, ensuring V8 compatibility.
 
 ## [3.14.5] - 2026-03-31
 
 ### Fixed
 
-#### `@vurb/core` — Edge Dispatch: Structured Clone Boundary Protection
+#### `@mcpfusion/core` — Edge Dispatch: Structured Clone Boundary Protection
 
 - **`__vinkius_edge_dispatch` now returns JSON string instead of raw object** — The edge dispatch function (`startServer` edge mode) previously returned the raw `routeCall()` result object directly across the V8 isolate structured-clone boundary. If any handler returned an object containing non-clonable values (`Promise`, `Function`, `Symbol`), the `isolated-vm` structured clone failed with `#<Promise> could not be cloned`, crashing the runtime. Fixed by wrapping the return value in `JSON.stringify()` inside the isolate before crossing the boundary. The host (`IsolateRunner`) calls `JSON.parse()` on the other side. `JSON.stringify` neutralizes all non-serializable values automatically (Promises become `{}`, Functions are stripped), eliminating the entire class of `DataCloneError` at the isolate boundary.
 
@@ -446,7 +503,7 @@ f.action('reports.generate')
 
 ### Fixed
 
-#### `@vurb/core` — Edge Deploy: V8 Isolate Boot Failures
+#### `@mcpfusion/core` — Edge Deploy: V8 Isolate Boot Failures
 
 Three fixes enabling successful V8 isolate boot for edge-deployed MCP servers that depend on Zod or the MCP SDK.
 
@@ -457,14 +514,14 @@ Three fixes enabling successful V8 isolate boot for edge-deployed MCP servers th
 
 ### Fixed
 
-#### `@vurb/core` — Marketplace Manifest Authentication Block
+#### `@mcpfusion/core` — Marketplace Manifest Authentication Block
 
-- **`vurb deploy` and `normalizeMarketplacePayload` now retain `authentication` field** — Previously, the `authentication` block in `vurb.marketplace.json` (used to define the UX strategy for credentials, such as `{"method": "static", "provider": "X", ...}`) was completely ignored by the TypeScript definitions, causing the CLI to strip it out when building the deploy payload. Added the `MarketplaceAuthentication` interface to `MarketplaceManifest.ts`, enabling parsing, camelCase-to-snake_case property mapping (`redirectUri` → `redirect_uri`), and i18n support for `setupInstructions`. This ensures the setup instructions reach the Cloud API intact.
+- **`mcpfusion deploy` and `normalizeMarketplacePayload` now retain `authentication` field** — Previously, the `authentication` block in `MCP Fusion.marketplace.json` (used to define the UX strategy for credentials, such as `{"method": "static", "provider": "X", ...}`) was completely ignored by the TypeScript definitions, causing the CLI to strip it out when building the deploy payload. Added the `MarketplaceAuthentication` interface to `MarketplaceManifest.ts`, enabling parsing, camelCase-to-snake_case property mapping (`redirectUri` → `redirect_uri`), and i18n support for `setupInstructions`. This ensures the setup instructions reach the Cloud API intact.
 
 ## [3.14.0] - 2026-03-29
 ### Added
 
-#### `@vurb/core` — OAuth 2.0 BYOA (Bring Your Own Account)
+#### `@mcpfusion/core` — OAuth 2.0 BYOA (Bring Your Own Account)
 
 Marketplace buyers can now authenticate with OAuth 2.0 providers (Calendly, Salesforce, Slack, Zoom, etc.) using their own OAuth credentials — orchestrated entirely by the platform, with zero MCP server code changes.
 
@@ -518,19 +575,19 @@ export const credentials = defineCredentials({
 
 ### Fixed
 
-#### `@vurb/core` — Credential Schema Not Persisted on Deploy
+#### `@mcpfusion/core` — Credential Schema Not Persisted on Deploy
 
-- **`vurb deploy` now injects `credential_schema` into the manifest payload** — Servers using `defineCredentials()` correctly generated the credential schema during introspection, but the `commandDeploy` function never injected `result.credentials` into the `manifest` object before uploading. The backend (`EdgeDeployController`) reads `manifest.credentials` to persist the schema on the `mcp_servers` record, so all deployed servers had `credential_schema = null` in the database. Buyers subscribing to these servers never saw the "Authentication" setup tab because `credential_schema` was empty. Fixed by injecting `result.credentials` into the manifest when present. The `IntrospectResult` type now includes an optional `credentials` field.
+- **`mcpfusion deploy` now injects `credential_schema` into the manifest payload** — Servers using `defineCredentials()` correctly generated the credential schema during introspection, but the `commandDeploy` function never injected `result.credentials` into the `manifest` object before uploading. The backend (`EdgeDeployController`) reads `manifest.credentials` to persist the schema on the `mcp_servers` record, so all deployed servers had `credential_schema = null` in the database. Buyers subscribing to these servers never saw the "Authentication" setup tab because `credential_schema` was empty. Fixed by injecting `result.credentials` into the manifest when present. The `IntrospectResult` type now includes an optional `credentials` field.
 
 ## [3.13.0] - 2026-03-28
 
 ### Added
 
-#### `@vurb/core` — Marketplace Prompt Examples
+#### `@mcpfusion/core` — Marketplace Prompt Examples
 
 Publishers can now showcase realistic AI agent interactions directly in marketplace listings, giving buyers a clear preview of what the MCP server can do — before subscribing.
 
-- **`promptExamples`** — New manifest field in `vurb.marketplace.json` for declaring conversational demos (user → agent exchanges). Each example has a `prompt` (what the user asks) and a `response` (what the agent replies), both supporting full i18n (`en`, `pt`, `es`, `fr`).
+- **`promptExamples`** — New manifest field in `MCP Fusion.marketplace.json` for declaring conversational demos (user → agent exchanges). Each example has a `prompt` (what the user asks) and a `response` (what the agent replies), both supporting full i18n (`en`, `pt`, `es`, `fr`).
 - **`MarketplacePromptExample` interface** — New type in `MarketplaceManifest.ts` with `I18nString`-capable `prompt` and `response` fields.
 - **Normalizer support** — `normalizeMarketplacePayload()` extracts canonical `en` values and builds `prompt_i18n` / `response_i18n` maps for multilingual examples.
 - **File-ref resolution** — `readMarketplaceManifest()` resolves `file:` references in prompt example fields, consistent with existing FAQ and long description behavior.
@@ -558,15 +615,15 @@ Publishers can now showcase realistic AI agent interactions directly in marketpl
 
 ### Fixed
 
-#### `@vurb/core` — Graceful Changelog File Reference
+#### `@mcpfusion/core` — Graceful Changelog File Reference
 
-- **Missing `CHANGELOG.md` no longer blocks marketplace sync** — When `vurb.marketplace.json` references `"changelog": "file:CHANGELOG.md"` but the file does not exist, `readMarketplaceManifest()` previously threw, causing the entire marketplace payload to be set to `null`. The deploy succeeded (edge bundle was uploaded) but the listing was never created or updated. Now the changelog field is silently dropped and the rest of the manifest (title, descriptions, FAQs, integration, tags) is sent normally. A missing changelog is a cosmetic omission, not a deployment blocker.
+- **Missing `CHANGELOG.md` no longer blocks marketplace sync** — When `MCP Fusion.marketplace.json` references `"changelog": "file:CHANGELOG.md"` but the file does not exist, `readMarketplaceManifest()` previously threw, causing the entire marketplace payload to be set to `null`. The deploy succeeded (edge bundle was uploaded) but the listing was never created or updated. Now the changelog field is silently dropped and the rest of the manifest (title, descriptions, FAQs, integration, tags) is sent normally. A missing changelog is a cosmetic omission, not a deployment blocker.
 
 ## [3.12.6] - 2026-03-28
 
 ### Fixed
 
-#### `@vurb/core` — Resilient esbuild Discovery (4-Strategy Resolution)
+#### `@mcpfusion/core` — Resilient esbuild Discovery (4-Strategy Resolution)
 
 - **`resolveEsbuild()` replaces blind `npm install`** — Projects with `tsx` + `vitest` have conflicting pinned esbuild versions (`~0.27` vs `0.21`), causing `npm install -D esbuild` to fail with `ERESOLVE`. The new `resolveEsbuild()` function tries 4 strategies in order:
   1. Direct ESM `import('esbuild')`
@@ -580,7 +637,7 @@ Publishers can now showcase realistic AI agent interactions directly in marketpl
 
 ### Fixed
 
-#### `@vurb/core` — esbuild Auto-install: ESM Resolution Cache Bypass
+#### `@mcpfusion/core` — esbuild Auto-install: ESM Resolution Cache Bypass
 
 - **`createRequire()` replaces `import()` after esbuild auto-install** — Node.js ESM caches resolution failures per specifier. After `import('esbuild')` fails (esbuild not installed), the runtime caches that failure. Even after `npm install -D esbuild` succeeds, a second `import('esbuild')` returns the cached error. The fix uses `createRequire()` from `node:module` anchored at the project root, which uses CJS resolution and does not cache ESM failures. Applied to both `introspect.ts` (validate) and `deploy.ts`.
 
@@ -588,25 +645,25 @@ Publishers can now showcase realistic AI agent interactions directly in marketpl
 
 ### Fixed
 
-#### `@vurb/core` — esbuild Auto-install Uses Project Root
+#### `@mcpfusion/core` — esbuild Auto-install Uses Project Root
 
-- **`vurb validate` esbuild auto-install now runs from the project root** — In v3.12.3, `runIntrospection()` ran `npm install -D esbuild` from `dirname(absEntry)` (e.g., `src/`), where no `package.json` exists. The function now accepts an optional `projectRoot` parameter, and `commandValidate` passes the correct `cwd`. Falls back to `dirname(absEntry)` if `projectRoot` is not provided.
+- **`fusion validate` esbuild auto-install now runs from the project root** — In v3.12.3, `runIntrospection()` ran `npm install -D esbuild` from `dirname(absEntry)` (e.g., `src/`), where no `package.json` exists. The function now accepts an optional `projectRoot` parameter, and `commandValidate` passes the correct `cwd`. Falls back to `dirname(absEntry)` if `projectRoot` is not provided.
 
 ## [3.12.3] - 2026-03-28
 
 ### Fixed
 
-#### `@vurb/core` — Introspection Pipeline Auto-installs esbuild
+#### `@mcpfusion/core` — Introspection Pipeline Auto-installs esbuild
 
-- **`vurb validate` and `vurb deploy` no longer fail when esbuild is missing** — The shared introspection pipeline (`runIntrospection()`) now auto-installs esbuild if the initial `import('esbuild')` fails. It runs `npm install -D esbuild` silently and retries, matching the existing auto-install pattern in `commandDeploy`. Previously, `vurb validate` failed with `Cannot find package 'esbuild'` in projects that didn't explicitly list esbuild as a devDependency.
+- **`fusion validate` and `mcpfusion deploy` no longer fail when esbuild is missing** — The shared introspection pipeline (`runIntrospection()`) now auto-installs esbuild if the initial `import('esbuild')` fails. It runs `npm install -D esbuild` silently and retries, matching the existing auto-install pattern in `commandDeploy`. Previously, `fusion validate` failed with `Cannot find package 'esbuild'` in projects that didn't explicitly list esbuild as a devDependency.
 
 ## [3.12.2] - 2026-03-28
 
 ### Fixed
 
-#### `@vurb/core` — Resilient `vurb update`
+#### `@mcpfusion/core` — Resilient `fusion update`
 
-- **`vurb update` no longer fails on freshly published versions** — Added `--prefer-online` to the `npm install` invocation to bypass stale npm cache metadata. Previously, `npm install @vurb/core@X.Y.Z` would fail with `ETARGET` immediately after a publish because npm's local cache still listed the old version as latest.
+- **`fusion update` no longer fails on freshly published versions** — Added `--prefer-online` to the `npm install` invocation to bypass stale npm cache metadata. Previously, `npm install @mcpfusion/core@X.Y.Z` would fail with `ETARGET` immediately after a publish because npm's local cache still listed the old version as latest.
 - **Automatic retry with per-package fallback** — If the batch `npm install` fails, the command retries once. If the retry also fails, it falls back to installing each package individually with per-package error reporting — partial updates succeed instead of all-or-nothing failure.
 - **Reduced noise** — Added `--no-fund --no-audit` flags and increased timeout to 120s for batch installs.
 
@@ -614,9 +671,9 @@ Publishers can now showcase realistic AI agent interactions directly in marketpl
 
 ### Fixed
 
-#### `@vurb/core` — Edge Deploy Bundle Sanitizer
+#### `@mcpfusion/core` — Edge Deploy Bundle Sanitizer
 
-- **Framework-internal patterns no longer trigger server-side security scan** — `sanitizeBundleForEdge()` now transforms four additional patterns that are legitimately emitted by `@vurb/core` internals when bundled inline via esbuild. Previously, deploying any server that used `requireCredential()` or edge bridge APIs would fail with `bundle rejected by security scan` because the framework's own credential injection and edge bridge code matched the server-side static analysis regexes:
+- **Framework-internal patterns no longer trigger server-side security scan** — `sanitizeBundleForEdge()` now transforms four additional patterns that are legitimately emitted by `@mcpfusion/core` internals when bundled inline via esbuild. Previously, deploying any server that used `requireCredential()` or edge bridge APIs would fail with `bundle rejected by security scan` because the framework's own credential injection and edge bridge code matched the server-side static analysis regexes:
   - `__vinkius_secrets` → Unicode escape (`\u005f_vinkius_secrets`) breaks the `/__vinkius_secrets/` regex while remaining a valid JS identifier at V8 runtime
   - `process.env` → bracket notation (`process["env"]`) breaks the `/\bprocess\s*\.\s*env\b/` regex
   - `__vinkius_edge_` → Unicode escape (`\u005f_vinkius_edge_`) breaks the `/__vinkius_edge_/` regex
@@ -626,19 +683,19 @@ Publishers can now showcase realistic AI agent interactions directly in marketpl
 
 ### Added
 
-#### `@vurb/core` — CLI Developer Experience Expansion
+#### `@mcpfusion/core` — CLI Developer Experience Expansion
 
-Four new CLI commands to bring the Vurb CLI to industry-standard developer experience and platform reliability.
+Four new CLI commands to bring the MCP Fusion CLI to industry-standard developer experience and platform reliability.
 
-- **`vurb version`** — Displays CLI version, Node.js/OS environment, and a table of all installed `@vurb/*` packages with their versions. Supports `-v` and `--version` shortcuts.
-- **`vurb update`** — Automatically scans all `@vurb/*` packages, fetches the latest versions from the npm registry, and performs targeted `npm install` for outdated packages. Displays a clear before/after comparison table.
-- **`vurb doctor`** — Comprehensive diagnostic suite that validates 8 environment checks: Node.js version (≥ 18), `@vurb/core` installation, `.vurbrc` configuration, deploy token validity (with live API probe), server entrypoint detection, esbuild availability, and `vurb.lock` status. Includes pass/warn/fail summary.
-- **`vurb validate`** — Live server smoke test inspired by `terraform validate`. Boots the server via introspection (`VURB_INTROSPECT=1`), compiles contracts, and runs 7 validation checks: entrypoint resolution, esbuild build, server boot timing, tool registration audit (grouped vs flat), description coverage, schema parameter analysis, and lockfile drift detection via SHA-256 comparison.
+- **`fusion version`** — Displays CLI version, Node.js/OS environment, and a table of all installed `@mcpfusion/*` packages with their versions. Supports `-v` and `--version` shortcuts.
+- **`fusion update`** — Automatically scans all `@mcpfusion/*` packages, fetches the latest versions from the npm registry, and performs targeted `npm install` for outdated packages. Displays a clear before/after comparison table.
+- **`mcpfusion doctor`** — Comprehensive diagnostic suite that validates 8 environment checks: Node.js version (≥ 18), `@mcpfusion/core` installation, `.MCPFusionrc` configuration, deploy token validity (with live API probe), server entrypoint detection, esbuild availability, and `fusion.lock` status. Includes pass/warn/fail summary.
+- **`fusion validate`** — Live server smoke test inspired by `terraform validate`. Boots the server via introspection (`FUSION_INTROSPECT=1`), compiles contracts, and runs 7 validation checks: entrypoint resolution, esbuild build, server boot timing, tool registration audit (grouped vs flat), description coverage, schema parameter analysis, and lockfile drift detection via SHA-256 comparison.
 
 #### Shared Infrastructure Modules
 
-- **`npm-registry.ts`** — Centralized module for scanning declared and installed `@vurb/*` packages, fetching latest versions from the npm registry with timeout handling, and enriching package lists with registry data.
-- **`introspect.ts`** — Shared introspection pipeline extracted from `deploy.ts`. Boots the server in non-transport mode, compiles `ToolContract` surfaces, generates lockfile manifests, and extracts tool entries (flat and grouped). Reused by both `vurb deploy` and `vurb validate`.
+- **`npm-registry.ts`** — Centralized module for scanning declared and installed `@mcpfusion/*` packages, fetching latest versions from the npm registry with timeout handling, and enriching package lists with registry data.
+- **`introspect.ts`** — Shared introspection pipeline extracted from `deploy.ts`. Boots the server in non-transport mode, compiles `ToolContract` surfaces, generates lockfile manifests, and extracts tool entries (flat and grouped). Reused by both `mcpfusion deploy` and `fusion validate`.
 
 ### Test Suite
 
@@ -652,10 +709,10 @@ Four new CLI commands to bring the Vurb CLI to industry-standard developer exper
 
 ### Fixed
 
-#### `@vurb/core` — Deploy Bundle Size & Deduplication
+#### `@mcpfusion/core` — Deploy Bundle Size & Deduplication
 
 - **Bundle size limit increased from 500KB to 1.5MB** — The previous 512KB limit was too restrictive for community-developed MCP servers that include standard third-party dependencies. All five size gates (CLI `MAX_BUNDLE_SIZE`, API controller `bundle`/`raw_size` validation, API service base64/raw guards) bumped in sync to 1,536,000 bytes (raw) / 2,100,000 bytes (base64).
-- **MCP SDK deduplication** — `edgeStubPlugin()` now intercepts `@modelcontextprotocol/sdk` imports and provides empty modules, preventing esbuild from bundling a second copy (~200KB saved). `@vurb/core` already bundles the SDK internally — user-listed copies are redundant.
+- **MCP SDK deduplication** — `edgeStubPlugin()` now intercepts `@modelcontextprotocol/sdk` imports and provides empty modules, preventing esbuild from bundling a second copy (~200KB saved). `@mcpfusion/core` already bundles the SDK internally — user-listed copies are redundant.
 
 ## [3.11.0] - 2026-03-27
 
@@ -673,7 +730,7 @@ Four new CLI commands to bring the Vurb CLI to industry-standard developer exper
 - **`compatibility`** — MCP clients this server is tested with (e.g. `["claude-desktop", "cursor", "cline"]`)
 
 #### Deploy Warnings
-- **Non-blocking category warnings** — When a manifest includes category slugs that don't exist in the marketplace, `vurb deploy` now displays a `⚠ Warning` with guidance instead of silently dropping them. Deploys never fail for category mismatches.
+- **Non-blocking category warnings** — When a manifest includes category slugs that don't exist in the marketplace, `mcpfusion deploy` now displays a `⚠ Warning` with guidance instead of silently dropping them. Deploys never fail for category mismatches.
 
 ### Changed
 - `normalizeMarketplacePayload()` now maps all new integration fields from camelCase to snake_case for the deploy API payload.
@@ -683,12 +740,12 @@ Four new CLI commands to bring the Vurb CLI to industry-standard developer exper
 
 ### Added
 
-#### `@vurb/core` — Marketplace Behavioral Transparency
+#### `@mcpfusion/core` — Marketplace Behavioral Transparency
 
-Vinkius Cloud now auto-computes a **Behavioral Trust Score** from the `CapabilityLockfile` (vurb.lock) at deploy time and exposes a public **Security Passport** on every marketplace listing — zero seller effort required.
+Vinkius Cloud now auto-computes a **Behavioral Trust Score** from the `CapabilityLockfile` (fusion.lock) at deploy time and exposes a public **Security Passport** on every marketplace listing — zero seller effort required.
 
 - **Behavioral Trust Score** — Auto-computed from 10 lockfile signals (tool descriptions, entitlements, destructive action flags, middleware chain, cognitive guardrails, unbounded collections, schema field count, credential schema, integrity digest). Assigns a tier badge: 🏆 Gold (≥ 85) · 🥈 Silver (≥ 60) · 🥉 Bronze (≥ 40) · ⚪ Unrated (< 40).
-- **Security Passport** — Public transparency tab rendered on every listing detail page. Displays entitlements grid (network, filesystem, subprocess, codeEvaluation), tool surface (count + destructive actions flagged), middleware chain, and cryptographic integrity digest — all auto-extracted from `vurb.lock`.
+- **Security Passport** — Public transparency tab rendered on every listing detail page. Displays entitlements grid (network, filesystem, subprocess, codeEvaluation), tool surface (count + destructive actions flagged), middleware chain, and cryptographic integrity digest — all auto-extracted from `fusion.lock`.
 - **Publisher Type** — New `publisher_type` field (`official` | `partner` | `community`) at the MCP server level. Official and Partner status require admin verification after review.
 - **i18n Marketplace Descriptions** — Sellers can now provide `short_description` and `long_description` in EN, PT, ES, and FR via a shared `I18nLangTabs` component. Canonical `en` field is maintained for backward compatibility.
 
@@ -702,7 +759,7 @@ Vinkius Cloud now auto-computes a **Behavioral Trust Score** from the `Capabilit
 
 ### Added
 
-#### `@vurb/core` — BYOC Credentials System (Bring Your Own Credentials)
+#### `@mcpfusion/core` — BYOC Credentials System (Bring Your Own Credentials)
 
 A new first-class API enabling marketplace-publishable MCP servers to declare and consume per-buyer credentials securely, without ever touching the seller's code or secrets.
 
@@ -714,35 +771,35 @@ A new first-class API enabling marketplace-publishable MCP servers to declare an
 
 ### Security
 
-- **Server-side credential injection scanner** (`@vurb/core`) — `vurb deploy` server now runs a static analysis pipeline that rejects bundles attempting to intercept or exfiltrate the credential injection mechanism. Blocked patterns include: direct access to `__vinkius_secrets`, `globalThis.*secrets*`, `process.env`, `Object.keys(globalThis)`, `JSON.stringify(globalThis)`, and related patterns. Returns HTTP 422 with structured `violations[]` response. Client-side scanning was removed — the server is the authoritative security boundary.
-- **CLI violation display** — `vurb deploy` now parses 422 responses and presents a structured violations list to the developer with actionable messages, instead of a raw HTTP error.
+- **Server-side credential injection scanner** (`@mcpfusion/core`) — `mcpfusion deploy` server now runs a static analysis pipeline that rejects bundles attempting to intercept or exfiltrate the credential injection mechanism. Blocked patterns include: direct access to `__vinkius_secrets`, `globalThis.*secrets*`, `process.env`, `Object.keys(globalThis)`, `JSON.stringify(globalThis)`, and related patterns. Returns HTTP 422 with structured `violations[]` response. Client-side scanning was removed — the server is the authoritative security boundary.
+- **CLI violation display** — `mcpfusion deploy` now parses 422 responses and presents a structured violations list to the developer with actionable messages, instead of a raw HTTP error.
 
 ### Test Suite
 
-- **`credentials.test.ts`** (`@vurb/core`) — New test file covering `defineCredentials` schema registration, `requireCredential` runtime resolution (secrets injection, env fallback, provided fallback, missing required), and `CredentialsContext` typed access.
+- **`credentials.test.ts`** (`@mcpfusion/core`) — New test file covering `defineCredentials` schema registration, `requireCredential` runtime resolution (secrets injection, env fallback, provided fallback, missing required), and `CredentialsContext` typed access.
 
 ## [3.8.3] - 2026-03-26
 
 ### Fixed
 
-- **Introspection action expansion** (`@vurb/core`) — `vurb deploy` now correctly expands grouped tools into individual action entries for both the CLI output and the dashboard sync payload. A namespace like `compliance` with actions `obligations`, `timeline`, and `generate_report` now reports three separate entries (`compliance.obligations`, `compliance.timeline`, `compliance.generate_report`). Flat tools with a single action remain unchanged. The previous implementation incorrectly cast `LockfileToolSurface.actions` (`readonly string[]`) to a `Record` type, causing a TS2352 build error; now uses the pre-lockfile `contracts` (`ToolContract.surface.actions`) which carries per-action `ActionContract` with description fields.
-- **Deploy success banner styling** (`@vurb/core`) — The success line is now plain white text with only the elapsed time highlighted in green, replacing the previous magenta/dim/bold mix.
+- **Introspection action expansion** (`@mcpfusion/core`) — `mcpfusion deploy` now correctly expands grouped tools into individual action entries for both the CLI output and the dashboard sync payload. A namespace like `compliance` with actions `obligations`, `timeline`, and `generate_report` now reports three separate entries (`compliance.obligations`, `compliance.timeline`, `compliance.generate_report`). Flat tools with a single action remain unchanged. The previous implementation incorrectly cast `LockfileToolSurface.actions` (`readonly string[]`) to a `Record` type, causing a TS2352 build error; now uses the pre-lockfile `contracts` (`ToolContract.surface.actions`) which carries per-action `ActionContract` with description fields.
+- **Deploy success banner styling** (`@mcpfusion/core`) — The success line is now plain white text with only the elapsed time highlighted in green, replacing the previous magenta/dim/bold mix.
 
 ## [3.8.1] - 2026-03-25
 
 ### Fixed
 
-- **`resources/list` handler computed at boot instead of per-request** (`@vurb/core`) — `registerResourceHandlers` registered the resource list via an IIFE, computing it once at `attachToServer()` time. Resources registered or removed from `ResourceRegistry` after initialization were never reflected in subsequent `resources/list` responses. Fixed by wrapping the list computation in an arrow function that is called on every request.
+- **`resources/list` handler computed at boot instead of per-request** (`@mcpfusion/core`) — `registerResourceHandlers` registered the resource list via an IIFE, computing it once at `attachToServer()` time. Resources registered or removed from `ResourceRegistry` after initialization were never reflected in subsequent `resources/list` responses. Fixed by wrapping the list computation in an arrow function that is called on every request.
 
-- **Variable shadowing: `signal` redeclared inside FHP block** (`@vurb/core`) — Inside `createToolCallHandler`, the outer `signal` (extracted at the top of the handler) was shadowed by a new `const signal` declaration inside the FHP handoff block. Renamed the inner variable to `handoffSignal` for clarity and to avoid potential misuse during future refactors.
+- **Variable shadowing: `signal` redeclared inside FHP block** (`@mcpfusion/core`) — Inside `createToolCallHandler`, the outer `signal` (extracted at the top of the handler) was shadowed by a new `const signal` declaration inside the FHP handoff block. Renamed the inner variable to `handoffSignal` for clarity and to avoid potential misuse during future refactors.
 
-- **`SwarmGateway.hasActiveHandoff` returned `false` during `connecting` phase** (`@vurb/swarm`) — When a handoff was activating but not yet fully connected, `hasActiveHandoff()` returned `false` (it only matched `status === 'active'`). This caused `ServerAttachment` to skip the `proxyToolsCall` path entirely, routing the LLM's tool call to the local gateway instead of returning the correct `HANDOFF_CONNECTING` error. Fixed by using `_sessions.has(sessionId)` — `proxyToolsCall` already handles `connecting` sessions correctly with a descriptive retry error.
+- **`SwarmGateway.hasActiveHandoff` returned `false` during `connecting` phase** (`@mcpfusion/swarm`) — When a handoff was activating but not yet fully connected, `hasActiveHandoff()` returned `false` (it only matched `status === 'active'`). This caused `ServerAttachment` to skip the `proxyToolsCall` path entirely, routing the LLM's tool call to the local gateway instead of returning the correct `HANDOFF_CONNECTING` error. Fixed by using `_sessions.has(sessionId)` — `proxyToolsCall` already handles `connecting` sessions correctly with a descriptive retry error.
 
 ## [3.8.0] - 2026-03-22
 
 ### Added
 
-#### `@vurb/swarm` — Federated Handoff Protocol (new package)
+#### `@mcpfusion/swarm` — Federated Handoff Protocol (new package)
 
 A new first-class package implementing the **Federated Handoff Protocol (FHP)**: a production-ready multi-agent orchestration layer that lets a single gateway MCP server dynamically hand off LLM sessions to specialist upstream micro-servers — and bring them back — without the LLM losing context.
 
@@ -776,7 +833,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
     - Hard-truncates at 2000 characters
     - Wraps in `<upstream_report source="…" trusted="false">` XML envelope
 
-- **Zero-trust delegation token flow (`@vurb/core` integration)**
+- **Zero-trust delegation token flow (`@mcpfusion/core` integration)**
   - `mintDelegationToken()` — HMAC-SHA256 signed payload: `iss`, `sub`, `iat`, `exp`, `tid`, optional `traceparent`
   - Claim-Check pattern: carry-over state > 2 KB is stored in `HandoffStateStore`; only the UUID key travels in the token
   - `requireGatewayClearance` middleware for upstream servers: verifies HMAC, checks expiry, hydrates carry-over state via atomic one-shot read
@@ -786,7 +843,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
   - Propagated to upstream via `traceparent` HTTP header and embedded in the delegation token
   - Accessible on upstream via `ctx.traceparent` — correlates gateway ↔ specialist spans in any OpenTelemetry backend
 
-#### `@vurb/core` — FHP security hardening
+#### `@mcpfusion/core` — FHP security hardening
 
 - **`EXPIRED_DELEGATION_TOKEN` error on missing Claim-Check state** — `verifyDelegationToken()` previously silently removed `state_id` and continued when the corresponding state was not found in the store (expired or already consumed). Now throws explicitly with `EXPIRED_DELEGATION_TOKEN`, enforcing fail-fast semantics and preventing silent context loss.
 
@@ -794,13 +851,13 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 - **`InMemoryHandoffStateStore`** — default in-process store suitable for single-instance deployments; uses two-phase `get` + `delete` (state is never irrecoverably lost on in-process crash, but concurrent requests can both succeed — documented behaviour).
 
-#### `@vurb/cloudflare` and `@vurb/vercel` — test coverage
+#### `@mcpfusion/cloudflare` and `@mcpfusion/vercel` — test coverage
 
 - Added `"test": "vitest run"` script and `vitest` devDependency to both adapter packages. Existing test files (`waitUntilCleanup-bug103.test.ts`, `VercelAdapter.test.ts`, `contextFactoryGuard-bug89.test.ts`) were already present but were not executed by `npm test --workspaces`.
 
 ### Fixed
 
-- **`DelegationToken.ts` — silent state loss on replay/expiry** (`@vurb/core`) — When `state_id` was present in token claims but the state was not found in the store (already consumed or TTL-expired), the old code silently deleted `state_id` from claims and continued. A replayed token would be accepted with partial context, allowing unintended downstream access. Fixed: explicit `EXPIRED_DELEGATION_TOKEN` rejection.
+- **`DelegationToken.ts` — silent state loss on replay/expiry** (`@mcpfusion/core`) — When `state_id` was present in token claims but the state was not found in the store (already consumed or TTL-expired), the old code silently deleted `state_id` from claims and continued. A replayed token would be accepted with partial context, allowing unintended downstream access. Fixed: explicit `EXPIRED_DELEGATION_TOKEN` rejection.
 
 ### Security
 
@@ -812,7 +869,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Test Suite
 
-- **New package: `@vurb/swarm`** — 7 test files, 158 tests covering:
+- **New package: `@mcpfusion/swarm`** — 7 test files, 158 tests covering:
   - `SwarmGateway` full lifecycle (activation, proxy, return, dispose)
   - `NamespaceRewriter` prefix/unprefix and `NamespaceError`
   - `ReturnTripInjector` injection, deduplication, and `formatSafeReturn` anti-IPI
@@ -820,15 +877,15 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
   - Concurrent session activation and session limit enforcement
   - Token replay and expiry rejection end-to-end
 
-- **`DelegationToken.deep.test.ts`** (`@vurb/core`) — 5 new tests:
+- **`DelegationToken.deep.test.ts`** (`@mcpfusion/core`) — 5 new tests:
   - Minimal atomic store (exercises the `getAndDelete`-only code path)
   - First/second verification with atomic store (one-shot via `getAndDelete`)
   - Pre-deleted state → `EXPIRED_DELEGATION_TOKEN`
   - Concurrent verification with atomic store: exactly 1 succeeds, 1 rejected
   - Concurrent verification with two-phase store: both succeed (documented behaviour); third call correctly rejected
 
-- **`@vurb/cloudflare`** — 1 file, 3 tests (previously not executed)
-- **`@vurb/vercel`** — 2 files, 26 tests (previously not executed)
+- **`@mcpfusion/cloudflare`** — 1 file, 3 tests (previously not executed)
+- **`@mcpfusion/vercel`** — 2 files, 26 tests (previously not executed)
 
 
 ## [3.7.13] - 2026-03-21
@@ -885,8 +942,8 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Fixed
 
-- **`vurb remote --server-id` overwrites existing remote URL** — Running `vurb remote --server-id <uuid>` without an explicit `--remote` URL would overwrite the existing remote (e.g. `http://localhost:8080`) with the default production URL (`https://cloud.vinkius.com`), causing deploy failures with "unexpected non-JSON response". Now only writes the `remote` key when the user explicitly provides a URL; otherwise preserves the existing value from `.vurbrc`.
-- **`vurb token` does not update `serverId`** — Setting a new token via `vurb token <value>` saved the token but left the old `serverId` in `.vurbrc`. When the new token belonged to a different server, subsequent `vurb deploy` failed with "connection token does not belong to this server". Now auto-resolves `serverId` by calling `GET /api/token/info` with the new token and updating `.vurbrc` automatically.
+- **`mcpfusion remote --server-id` overwrites existing remote URL** — Running `mcpfusion remote --server-id <uuid>` without an explicit `--remote` URL would overwrite the existing remote (e.g. `http://localhost:8080`) with the default production URL (`https://cloud.vinkius.com`), causing deploy failures with "unexpected non-JSON response". Now only writes the `remote` key when the user explicitly provides a URL; otherwise preserves the existing value from `.MCPFusionrc`.
+- **`mcpfusion token` does not update `serverId`** — Setting a new token via `mcpfusion token <value>` saved the token but left the old `serverId` in `.MCPFusionrc`. When the new token belonged to a different server, subsequent `mcpfusion deploy` failed with "connection token does not belong to this server". Now auto-resolves `serverId` by calling `GET /api/token/info` with the new token and updating `.MCPFusionrc` automatically.
 
 ## [3.7.7] - 2026-03-19
 
@@ -898,20 +955,20 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Fixed
 
-- **Introspection action expansion** — `vurb deploy` now lists individual actions for grouped tools in both the CLI output and dashboard sync payload. A grouped namespace like `compliance` with actions `obligations`, `timeline`, `generate_report` now correctly reports 3 entries (`compliance.obligations`, `compliance.timeline`, `compliance.generate_report`) instead of a single `compliance`. Flat tools (single action) remain unchanged.
+- **Introspection action expansion** — `mcpfusion deploy` now lists individual actions for grouped tools in both the CLI output and dashboard sync payload. A grouped namespace like `compliance` with actions `obligations`, `timeline`, `generate_report` now correctly reports 3 entries (`compliance.obligations`, `compliance.timeline`, `compliance.generate_report`) instead of a single `compliance`. Flat tools (single action) remain unchanged.
 - **Deploy success line styling** — Simplified the success banner to clean white text with only the elapsed time highlighted in green.
 
 ## [3.7.5] - 2026-03-19
 
 ### Fixed
 
-- **Node-compatible introspection build** — `vurb deploy` introspection now uses a separate esbuild pass (`platform: 'node'`, `format: 'esm'`) instead of re-executing the edge bundle. The edge bundle stubs Node builtins via `edgeStubPlugin` (e.g. `os.tmpdir` → noop), which caused `(0, an.tmpdir) is not a function` when running introspection locally. The second build is near-instant since esbuild is already loaded.
+- **Node-compatible introspection build** — `mcpfusion deploy` introspection now uses a separate esbuild pass (`platform: 'node'`, `format: 'esm'`) instead of re-executing the edge bundle. The edge bundle stubs Node builtins via `edgeStubPlugin` (e.g. `os.tmpdir` → noop), which caused `(0, an.tmpdir) is not a function` when running introspection locally. The second build is near-instant since esbuild is already loaded.
 
 ## [3.7.4] - 2026-03-19
 
 ### Fixed
 
-- **IIFE introspection via `vm.runInThisContext`** — `vurb deploy` introspection was failing with `Unexpected token '['` because the esbuild bundle (format: `iife`) was being imported as ESM (`.mjs`). Replaced `import()` with `vm.runInThisContext()` to correctly evaluate the IIFE in the current process context. Uses the original unsanitized bundle since edge sanitization is only needed for the deploy payload.
+- **IIFE introspection via `vm.runInThisContext`** — `mcpfusion deploy` introspection was failing with `Unexpected token '['` because the esbuild bundle (format: `iife`) was being imported as ESM (`.mjs`). Replaced `import()` with `vm.runInThisContext()` to correctly evaluate the IIFE in the current process context. Uses the original unsanitized bundle since edge sanitization is only needed for the deploy payload.
 
 ## [3.7.3] - 2026-03-19
 
@@ -924,7 +981,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 ### Fixed
 
 - **ToolRegistry namespace merge** — `registry.register()` now merges actions from builders that share the same namespace (e.g. `f.query('compliance.obligations')` and `f.query('compliance.timeline')` in separate files). Previously threw `Tool "compliance" is already registered`.
-- **Bundle-based introspection** — `vurb deploy` introspection now imports the pre-compiled esbuild bundle directly instead of re-importing source `.ts` files through tsx. Near-instant evaluation, no TypeScript compilation overhead. Timeout reduced from 10s to 5s.
+- **Bundle-based introspection** — `mcpfusion deploy` introspection now imports the pre-compiled esbuild bundle directly instead of re-importing source `.ts` files through tsx. Near-instant evaluation, no TypeScript compilation overhead. Timeout reduced from 10s to 5s.
 
 ## [3.7.1] - 2026-03-19
 
@@ -937,20 +994,20 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Added
 
-- **Deploy Manifest — Cryptographic Deploy Signature** — `vurb deploy` now generates a fresh **lockfile manifest** on every deploy using the real introspection system (`compileContracts` + `generateLockfile`). The manifest is the deploy's cryptographic signature — same SHA-256 behavioral digests as `vurb lock`. Sent with the deploy payload and stored per-deployment on the backend for audit trail.
-- **`VURB_INTROSPECT` mode in `startServer()`** — When the CLI sets `process.env.VURB_INTROSPECT=1`, `startServer()` captures the registry and tool definitions, resolves a `globalThis` promise, and returns immediately without starting any transport. Enables CLI introspection without side effects.
+- **Deploy Manifest — Cryptographic Deploy Signature** — `mcpfusion deploy` now generates a fresh **lockfile manifest** on every deploy using the real introspection system (`compileContracts` + `generateLockfile`). The manifest is the deploy's cryptographic signature — same SHA-256 behavioral digests as `fusion lock`. Sent with the deploy payload and stored per-deployment on the backend for audit trail.
+- **`FUSION_INTROSPECT` mode in `startServer()`** — When the CLI sets `process.env.FUSION_INTROSPECT=1`, `startServer()` captures the registry and tool definitions, resolves a `globalThis` promise, and returns immediately without starting any transport. Enables CLI introspection without side effects.
 - **Tool sync during deploy** — Tools are now synced to the dashboard immediately during deploy via `ToolSyncService`, eliminating the need to wait for runtime boot.
 - **Premium deploy output** — Redesigned CLI output with brand-forward "Vinkius Edge" header, MCP Server Stateful label, tool listing with descriptions, and manifest signature confirmation.
 
 ### Removed
 
-- **Regex-based tool introspection** — The fragile `introspectToolsFromBundle()` regex scanner has been removed entirely. Tool discovery now uses the same real introspection pipeline as `vurb lock`.
+- **Regex-based tool introspection** — The fragile `introspectToolsFromBundle()` regex scanner has been removed entirely. Tool discovery now uses the same real introspection pipeline as `fusion lock`.
 
 ## [3.6.10] - 2026-03-18
 
 ### Fixed
 
-- **`vurb deploy` — Bundle sanitizer for edge static analysis** — The deploy server rejects bundles containing `eval()`, `new Function()`, `__proto__`, `Object.setPrototypeOf` etc. These patterns appear legitimately in esbuild output (CJS interop, class transpilation) and third-party SDKs (Zod, MCP SDK). Added `sanitizeBundleForEdge()` post-bundle step that neutralizes each pattern without changing JS semantics (indirect eval, bracket notation, etc.). Server security stays intact — V8 isolate sandbox is the real boundary.
+- **`mcpfusion deploy` — Bundle sanitizer for edge static analysis** — The deploy server rejects bundles containing `eval()`, `new Function()`, `__proto__`, `Object.setPrototypeOf` etc. These patterns appear legitimately in esbuild output (CJS interop, class transpilation) and third-party SDKs (Zod, MCP SDK). Added `sanitizeBundleForEdge()` post-bundle step that neutralizes each pattern without changing JS semantics (indirect eval, bracket notation, etc.). Server security stays intact — V8 isolate sandbox is the real boundary.
 
 ### Test Suite
 
@@ -963,15 +1020,15 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Fixed
 
-- **`vurb deploy` — Cannot find module 'vurb' (Bug #151)** — `edgeStubAliases()` used `createRequire().resolve('vurb')` to locate `edge-stub.js`, but the package is published as `@vurb/core`, and its `exports` map only defines the `"import"` (ESM) condition — making CJS `require.resolve` fail even with the correct name. Replaced with `fileURLToPath(new URL('../../edge-stub.js', import.meta.url))`, a relative path that requires no external resolution.
-- **`vurb deploy` — esbuild alias prefix matching** — esbuild `alias` does prefix matching: aliasing `fs` → `edge-stub.js` turned `fs/promises` → `edge-stub.js/promises`. Replaced with esbuild plugin (onResolve + onLoad) using CJS Proxy catch-all for named imports not in edge-stub.js.
-- **`token.ts` exactOptionalPropertyTypes violation** — `writeVurbRc(cwd, { token: undefined })` violated `exactOptionalPropertyTypes: true`. Replaced with destructuring rest `const { token: _, ...rest } = config` to omit the key cleanly.
+- **`mcpfusion deploy` — Cannot find module 'MCP Fusion' (Bug #151)** — `edgeStubAliases()` used `createRequire().resolve('MCP Fusion')` to locate `edge-stub.js`, but the package is published as `@mcpfusion/core`, and its `exports` map only defines the `"import"` (ESM) condition — making CJS `require.resolve` fail even with the correct name. Replaced with `fileURLToPath(new URL('../../edge-stub.js', import.meta.url))`, a relative path that requires no external resolution.
+- **`mcpfusion deploy` — esbuild alias prefix matching** — esbuild `alias` does prefix matching: aliasing `fs` → `edge-stub.js` turned `fs/promises` → `edge-stub.js/promises`. Replaced with esbuild plugin (onResolve + onLoad) using CJS Proxy catch-all for named imports not in edge-stub.js.
+- **`token.ts` exactOptionalPropertyTypes violation** — `writeMCPFusionrc(cwd, { token: undefined })` violated `exactOptionalPropertyTypes: true`. Replaced with destructuring rest `const { token: _, ...rest } = config` to omit the key cleanly.
 - **Dead `dirname` import in `deploy.ts`** — Removed unused `dirname` from `node:path` import after the resolution refactor.
 - **Flaky JWT clock tolerance test** — `JwtVerifier.edge.test.ts` boundary test used real time with 1s margin, failing on slow CI. Fixed with `vi.useFakeTimers()` for deterministic execution.
 
 ### Added
 
-- **CLI `token` command** — `vurb token <value>`, `vurb token --clear`, `vurb token` (show status). `tokenValue` and `clearToken` fields in `CliArgs`.
+- **CLI `token` command** — `mcpfusion token <value>`, `mcpfusion token --clear`, `mcpfusion token` (show status). `tokenValue` and `clearToken` fields in `CliArgs`.
 
 ### Test Suite
 
@@ -992,7 +1049,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 - **`GovernanceObserver` deduplication** — Extracted shared span/event emission logic from `observe()` and `observeAsync()` into a `finalize()` helper and a `startSpan()` helper, eliminating ~60 lines of duplicated code between the two methods.
 - **`ServerAttachment` helper extraction** — Extracted FSM clone/restore logic into `cloneAndRestoreFsm()` and session ID resolution into `resolveSessionId()`, reducing file size from 1425 to 1312 lines.
-- **Unused imports cleanup** — Removed 8 unused type imports from `GovernanceObserver.ts` (`VurbAttributeValue`, `ToolContract`, `CapabilityLockfile`, `LockfileCheckResult`, `GenerateLockfileOptions`, `ServerDigest`, `AttestationResult`, `EntitlementReport`, `StaticTokenProfile`, `ContractDiffResult`).
+- **Unused imports cleanup** — Removed 8 unused type imports from `GovernanceObserver.ts` (`MCPFusionAttributeValue`, `ToolContract`, `CapabilityLockfile`, `LockfileCheckResult`, `GenerateLockfileOptions`, `ServerDigest`, `AttestationResult`, `EntitlementReport`, `StaticTokenProfile`, `ContractDiffResult`).
 - **`eslint-disable` annotations** — All remaining `as any` casts now carry inline rationale comments explaining the type-safety boundary.
 - **Empty catch blocks** — All empty `catch {}` blocks now include descriptive comments explaining why the error is intentionally swallowed.
 
@@ -1113,7 +1170,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 - **`FluentToolBuilder._addParam()` safety** — duplicate check now uses `Object.prototype.hasOwnProperty.call()` instead of `in` operator, preventing prototype pollution false positives
 - **`FluentToolBuilder` type sentinel** — `TInput` default changed from `void` to `Record<string, never>` for correct conditional type resolution in `.handle()` and `.resolve()`
 - **`.returns()` covariance** — accepts `Presenter<any>` instead of `Presenter<unknown>`, eliminating forced casting when the Presenter type differs from the tool's context type
-- **Scaffold templates updated** — generated projects now use `@vurb/core` (correct npm package name) instead of `vurb`, include `models/` directory with `SystemModel.ts`, and Presenter templates reference Model schemas
+- **Scaffold templates updated** — generated projects now use `@mcpfusion/core` (correct npm package name) instead of `@mcpfusion/core`, include `models/` directory with `SystemModel.ts`, and Presenter templates reference Model schemas
 - **Documentation overhaul** — homepage redesign with new hero, theme, and navigation; MCP server frameworks comparison blog post; copy edits across introduction, quickstart, MVA pattern, building tools, presenter, middleware, and comparison pages
 - **`Presenter.makeAsync()` truncation fix** — async callbacks now operate on the same truncated dataset the sync pipeline used, preventing inconsistent data when `agentLimit` is active
 
@@ -1129,7 +1186,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 - **`ServerAttachment` FSM auto-bind flat name (Bug #9)** — single-action default tools now use the bare tool name (matching `ExpositionCompiler.compileFlat` behavior) instead of appending `_default`
 - **`TelemetryBus` socket chmod race** — `chmodSync(0o600)` now runs inside the `server.listen()` callback, eliminating the window where the socket is world-readable between bind and permission change
 - **`PresenterPipeline` redactor write-back** — lazy-compiled redactors are now propagated back to the Presenter instance via `writeBackRedactor()`, preventing redundant recompilation on subsequent `make()` calls
-- **Scaffold `package.json` package name** — generated dependency now correctly references `@vurb/core` instead of `vurb`
+- **Scaffold `package.json` package name** — generated dependency now correctly references `@mcpfusion/core` instead of `@mcpfusion/core`
 
 ### Test Suite
 
@@ -1174,16 +1231,16 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
   - `BlogIndex.vue` — Blog listing page with hero section, tag-based filtering, article cards
   - `BlogPostHeader.vue` — Clickable tags linking to filtered views, author GitHub link
   - `posts.data.mts` — Frontmatter data loader with `authorUrl` support
-  - 3 blog posts: *Introducing Vurb.ts*, *MVA Pattern Deep Dive*, *Anatomy of an AI Platform Breach*
-- **Security analysis article** — *"Anatomy of an AI Platform Breach: How Vurb.ts Would Have Defended Every Attack Vector"*: 9 vulnerability vectors mapped to Vurb.ts defenses with real code examples, Executive Summary for CISOs, Compliance Mapping table (SOC2/GDPR/ISO 27001, 14 controls), Recommended Security Posture playbook (4 priorities with effort estimates)
+  - 3 blog posts: *Introducing MCP Fusion*, *MVA Pattern Deep Dive*, *Anatomy of an AI Platform Breach*
+- **Security analysis article** — *"Anatomy of an AI Platform Breach: How MCP Fusion Would Have Defended Every Attack Vector"*: 9 vulnerability vectors mapped to MCP Fusion defenses with real code examples, Executive Summary for CISOs, Compliance Mapping table (SOC2/GDPR/ISO 27001, 14 controls), Recommended Security Posture playbook (4 priorities with effort estimates)
 - **Security Layer documentation** — 6 new doc pages: overview, InputFirewall, PromptFirewall, AuditTrail, RateLimiter, JudgeChain
 - **Resource Subscriptions documentation** — Dedicated doc page with Fluent API examples
 
 ### Changed
 
-- **Vurb.ts rebrand** — All references to "MCP Fusion" updated to "Vurb.ts" across `config.mts` (title, meta tags, JSON-LD, codeRepository), `seo.ts`, blog posts, and README links
-- **Header** — Logo-only navbar using S3-hosted Vurb.ts wordmark PNG (48px), subtitle removed, `siteTitle: false`
-- **GitHub links** — All repository URLs updated from `vinkius-labs/mcp-fusion` to `vinkius-labs/vurb.ts`
+- **MCP Fusion rebrand** — All references to "MCP Fusion" updated to "MCP Fusion" across `config.mts` (title, meta tags, JSON-LD, codeRepository), `seo.ts`, blog posts, and README links
+- **Header** — Logo-only navbar using S3-hosted MCP Fusion wordmark PNG (48px), subtitle removed, `siteTitle: false`
+- **GitHub links** — All repository URLs updated from `vinkius-labs/mcpfusion` to `vinkius-labs/mcpfusion`
 
 ## [3.3.3] - 2026-03-12
 
@@ -1257,7 +1314,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 ### Fixed
 
 - `autoDiscover()` now deduplicates discovered tool builders by tool name — previously, a directory containing both `index.ts` and a barrel re-export could register the same tool twice
-- `VurbClient` fluent proxy now guards `Symbol.toPrimitive`, `Symbol.toStringTag`, `Symbol.iterator`, `Symbol.asyncIterator`, `Symbol.hasInstance`, and `nodejs.util.inspect.custom` — previously, debugging tools and `util.inspect()` triggered unexpected recursive proxy traversal
+- `MCPFusionClient` fluent proxy now guards `Symbol.toPrimitive`, `Symbol.toStringTag`, `Symbol.iterator`, `Symbol.asyncIterator`, `Symbol.hasInstance`, and `nodejs.util.inspect.custom` — previously, debugging tools and `util.inspect()` triggered unexpected recursive proxy traversal
 - `ExpositionCompiler.buildAtomicSchema()` no longer emits `console.warn()` in production when action schema fields overlap common schema fields — diagnostic warnings are now routed through the optional `onWarn` callback (wired to the debug observer in `ServerAttachment`)
 
 ### Changed
@@ -1315,8 +1372,8 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 ### Fixed
 
 - `.env` parser (`loadEnv`) now strips inline comments (`KEY=value # comment` → `value`) for unquoted values and only removes matching quote pairs — previously inline `#` was kept verbatim and mismatched quotes (e.g. `'bar"`) were independently stripped
-- `Vurb.ts_VERSION` now reads from `package.json` at runtime via `createRequire` — previously hardcoded as `'1.1.0'`, causing stale version in CLI output and lockfile digests
-- `VurbTester.callAction()` now places the discriminator (`action`) **after** the user-provided args spread — previously placed it before, allowing user args `{ action: 'override' }` to shadow the programmatic discriminator
+- `FUSION_VERSION` now reads from `package.json` at runtime via `createRequire` — previously hardcoded as `'1.1.0'`, causing stale version in CLI output and lockfile digests
+- `MCPFusionTester.callAction()` now places the discriminator (`action`) **after** the user-provided args spread — previously placed it before, allowing user args `{ action: 'override' }` to shadow the programmatic discriminator
 - Inspector `Simulator` now emits exactly **one** `execute` event per pipeline — previously emitted an unconditional first `execute` plus a second inside the if/else branches, doubling `callCount` and live-traffic entries
 - `autoDiscover` `walkDir()` now sorts directory entries alphabetically via `localeCompare` — previously returned files in filesystem-dependent order, causing non-deterministic tool registration across OS/deploys
 - Cloudflare adapter now uses `ctx.waitUntil(server.close())` for non-blocking cleanup — previously used `finally { await server.close() }`, which delayed every response until cleanup completed
@@ -1349,17 +1406,17 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 - SSE server template now wraps the async HTTP handler body in `try/catch` — previously, a rejected promise from `server.connect()` or `transport.handlePostMessage()` would crash the generated server with an unhandled rejection
 - `scaffold()` now cleans up the target directory when a write operation fails mid-way (e.g. permission denied, disk full) — partially-written project files are removed instead of left as broken orphans
-- `Vurb.ts deploy` now prompts for user confirmation before auto-installing `esbuild` — previously ran `npm install -D esbuild` silently with `stdio: 'ignore'`, modifying `package.json` without consent
-- `Vurb.ts deploy` now validates `serverId` format against `[a-zA-Z0-9_-]+` and applies `encodeURIComponent` — previously, a malicious `.vurbrc` with `serverId: "../../admin/nuke"` could traverse the API path
-- `VurbClient` now accepts a `discriminatorKey` option (defaults to `'action'`) — previously hard-coded `action` as the key, breaking grouped tool calls when the server uses a custom discriminator like `.discriminator('command')`
+- `mcpfusion deploy` now prompts for user confirmation before auto-installing `esbuild` — previously ran `npm install -D esbuild` silently with `stdio: 'ignore'`, modifying `package.json` without consent
+- `mcpfusion deploy` now validates `serverId` format against `[a-zA-Z0-9_-]+` and applies `encodeURIComponent` — previously, a malicious `.MCPFusionrc` with `serverId: "../../admin/nuke"` could traverse the API path
+- `MCPFusionClient` now accepts a `discriminatorKey` option (defaults to `'action'`) — previously hard-coded `action` as the key, breaking grouped tool calls when the server uses a custom discriminator like `.discriminator('command')`
 
 ## [3.1.19] - 2026-03-06
 
 ### Fixed
 
 - CLI entry-point guard now handles Windows shim extensions (`.cmd`, `.ps1`, `.cjs`, `.mjs`, `.exe`) — previously `main()` was silently skipped when invoked via npx/pnpm/yarn on Windows
-- `Vurb.ts dev` reload now resolves the new registry before clearing the old one — if resolution fails (e.g. syntax error in user code), existing tools remain available instead of vanishing
-- `Vurb.ts deploy` now warns when the deploy token would be sent over plaintext HTTP, adds a 60-second fetch timeout, and wraps `res.json()` in try/catch for non-JSON responses
+- `mcpfusion dev` reload now resolves the new registry before clearing the old one — if resolution fails (e.g. syntax error in user code), existing tools remain available instead of vanishing
+- `mcpfusion deploy` now warns when the deploy token would be sent over plaintext HTTP, adds a 60-second fetch timeout, and wraps `res.json()` in try/catch for non-JSON responses
 - FSM state gate now clones per-request even without an external `fsmStore` — concurrent SSE/stdio clients no longer share and mutate the same FSM instance, preventing cross-session workflow corruption
 - `FluentToolBuilder` inline `.use()` middleware no longer merges enriched context via `Object.assign` — dangerous keys (`__proto__`, `constructor`, `prototype`) are now filtered to prevent prototype pollution
 
@@ -1402,7 +1459,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 - **`GovernanceObserver.observe()` sync mishandles async callbacks (Bug #50)** — `observe<T>(fn: () => T): T` accepted async callbacks since `() => Promise<T>` is assignable to `() => T`. The span ended immediately, `durationMs` was near-zero, async rejections were never caught, and the debug event registered success before async work completed. Fixed by adding a runtime guard that throws when the result is thenable, directing users to `observeAsync()`.
 
-- **`VurbClient.terminalCall` — user `action` field overwrites routing field (Bug #51)** — `{ action: actionName, ...args }` placed the routing `action` before user args. If the user's schema had a field named `action`, the user's value silently overwrote the routing field, causing the server to route to the wrong handler. Fixed by inverting spread order to `{ ...args, action: actionName }`.
+- **`MCPFusionClient.terminalCall` — user `action` field overwrites routing field (Bug #51)** — `{ action: actionName, ...args }` placed the routing `action` before user args. If the user's schema had a field named `action`, the user's value silently overwrote the routing field, causing the server to route to the wrong handler. Fixed by inverting spread order to `{ ...args, action: actionName }`.
 
 - **`Group.addChildGroup()` without cycle detection — infinite recursion (Bug #52)** — Adding a group as a child of itself or creating an indirect cycle caused infinite recursion in `getRoot()` and `getFullyQualifiedNameRecursive()`. Fixed by walking the parent chain before adding; if the child is an ancestor, throw.
 
@@ -1442,7 +1499,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Fixed
 
-- **`redactPII()` silently fails when `fast-redact` not loaded asynchronously (Bug #37)** — `compileRedactor()` called the synchronous `getFastRedact()` which returns `null` if the async `loadFastRedact()` hasn't completed yet. Presenters declared at module top-level (before `initVurb()`) received `_compiledRedactor = undefined` and PII passed to the wire without redaction or warning. Fixed by making `_applyRedaction` lazily retry compilation on first use and emitting a `console.warn` when redaction is configured but `fast-redact` remains unavailable.
+- **`redactPII()` silently fails when `fast-redact` not loaded asynchronously (Bug #37)** — `compileRedactor()` called the synchronous `getFastRedact()` which returns `null` if the async `loadFastRedact()` hasn't completed yet. Presenters declared at module top-level (before `initMCPFusion()`) received `_compiledRedactor = undefined` and PII passed to the wire without redaction or warning. Fixed by making `_applyRedaction` lazily retry compilation on first use and emitting a `console.warn` when redaction is configured but `fast-redact` remains unavailable.
 
 - **`createGroup.execute()` discards validated/transformed Zod data (Bug #38)** — After `schema.safeParse(args)` succeeded, the handler was called with the raw `args` instead of `result.data`. Zod transforms (`.transform(Number)`), defaults (`.default('foo')`), and strip (`.strip()`) were silently discarded. Fixed by passing `result.data ?? args` to the handler chain.
 
@@ -1474,7 +1531,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 - **`retryAfter` not validated for finite/positive values in `toolError` (Bug #25)** — `retryAfter` accepted `NaN`, `Infinity`, `-1`, and `0`, producing invalid XML like `<retry_after>NaN seconds</retry_after>`. Fixed by gating the tag emission with `Number.isFinite(retryAfter) && retryAfter > 0`.
 
-- **`VurbClient` error text includes `"undefined"` for non-text content (Bug #26)** — `.map(c => c.text)` produced `undefined` for image/resource content blocks. Fixed by adding `.filter(c => c.type === 'text')` before `.map()` in `executeInternal()`.
+- **`MCPFusionClient` error text includes `"undefined"` for non-text content (Bug #26)** — `.map(c => c.text)` produced `undefined` for image/resource content blocks. Fixed by adding `.filter(c => c.type === 'text')` before `.map()` in `executeInternal()`.
 
 - **`EgressGuard` missing truncation suffix at exact byte boundary (Bug #27)** — When a content block consumed exactly all remaining bytes, subsequent blocks were silently skipped without appending the truncation suffix. The response appeared complete to the LLM despite missing content. Fixed by checking after the loop whether blocks were skipped and appending the suffix to the last block.
 
@@ -1654,7 +1711,7 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 
 ### Added
 
-- **`@vurb/inspector` v1.0.0 → v1.0.1** — Published to npm. Real-time terminal dashboard for Vurb.ts servers via Shadow Socket (IPC).
+- **`@mcpfusion/inspector` v1.0.0 → v1.0.1** — Published to npm. Real-time terminal dashboard for MCP mcpfusion servers via Shadow Socket (IPC).
 
 ### Fixed
 
@@ -1669,11 +1726,11 @@ A new first-class package implementing the **Federated Handoff Protocol (FHP)**:
 ### Ecosystem v1.0.1
 
 All sub-packages bumped to 1.0.1 for README updates:
-`Vurb.ts-api-key`, `Vurb.ts-aws`, `Vurb.ts-cloudflare`, `mcp-Vurb.ts-inspector`, `Vurb.ts-jwt`, `Vurb.ts-n8n`, `Vurb.ts-oauth`, `Vurb.ts-openapi-gen`, `Vurb.ts-prisma-gen`, `Vurb.ts-testing`, `Vurb.ts-vercel`.
+`@mcpfusion/api-key`, `@mcpfusion/aws`, `@mcpfusion/cloudflare`, `@mcpfusion/inspector`, `@mcpfusion/jwt`, `@mcpfusion/n8n`, `@mcpfusion/oauth`, `@mcpfusion/openapi-gen`, `@mcpfusion/prisma-gen`, `@mcpfusion/testing`, `@mcpfusion/vercel`.
 
 ---
 
-## [@vurb/jwt v1.0.0] - 2026-02-28
+## [@mcpfusion/jwt v1.0.0] - 2026-02-28
 
 ### 🔐 JWT Verification — Standards-Compliant Token Validation
 
@@ -1704,7 +1761,7 @@ Drop-in JWT verification middleware for MCP servers. Verifies tokens using `jose
 
 ---
 
-## [@vurb/api-key v1.0.0] - 2026-02-28
+## [@mcpfusion/api-key v1.0.0] - 2026-02-28
 
 ### 🔑 API Key Validation — Timing-Safe Key Management
 
@@ -1759,7 +1816,7 @@ Three complementary anti-hallucination layers:
   - Lazy `import('xstate')` with manual fallback when XState is not installed
 - **`.bindState(states, transition?)` on FluentToolBuilder** — declarative tool-to-state binding
 - **`.bindState(states, transition?)` on GroupedToolBuilder** — with `getFsmBinding()` / `getToolName()` metadata accessors
-- **`f.fsm(config)` factory** on `initVurb()` — creates `StateMachineGate` instances
+- **`f.fsm(config)` factory** on `initMCPFusion()` — creates `StateMachineGate` instances
 - **ServerAttachment integration**:
   - `tools/list` filtered by `gate.isToolAllowed()` — tools physically removed from response
   - `tools/call` auto-transition on successful execution only (`!result.isError` guard)
@@ -1800,7 +1857,7 @@ Three complementary anti-hallucination layers:
 
 ### 🛡️ DLP Compliance Engine — Zero-Leak PII Redaction (GDPR / LGPD / HIPAA)
 
-Vurb.ts now structurally masks Personally Identifiable Information before it reaches the LLM. Powered by `fast-redact` — the same V8-compiled engine behind Pino — the framework guarantees zero-leak at the wire level. Once `.redactPII()` is configured, it is **physically impossible** for a developer to accidentally expose sensitive data through the MCP JSON-RPC payload.
+MCP Fusion now structurally masks Personally Identifiable Information before it reaches the LLM. Powered by `fast-redact` — the same V8-compiled engine behind Pino — the framework guarantees zero-leak at the wire level. Once `.redactPII()` is configured, it is **physically impossible** for a developer to accidentally expose sensitive data through the MCP JSON-RPC payload.
 
 ### Added
 
@@ -1895,7 +1952,7 @@ LLMs can now send JavaScript functions to be executed in a sealed V8 isolate on 
 - **`SandboxErrorCode`** — `TIMEOUT | MEMORY | SYNTAX | RUNTIME | OUTPUT_TOO_LARGE | INVALID_CODE | UNAVAILABLE`
 - **`validateSandboxCode()`** — fail-fast syntax checker (not a security boundary)
 - **`FluentToolBuilder.sandboxed(config?)`** — enables sandbox + HATEOAS auto-prompting on any tool
-- **`f.sandbox(config?)`** — factory method on `initVurb()` instance
+- **`f.sandbox(config?)`** — factory method on `initMCPFusion()` instance
 - **`SANDBOX_SYSTEM_INSTRUCTION`** — auto-injected tool description for LLM guidance
 - **V8 Security Model** — empty Context: no process, require, fs, net, setTimeout, Buffer, fetch, eval
 
@@ -1914,11 +1971,11 @@ LLMs can now send JavaScript functions to be executed in a sealed V8 isolate on 
   - `FluentSandbox.test.ts` — Fluent API integration
   - `SandboxGuard.test.ts` — fail-fast syntax validation
 
-## [@vurb/vercel@1.0.0] - 2026-02-27
+## [@mcpfusion/vercel@1.0.0] - 2026-02-27
 
 ### 🚀 Vercel Adapter — Serverless & Edge Deployment in One Line
 
-New `@vurb/vercel` package. Deploys any Vurb.ts ToolRegistry to Vercel Functions (Edge or Node.js) with zero configuration. Returns a POST handler compatible with Next.js App Router route handlers and standalone Vercel Functions. Stateless JSON-RPC via the MCP SDK's native `WebStandardStreamableHTTPServerTransport`.
+New `@mcpfusion/vercel` package. Deploys any MCP Fusion ToolRegistry to Vercel Functions (Edge or Node.js) with zero configuration. Returns a POST handler compatible with Next.js App Router route handlers and standalone Vercel Functions. Stateless JSON-RPC via the MCP SDK's native `WebStandardStreamableHTTPServerTransport`.
 
 ### Added
 
@@ -1943,11 +2000,11 @@ New `@vurb/vercel` package. Deploys any Vurb.ts ToolRegistry to Vercel Functions
 
 - **27 tests** — handler creation, method rejection (GET/PUT/DELETE → 405), McpServer configuration (defaults and overrides), transport enableJsonResponse, registry wiring and attachOptions forwarding, context factory invocation and injection, request lifecycle ordering (connect → handle → close), cleanup on error, request isolation, edge cases
 
-## [@vurb/cloudflare@1.0.0] - 2026-02-27
+## [@mcpfusion/cloudflare@1.0.0] - 2026-02-27
 
 ### ☁️ Cloudflare Workers Adapter — Edge Deployment in One Line
 
-New `@vurb/cloudflare` package. Deploys any Vurb.ts ToolRegistry to Cloudflare Workers with zero configuration. Stateless JSON-RPC via the MCP SDK's native `WebStandardStreamableHTTPServerTransport` — no SSE sessions, no transport bridging, no polyfills. Registry compiles at cold start; warm requests only instantiate `McpServer` + `Transport`.
+New `@mcpfusion/cloudflare` package. Deploys any MCP Fusion ToolRegistry to Cloudflare Workers with zero configuration. Stateless JSON-RPC via the MCP SDK's native `WebStandardStreamableHTTPServerTransport` — no SSE sessions, no transport bridging, no polyfills. Registry compiles at cold start; warm requests only instantiate `McpServer` + `Transport`.
 
 ### Added
 
@@ -2055,7 +2112,7 @@ Multi-layer defense upgrade for the EntitlementScanner. The regex-based pattern 
   - `computeServerDigest(contracts)` → `ServerDigest` — aggregate server-wide digest
   - `compareServerDigests(a, b)` → `DigestComparison` — drift detection with added/removed/changed tool lists
 
-- **Capability Lockfile (`vurb.lock`)**
+- **Capability Lockfile (`fusion.lock`)**
   - `generateLockfile(options)` — captures tools, prompts, digests, entitlements, token economics in a git-diffable JSON lockfile
   - `checkLockfile(current, stored)` → `LockfileCheckResult` — structural comparison with detailed diff messages
   - `writeLockfile()` / `readLockfile()` / `parseLockfile()` / `serializeLockfile()` — full I/O lifecycle
@@ -2096,11 +2153,11 @@ Multi-layer defense upgrade for the EntitlementScanner. The regex-based pattern 
   - `GovernanceEvent` added to the `DebugEvent` discriminated union — `{ type: 'governance', operation, label, outcome, detail?, durationMs, timestamp }`
   - `GovernanceOperation` — 11 operation identifiers: `contract.compile`, `contract.diff`, `digest.compute`, `lockfile.generate`, `lockfile.check`, `lockfile.write`, `lockfile.read`, `attestation.sign`, `attestation.verify`, `entitlement.scan`, `token.profile`
 
-- **CLI — `Vurb.ts lock`**
-  - `Vurb.ts lock [--server <entrypoint>] [--name <serverName>]` — generate or update `vurb.lock`
-  - `Vurb.ts lock --check [--server <entrypoint>]` — verify lockfile matches current server (CI gate, exits 0 or 1)
+- **CLI — `fusion lock`**
+  - `fusion lock [--server <entrypoint>] [--name <serverName>]` — generate or update `fusion.lock`
+  - `fusion lock --check [--server <entrypoint>]` — verify lockfile matches current server (CI gate, exits 0 or 1)
   - Composer/Yarn-style progress output with step timing and status icons
-  - `bin.fusion` added to `package.json` — `npx Vurb.ts lock` works out of the box
+  - `bin.fusion` added to `package.json` — `npx mcpfusion lock` works out of the box
 
 ### Fixed
 
@@ -2134,7 +2191,7 @@ Complete developer experience overhaul: 8 new APIs designed to eliminate boilerp
 
 ### Added
 
-- **`initVurb<TContext>()`** — tRPC-style context initialization. Define the context type once, every `f.tool()`, `f.presenter()`, `f.prompt()`, `f.middleware()`, `f.registry()` inherits it automatically. Zero generic repetition.
+- **`initMCPFusion<TContext>()`** — tRPC-style context initialization. Define the context type once, every `f.tool()`, `f.presenter()`, `f.prompt()`, `f.middleware()`, `f.registry()` inherits it automatically. Zero generic repetition.
   - `f.tool({ name, input, handler })` — handler receives `{ input, ctx }` destructured (tRPC v11 pattern). `'domain.action'` naming auto-splits into tool name + action.
   - `f.presenter(config)` — delegates to `definePresenter()` with context typing
   - `f.prompt(name, config)` — context-typed prompt factory
@@ -2169,7 +2226,7 @@ Complete developer experience overhaul: 8 new APIs designed to eliminate boilerp
 
 - **Standard Schema v1 Abstraction Layer** — Decouple from Zod, support any validator implementing the Standard Schema spec.
   - `StandardSchemaV1<TInput, TOutput>` interface
-  - `VurbValidator<T>` — `.validate(value)`, `.vendor`, `.schema`
+  - `MCPFusionValidator<T>` — `.validate(value)`, `.vendor`, `.schema`
   - `toStandardValidator(schema)` — wrap Standard Schema v1 (Valibot, ArkType, etc.)
   - `fromZodSchema(schema)` — wrap Zod via `.safeParse()`
   - `autoValidator(schema)` — auto-detect schema type (Standard Schema → Zod → error)
@@ -2177,11 +2234,11 @@ Complete developer experience overhaul: 8 new APIs designed to eliminate boilerp
   - `ValidationResult<T>`, `InferStandardOutput<T>`, `StandardSchemaIssue` types
 
 - **Subpath Exports** — 10 tree-shakeable entry points:
-  - `Vurb.ts` (full), `/client`, `/ui`, `/presenter`, `/prompt`, `/state-sync`, `/observability`, `/dev`, `/schema`, `/testing`
+  - `@mcpfusion/core` (full), `/client`, `/ui`, `/presenter`, `/prompt`, `/state-sync`, `/observability`, `/dev`, `/schema`, `/testing`
 
 ### Documentation
 
-- **Presenter elevated to hero position** — README Quick Start now shows: `initVurb()` → `definePresenter()` → `f.tool({ returns: Presenter })` → `f.prompt({ fromView })` → Server bootstrap. The Presenter is THE first feature section with both APIs (`definePresenter()` + `createPresenter()`) and a full capabilities table (Egress Firewall, JIT Rules, Server-Rendered UI, Cognitive Guardrails, Action Affordances, Relational Composition, Prompt Bridge).
+- **Presenter elevated to hero position** — README Quick Start now shows: `initMCPFusion()` → `definePresenter()` → `f.tool({ returns: Presenter })` → `f.prompt({ fromView })` → Server bootstrap. The Presenter is THE first feature section with both APIs (`definePresenter()` + `createPresenter()`) and a full capabilities table (Egress Firewall, JIT Rules, Server-Rendered UI, Cognitive Guardrails, Action Affordances, Relational Composition, Prompt Bridge).
 - **No-Zod JSON Descriptors shown everywhere** — All Quick Start examples, tool examples, and prompt examples use JSON param descriptors (`'string'`, `{ type: 'number', min: 0 }`, `{ enum: [...] as const }`) as the recommended API. Zod shown as the alternative tab.
 - **Prompt Engine given equal DX treatment** — `f.prompt()` shown alongside `f.tool()` in every Quick Start. `PromptMessage.fromView()` bridge to Presenter shown prominently.
 - **Comprehensive documentation rewrite** — 20+ doc files updated with `f.tool()` / `f.prompt()` tabs, No-Zod examples, Presenter integration. New `docs/dx-guide.md` covers all 8 new features.
@@ -2195,7 +2252,7 @@ Complete developer experience overhaul: 8 new APIs designed to eliminate boilerp
 - **67 new tests** across 7 test files:
   - `DefinePresenter.test.ts` (8 tests) — object config, auto-rules, Zod `.describe()` extraction, `collectionUi`, error cases
   - `ZodDescriptionExtractor.test.ts` (12 tests) — field extraction, optional/nullable/default unwrapping, nested objects, enums, edge cases
-  - `InitFusion.test.ts` (11 tests) — `f.tool()` handler, `f.presenter()`, `f.prompt()`, `f.middleware()`, `f.registry()`, auto-wrap
+  - `initMCPFusion.test.ts` (11 tests) — `f.tool()` handler, `f.presenter()`, `f.prompt()`, `f.middleware()`, `f.registry()`, auto-wrap
   - `CreateGroup.test.ts` (10 tests) — dispatch, validation, middleware composition, frozen output, unknown action error
   - `StandardSchema.test.ts` (11 tests) — `toStandardValidator`, `fromZodSchema`, `autoValidator`, `isStandardSchema`, error mapping
   - `AutoDiscover.test.ts` (7 tests) — export types, type guard functions
@@ -2226,12 +2283,12 @@ Three-pillar enhancement across the framework: richer self-healing error envelop
   - `detectOverlaps(policies)` — static analysis utility returning `OverlapWarning[]` for first-match-wins ordering bugs
   - `InvalidationEvent`, `ResourceNotification`, `OverlapWarning` types exported from barrel
 
-- **VurbClient (Pillar C):**
+- **MCPFusionClient (Pillar C):**
   - `ClientMiddleware` type — `(action, args, next) → Promise<ToolResponse>` request interceptor
-  - `VurbClientOptions` interface — `{ middleware?, throwOnError? }`
-  - `VurbClientError` class — parses `<tool_error>` XML into typed fields (code, message, recovery, availableActions, severity, raw)
+  - `MCPFusionClientOptions` interface — `{ middleware?, throwOnError? }`
+  - `MCPFusionClientError` class — parses `<tool_error>` XML into typed fields (code, message, recovery, availableActions, severity, raw)
   - `executeBatch(calls, options?)` — parallel (default) or sequential batch execution
-  - `throwOnError` option — error responses auto-throw as `VurbClientError` instead of returning
+  - `throwOnError` option — error responses auto-throw as `MCPFusionClientError` instead of returning
   - Middleware chain compiled once at client creation (O(1) per call)
   - XML entity unescaping in parsed error fields (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`)
 
@@ -2247,7 +2304,7 @@ Three-pillar enhancement across the framework: richer self-healing error envelop
 ### Documentation
 
 - Updated `docs/error-handling.md` with ErrorCode table, severity levels, structured details, retryAfter, full HATEOAS envelope example
-- Updated `docs/fusion-client.md` with client middleware, `throwOnError`, `VurbClientError`, `executeBatch()`, batch options
+- Updated `docs/fusion-client.md` with client middleware, `throwOnError`, `MCPFusionClientError`, `executeBatch()`, batch options
 - Updated `docs/state-sync.md` with `onInvalidation`, `notificationSink`, `detectOverlaps()`, observability hooks section
 - Updated `README.md` — Self-Healing Errors, Type-Safe Client, and State Sync feature sections + capabilities table
 - Updated `llms.txt` — Public API section, Self-Healing Errors section, State Sync section, Response Helpers
@@ -2257,20 +2314,20 @@ Three-pillar enhancement across the framework: richer self-healing error envelop
 - **52 new tests** across 3 files:
   - `SelfHealing.test.ts` (15 tests) — severity, details, retryAfter, ErrorCode, XML-unsafe keys, empty details, error() with code
   - `StateSyncEnhanced.test.ts` (16 tests) — onInvalidation, notificationSink, async rejection safety, ResponseDecorator escaping, detectOverlaps
-  - `VurbClientEnhanced.test.ts` (21 tests) — middleware pipeline, throwOnError, XML entity unescaping, executeBatch, empty batch, middleware exceptions, backward compat
+  - `MCPFusionClientEnhanced.test.ts` (21 tests) — middleware pipeline, throwOnError, XML entity unescaping, executeBatch, empty batch, middleware exceptions, backward compat
 - All **2092 tests** passing across 94 files
 
 ## [2.4.0] - 2026-02-24
 
 ### 🧪 Testing — Deterministic AI Governance Auditing
 
-New `@vurb/testing` package. The first and only framework capable of mathematically auditing AI Data Governance (SOC2) in a CI/CD pipeline — zero tokens, zero servers, deterministic.
+New `@mcpfusion/testing` package. The first and only framework capable of mathematically auditing AI Data Governance (SOC2) in a CI/CD pipeline — zero tokens, zero servers, deterministic.
 
 ### Added
 
-- **`packages/testing/`:** New `@vurb/testing` package:
-  - `VurbTester` — In-memory MVA lifecycle emulator, runs the real pipeline (Zod → Middleware → Handler → Presenter → Egress Firewall) entirely in RAM
-  - `createVurbTester(registry, options)` — Factory function for ergonomic test setup
+- **`packages/testing/`:** New `@mcpfusion/testing` package:
+  - `MCPFusionTester` — In-memory MVA lifecycle emulator, runs the real pipeline (Zod → Middleware → Handler → Presenter → Egress Firewall) entirely in RAM
+  - `createMCPFusionTester(registry, options)` — Factory function for ergonomic test setup
   - `MvaTestResult` — Structured response decomposition with `data`, `systemRules`, `uiBlocks`, `isError`, `rawResponse` fields
   - `callAction(toolName, actionName, args?, overrideContext?)` — Execute any tool action with optional per-test context overrides
   - Symbol Backdoor (`MVA_META_SYMBOL`) — Extracts structured MVA layers from ToolResponse without XML parsing; invisible to `JSON.stringify`
@@ -2283,24 +2340,24 @@ New `@vurb/testing` package. The first and only framework capable of mathematica
 
 - **15 testing documentation pages:** Deterministic AI Governance (landing), Quick Start, Command-Line Runner, Fixtures, Assertions, Test Doubles, Egress Firewall, System Rules, UI Blocks, Middleware Guards, OOM Guard, Error Handling, Raw Response, CI/CD Integration (with SOC2 automated audit examples), Convention
 - **15 SEO entries** with FAQPage JSON-LD for all testing pages
-- Updated `llms.txt` with VurbTester API, types, and usage examples
+- Updated `llms.txt` with MCPFusionTester API, types, and usage examples
 - Updated `README.md` with Testing section, capabilities table entry, and package reference
 
 ## [2.3.0] - 2026-02-23
 
 ### 🗄️ Prisma Generator — Schema Annotations to Hardened MCP Tools
 
-New `Vurb.ts-prisma-gen` package. Reads `schema.prisma` annotations (`@vurb.hide`, `@vurb.describe`, `@vurb.tenantKey`) and emits typed Presenters and ToolBuilders during `npx prisma generate`.
+New `@mcpfusion/prisma-gen` package. Reads `schema.prisma` annotations (`@fusion.hide`, `@fusion.describe`, `@fusion.tenantKey`) and emits typed Presenters and ToolBuilders during `npx prisma generate`.
 
 ### Added
 
-- **`packages/prisma-gen/`:** New `Vurb.ts-prisma-gen` generator package:
-  - `AnnotationParser` — Extracts `@vurb.hide`, `@vurb.describe("...")`, `@vurb.tenantKey` from Prisma DMMF `documentation` field
+- **`packages/prisma-gen/`:** New `@mcpfusion/prisma-gen` generator package:
+  - `AnnotationParser` — Extracts `@fusion.hide`, `@fusion.describe("...")`, `@fusion.tenantKey` from Prisma DMMF `documentation` field
   - `PresenterEmitter` — Generates Zod `.strict()` response schemas with hidden fields physically excluded (Egress Firewall)
   - `ToolEmitter` — Generates 5 CRUD actions (`find_many`, `find_unique`, `create`, `update`, `delete`) with:
     - Asymmetric schemas (ResponseSchema ≠ CreateSchema ≠ UpdateSchema)
     - `PrismaFusionContext` type injection (shift-left security)
-    - Tenant isolation in every query `WHERE` clause via `@vurb.tenantKey`
+    - Tenant isolation in every query `WHERE` clause via `@fusion.tenantKey`
     - OOM pagination guard (`take` max 50, min 1, default 20)
     - MCP annotations (`readOnly`, `destructive`)
   - `NamingHelpers` — `toSnakeCase`, `toPascalCase`, `pluralize`
@@ -2312,7 +2369,7 @@ New `Vurb.ts-prisma-gen` package. Reads `schema.prisma` annotations (`@vurb.hide
 
 - **`docs/prisma-gen.md`:** Full VitePress documentation page — 3 Engineering Primitives, schema annotations, configuration reference, production example
 - **`packages/prisma-gen/README.md`:** Package README with primitive breakdown and usage examples
-- **`README.md`:** Added `Vurb.ts-prisma-gen` to Packages table and Documentation guides
+- **`README.md`:** Added `@mcpfusion/prisma-gen` to Packages table and Documentation guides
 - **`.vitepress/config.mts`:** Prisma Generator sidebar entry (already configured)
 
 ### Test Suite
@@ -2326,11 +2383,11 @@ New `Vurb.ts-prisma-gen` package. Reads `schema.prisma` annotations (`@vurb.hide
 
 ### 🔌 n8n Connector — Turn Workflows into MCP Tools
 
-New `Vurb.ts-n8n` package. Auto-discovers n8n webhook workflows and produces Vurb.ts tool builders — so AI agents can call your automations natively.
+New `@mcpfusion/n8n` package. Auto-discovers n8n webhook workflows and produces MCP Fusion tool builders — so AI agents can call your automations natively.
 
 ### Added
 
-- **`packages/n8n/`:** New `Vurb.ts-n8n` connector package:
+- **`packages/n8n/`:** New `@mcpfusion/n8n` connector package:
   - `createN8nConnector()` — Auto-discovery mode: connects to n8n, finds webhook workflows, produces `SynthesizedTool[]`
   - `defineN8nTool()` — Manual/enterprise mode: surgically define a specific workflow as an MCP tool
   - `N8nClient` — HTTP client for n8n REST API with auth and timeout
@@ -2344,8 +2401,8 @@ New `Vurb.ts-n8n` package. Auto-discovers n8n webhook workflows and produces Vur
 
 - **`docs/n8n-connector.md`:** Full VitePress documentation page — 5 Engineering Primitives with impact sections
 - **`packages/n8n/README.md`:** Package README with primitive breakdown and usage examples
-- **`README.md`:** New "From Spaghetti Code to Vurb.ts" power statement — pain-first structure with full capability coverage
-- **`README.md`:** Added `Vurb.ts-n8n` to Packages table and Documentation guides
+- **`README.md`:** New "From Spaghetti Code to MCP Fusion" power statement — pain-first structure with full capability coverage
+- **`README.md`:** Added `@mcpfusion/n8n` to Packages table and Documentation guides
 - **`.vitepress/config.mts`:** Added n8n Connector sidebar entry
 
 ### Test Suite
@@ -2356,11 +2413,11 @@ New `Vurb.ts-n8n` package. Auto-discovers n8n webhook workflows and produces Vur
 
 ### 🧬 OpenAPI Generator — Spec to MCP Server in One Command
 
-New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server from any OpenAPI 3.x specification. One command produces Zod schemas, Presenters, tool definitions, ToolRegistry, and server bootstrap — all following the MVA Convention.
+New `@mcpfusion/openapi-gen` package that generates a complete **MCP Fusion** server from any OpenAPI 3.x specification. One command produces Zod schemas, Presenters, tool definitions, ToolRegistry, and server bootstrap — all following the MVA Convention.
 
 ### Added
 
-- **`packages/openapi/`:** New `Vurb.ts-openapi-gen` package with full pipeline:
+- **`packages/openapi/`:** New `@mcpfusion/openapi-gen` package with full pipeline:
   - `OpenApiParser` — resolves `$ref`, extracts groups/actions/params/responses
   - `EndpointMapper` — `operationId` → `snake_case`, dedup, HTTP method → MCP annotations
   - `ZodCompiler` — `SchemaNode` → Zod code with coercion, formats, constraints
@@ -2388,18 +2445,18 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### 🏗️ Monorepo Refactor — Multi-Package Architecture
 
-**Vurb.ts** is now a monorepo with npm workspaces. The core framework lives in `packages/core/` and a new `packages/testing/` workspace provides testing utilities. This aligns with industry standards (tRPC, Vitest, Prisma) for package management and distribution.
+**MCP Fusion** is now a monorepo with npm workspaces. The core framework lives in `packages/core/` and a new `packages/testing/` workspace provides testing utilities. This aligns with industry standards (tRPC, Vitest, Prisma) for package management and distribution.
 
 ### BREAKING
 
-- **Project structure:** `src/` → `packages/core/src/`, `tests/` → `packages/core/tests/`. The npm package name and public API remain **unchanged** — `Vurb.ts` still exports the same modules.
+- **Project structure:** `src/` → `packages/core/src/`, `tests/` → `packages/core/tests/`. The npm package name and public API remain **unchanged** — `@mcpfusion/core` still exports the same modules.
 - **Root `package.json`:** Now `private: true` with `"workspaces": ["packages/*"]`. The root is no longer the publishable package.
 - **`tsconfig.json` → `tsconfig.base.json`:** Shared TypeScript configuration is now at the root level. Each package extends it via `"extends": "../../tsconfig.base.json"`.
 
 ### Added
 
-- **`packages/core/`:** Contains the full framework source (`src/`), tests (`tests/`), and its own `package.json` with `Vurb.ts` as the publishable name.
-- **`packages/testing/`:** New `@vurb/testing` package (skeleton). Will contain mock servers, test clients, and assertion helpers.
+- **`packages/core/`:** Contains the full framework source (`src/`), tests (`tests/`), and its own `package.json` with `@mcpfusion/core` as the publishable name.
+- **`packages/testing/`:** New `@mcpfusion/testing` package (skeleton). Will contain mock servers, test clients, and assertion helpers.
 - **Per-package CI:** `ci.yml` updated to `npm run build -ws` and `npm test -w packages/core`.
 - **Per-package publish:** `publish-npm.yml` now publishes each workspace package independently.
 
@@ -2422,7 +2479,7 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### 📄 Stateless Cursor Pagination for Prompts
 
-**Vurb.ts** now provides O(1) memory, cryptographic cursor-based pagination for `prompts/list`. Instead of loading thousands of prompts into memory or sending large payloads to MCP clients, the framework emits pages using an RFC-compliant cursor algorithm powered by the native Web Crypto API.
+**MCP Fusion** now provides O(1) memory, cryptographic cursor-based pagination for `prompts/list`. Instead of loading thousands of prompts into memory or sending large payloads to MCP clients, the framework emits pages using an RFC-compliant cursor algorithm powered by the native Web Crypto API.
 
 ### Added
 
@@ -2437,7 +2494,7 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### Hydration Timeout Sandbox — Graceful Degradation for Prompt Hydration
 
-**Vurb.ts** now protects prompt handlers from slow/failing external data sources via the **Hydration Timeout Sandbox**. When a handler fetches data from Jira, Stripe, databases, or any external source and the call hangs, the framework enforces a strict deadline, unblocks the UI immediately, and returns a structured SYSTEM ALERT.
+**MCP Fusion** now protects prompt handlers from slow/failing external data sources via the **Hydration Timeout Sandbox**. When a handler fetches data from Jira, Stripe, databases, or any external source and the call hangs, the framework enforces a strict deadline, unblocks the UI immediately, and returns a structured SYSTEM ALERT.
 
 ### Added
 
@@ -2461,7 +2518,7 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### Intent Mutex (Anti-Race Condition)
 
-**Vurb.ts** now provides automatic transactional isolation for AI agents via the **Intent Mutex**. When an LLM hallucinates and fires identical destructive calls in the exact same millisecond (e.g., double-deleting a user), the framework serializes them to guarantee isolation.
+**MCP Fusion** now provides automatic transactional isolation for AI agents via the **Intent Mutex**. When an LLM hallucinates and fires identical destructive calls in the exact same millisecond (e.g., double-deleting a user), the framework serializes them to guarantee isolation.
 
 ### Added
 
@@ -2477,7 +2534,7 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### Runtime Guards — Concurrency Limiter & Egress Guard
 
-**Vurb.ts** now provides two built-in runtime guards that fulfill the MCP specification requirement: *"Servers MUST rate limit tool invocations."* Both guards have **zero overhead** when not configured — no objects created, no branches in the hot path.
+**MCP Fusion** now provides two built-in runtime guards that fulfill the MCP specification requirement: *"Servers MUST rate limit tool invocations."* Both guards have **zero overhead** when not configured — no objects created, no branches in the hot path.
 
 ### Added
 
@@ -2518,7 +2575,7 @@ New `Vurb.ts-openapi-gen` package that generates a complete **Vurb.ts** server f
 
 ### 🚫 Cancellation Propagation — Cooperative AbortSignal for MCP Tools
 
-**Vurb.ts** now intercepts the `AbortSignal` from the MCP SDK and propagates it through the **entire execution pipeline** — middleware, handlers, and generators. When a user clicks "Stop" or the transport drops, all in-flight operations terminate immediately. Zero zombie processes. Zero resource leaks.
+**MCP Fusion** now intercepts the `AbortSignal` from the MCP SDK and propagates it through the **entire execution pipeline** — middleware, handlers, and generators. When a user clicks "Stop" or the transport drops, all in-flight operations terminate immediately. Zero zombie processes. Zero resource leaks.
 
 ### Added
 
@@ -2709,7 +2766,7 @@ Production-grade tracing for AI-native MCP servers. Every tool call creates **on
 
 ### Added
 
-- **`VurbTracer` / `VurbSpan` interfaces:** Structural subtyping contracts that match the real OpenTelemetry `Tracer` and `Span` — no `implements` or `import @opentelemetry/api` needed.
+- **`MCPFusionTracer` / `MCPFusionSpan` interfaces:** Structural subtyping contracts that match the real OpenTelemetry `Tracer` and `Span` — no `implements` or `import @opentelemetry/api` needed.
 - **`SpanStatusCode` constants:** Exported `UNSET` (0), `OK` (1), `ERROR` (2) matching OTel values.
 - **`.tracing(tracer)` on builders:** Per-tool tracing via fluent API on both `createTool()` and `defineTool()`.
 - **`enableTracing(tracer)` on `ToolRegistry`:** Propagate tracer to all registered builders.
@@ -2729,7 +2786,7 @@ Production-grade tracing for AI-native MCP servers. Every tool call creates **on
 - **`_executeTraced()` error path:** Returns graceful `error()` response instead of `throw` — prevents MCP server crashes while preserving `SpanStatusCode.ERROR` for ops alerting.
 
 ### Documentation
-- **New "Tracing" page:** Dedicated documentation page covering VurbTracer interface, error classification matrix, span attribute reference, pipeline events, context propagation limitation, and production setup example (OTLP/Jaeger).
+- **New "Tracing" page:** Dedicated documentation page covering MCPFusionTracer interface, error classification matrix, span attribute reference, pipeline events, context propagation limitation, and production setup example (OTLP/Jaeger).
 - **VitePress sidebar:** Added Tracing under Advanced Guides.
 
 ### Test Suite
@@ -2798,11 +2855,11 @@ Generator handlers that `yield progress()` now **automatically** send `notificat
 
 ### 🔍 Dynamic Manifest — RBAC-Aware Server Capabilities via MCP Resources
 
-Expose a **live capabilities manifest** (`Vurb.ts://manifest.json`) as a native MCP Resource. Orchestrators, admin dashboards, and AI agents can discover every tool, action, and presenter registered on the server — dynamically filtered by the requesting user's role and permissions.
+Expose a **live capabilities manifest** (`MCP Fusion://manifest.json`) as a native MCP Resource. Orchestrators, admin dashboards, and AI agents can discover every tool, action, and presenter registered on the server — dynamically filtered by the requesting user's role and permissions.
 
 ### Added
 
-- **Dynamic Manifest Resource:** New opt-in MCP Resource (`Vurb.ts://manifest.json`) that exposes the full server capabilities tree. Uses native MCP `resources/list` and `resources/read` protocol — no custom HTTP endpoints. Zero overhead when disabled.
+- **Dynamic Manifest Resource:** New opt-in MCP Resource (`MCP Fusion://manifest.json`) that exposes the full server capabilities tree. Uses native MCP `resources/list` and `resources/read` protocol — no custom HTTP endpoints. Zero overhead when disabled.
 - **ManifestCompiler:** New `compileManifest()` function that extracts metadata from all registered `ToolBuilder` instances and produces a structured `ManifestPayload` with tools, actions, input schemas, and presenter references. `cloneManifest()` provides deep-clone isolation for RBAC filtering.
 - **IntrospectionResource:** New `registerIntrospectionResource()` function that registers `resources/list` and `resources/read` handlers on the low-level MCP Server. Supports custom URIs, RBAC filter callbacks, and context factory integration.
 - **RBAC Filtering:** Filter callback receives a deep clone of the manifest plus the session context (from `contextFactory`). Delete tools, actions, or presenters the user should not see. Each request gets a fresh clone — concurrent sessions with different roles never interfere.
@@ -2810,7 +2867,7 @@ Expose a **live capabilities manifest** (`Vurb.ts://manifest.json`) as a native 
 - **`ActionMetadata` Presenter Fields:** Extended `ActionMetadata` with `presenterName`, `presenterSchemaKeys`, `presenterUiBlockTypes`, and `presenterHasContextualRules` for action-level presenter metadata.
 - **`ToolRegistry.getBuilders()`:** New method returning an iterable of all registered `ToolBuilder` instances for introspection.
 - **`AttachOptions.introspection`:** New `IntrospectionConfig<TContext>` option with `enabled`, `uri`, and `filter` fields.
-- **`AttachOptions.serverName`:** New option to set the manifest's server name (default: `'Vurb.ts-server'`).
+- **`AttachOptions.serverName`:** New option to set the manifest's server name (default: `'fusion-server'`).
 
 ### Documentation
 - **New "Dynamic Manifest" page:** Dedicated documentation page with full configuration guide, RBAC patterns, payload structure reference, architecture diagram, and real-world examples (multi-tenant RBAC, compliance audits, admin dashboards).
@@ -2826,7 +2883,7 @@ Expose a **live capabilities manifest** (`Vurb.ts://manifest.json`) as a native 
 
 ### 🎉 First Stable Release — MVA Architecture for AI-Native MCP Servers
 
-This is the first stable release of `Vurb.ts`, introducing **MVA (Model-View-Agent)** — a new architectural pattern created by Renato Marinho at Vinkius Labs that replaces MVC for the AI era.
+This is the first stable release of `@mcpfusion/core`, introducing **MVA (Model-View-Agent)** — a new architectural pattern created by Renato Marinho at Vinkius Labs that replaces MVC for the AI era.
 
 ### Highlights
 
@@ -2836,7 +2893,7 @@ This is the first stable release of `Vurb.ts`, introducing **MVA (Model-View-Age
 - **Two Builder APIs:** `defineTool()` (JSON-first, zero Zod imports) and `createTool()` (full Zod power). Both produce identical runtime behavior.
 - **tRPC-style Middleware:** Pre-compiled at build time with `defineMiddleware()` for context derivation. Apply globally or per-group. Zero runtime allocation.
 - **Self-Healing Errors:** `toolError()` with structured recovery hints and suggested retry arguments. AI agents self-correct without human intervention.
-- **VurbClient:** tRPC-style end-to-end type safety with `createVurbClient<TRouter>()`. Full autocomplete, compile-time checking, zero code generation.
+- **MCPFusionClient:** tRPC-style end-to-end type safety with `createMCPFusionClient<TRouter>()`. Full autocomplete, compile-time checking, zero code generation.
 - **State Sync:** RFC 7234-inspired cache signals with `cacheSignal()` and `invalidates()` for cross-domain causal invalidation. Prevents temporal blindness.
 - **Cognitive Guardrails:** `.agentLimit(n)` prevents context DDoS. Reduces token costs by up to 100x on large datasets.
 - **TOON Encoding:** `toonSuccess()` reduces token count by ~40% vs standard JSON while remaining LLM-parseable.
@@ -2860,7 +2917,7 @@ This is the first stable release of `Vurb.ts`, introducing **MVA (Model-View-Age
 
 ### Test Suite
 - **842 tests** across 36 files, all passing.
-- Covers: invariant contracts, security vectors, adversarial inputs, schema collisions, concurrent stress, E2E integration, streaming, VurbClient contracts, and Presenter composition.
+- Covers: invariant contracts, security vectors, adversarial inputs, schema collisions, concurrent stress, E2E integration, streaming, MCPFusionClient contracts, and Presenter composition.
 
 ## [0.10.0] - 2026-02-22
 
@@ -2889,7 +2946,7 @@ This is the first stable release of `Vurb.ts`, introducing **MVA (Model-View-Age
 ## [0.9.1] - 2026-02-22
 
 ### Fixed
-- **Sub-path export:** Added `"./client"` entry point in `package.json` exports so that the documented import (`Vurb.ts/client`) works natively.
+- **Sub-path export:** Added `"./client"` entry point in `package.json` exports so that the documented import (`@mcpfusion/core/client`) works natively.
 - **Action Group Guard:** Added runtime guard in `defineTool()` throwing an error if both `actions` and `groups` are used simultaneously, aligning with `GroupedToolBuilder` mutual exclusivity.
 - **Dead-code JSDoc stub:** Removed a malformed `export function defineTool(...)` stub that was incorrectly embedded inside the `defineTool` JSDoc text.
 - **Type Safety & Strictness:** Resolved all remaining TypeScript lint errors across the core builders and schema generators (`no-explicit-any`, `strict-boolean-expressions`, and index signature properties). Removed `eslint-disable` escape hatches in favor of strict type inference using `infer` and pure TypeScript solutions.
@@ -2924,7 +2981,7 @@ This is the first stable release of `Vurb.ts`, introducing **MVA (Model-View-Age
 - **`createToolAnnotations()` factory function:** Creates immutable `ToolAnnotations` instances.
 - **`createAnnotations()` factory function:** Creates immutable `Annotations` instances.
 - **Edge-case test suite (`EdgeCases.test.ts`):** 37 new tests covering `getActionMetadata()`, group-level middleware chains, frozen guard on all config methods, error paths (non-Error throws, middleware errors), `ResponseHelper` empty-string fallback, `ConverterBase` null filtering, custom discriminator routing, and description generator edge cases.
-- **Enterprise-grade test suites:** Added `InvariantContracts.test.ts` (56 tests: determinism, execution isolation, context immutability, handler chaos, unicode/binary boundaries, re-entrancy, concurrent registry stress, API equivalence, VurbClient contracts), `DeepVerification.test.ts`, `LargeScaleScenarios.test.ts`, `SecurityDeep.test.ts` (15 attack vectors), `McpServerAdapter.test.ts` (duck-type detection, detach lifecycle), `StreamingProgress.test.ts`, `EndToEnd.test.ts` (full-stack integration), and `ToonDescription.test.ts`.
+- **Enterprise-grade test suites:** Added `InvariantContracts.test.ts` (56 tests: determinism, execution isolation, context immutability, handler chaos, unicode/binary boundaries, re-entrancy, concurrent registry stress, API equivalence, MCPFusionClient contracts), `DeepVerification.test.ts`, `LargeScaleScenarios.test.ts`, `SecurityDeep.test.ts` (15 attack vectors), `McpServerAdapter.test.ts` (duck-type detection, detach lifecycle), `StreamingProgress.test.ts`, `EndToEnd.test.ts` (full-stack integration), and `ToonDescription.test.ts`.
 - **Test coverage improved:** 773 tests across 33 files, 100% function coverage. Comprehensive invariant, security, and adversarial testing.
 
 ### Changed

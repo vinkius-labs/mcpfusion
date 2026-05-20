@@ -6,7 +6,7 @@
  * instruments the execution pipeline for a specific observability concern:
  *
  * - **Debug**: Lightweight structured event emission via `DebugObserverFn`
- * - **Tracing**: OpenTelemetry-compatible span creation via `VurbTracer`
+ * - **Tracing**: OpenTelemetry-compatible span creation via `MCPFusionTracer`
  * - **Telemetry**: Shadow Socket IPC emission for the Inspector TUI
  *
  * @module
@@ -14,7 +14,7 @@
 import { type ToolResponse } from '../types.js';
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
 import { type TelemetrySink } from '../../observability/TelemetryEvent.js';
-import { type VurbTracer, SpanStatusCode } from '../../observability/Tracing.js';
+import { type MCPFusionTracer, SpanStatusCode } from '../../observability/Tracing.js';
 import { computeResponseSize, type PipelineHooks } from '../execution/PipelineHooks.js';
 import { toErrorMessage } from '../ErrorUtils.js';
 
@@ -84,12 +84,12 @@ export function buildDebugHooks(debug: DebugObserverFn, ctx: HookContext): Pipel
  * Uses wrapResponse for leak-proof span closure.
  * AI errors → UNSET, system errors → ERROR.
  *
- * @param tracer - A {@link VurbTracer} instance (or OTel Tracer)
+ * @param tracer - A {@link MCPFusionTracer} instance (or OTel Tracer)
  * @param ctx - Tool metadata
  */
-export function buildTracedHooks(tracer: VurbTracer, ctx: HookContext): PipelineHooks {
+export function buildTracedHooks(tracer: MCPFusionTracer, ctx: HookContext): PipelineHooks {
     const startAttrs: Record<string, string | number | boolean | ReadonlyArray<string>> = {
-        'mcp.system': 'vurb',
+        'mcp.system': 'mcpfusion',
         'mcp.tool': ctx.name,
     };
     if (ctx.tags.length > 0) startAttrs['mcp.tags'] = ctx.tags;
@@ -165,7 +165,7 @@ export function buildTracedHooks(tracer: VurbTracer, ctx: HookContext): Pipeline
  * Build telemetry hooks: Shadow Socket event emission for Inspector TUI.
  *
  * Emits `validate`, `middleware`, and `execute` TelemetryEvents
- * to the IPC sink so that `vurb inspect` shows real pipeline data.
+ * to the IPC sink so that `mcpfusion inspect` shows real pipeline data.
  *
  * @param emit - TelemetrySink IPC function
  * @param ctx - Tool metadata

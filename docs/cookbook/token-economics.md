@@ -10,7 +10,7 @@
 
 ## Introduction {#introduction}
 
-Every token your MCP server sends to the LLM costs money and consumes context window. A naive implementation can blow through $10/hr on a single agent workflow. Vurb.ts provides four orthogonal mechanisms to cut token usage by 60-80% without losing any functionality.
+Every token your MCP server sends to the LLM costs money and consumes context window. A naive implementation can blow through $10/hr on a single agent workflow. MCP Fusion provides four orthogonal mechanisms to cut token usage by 60-80% without losing any functionality.
 
 ## Where Tokens Are Wasted {#waste}
 

@@ -17,8 +17,8 @@ export function oauthSetupTs(config: ProjectConfig): string {
  * 2. Register the auth tool in server.ts
  * 3. Use \`requireAuth()\` on protected tools
  */
-import { createAuthTool, TokenManager } from '@vurb/oauth';
-import type { ToolRegistry } from '@vurb/core';
+import { createAuthTool, TokenManager } from '@mcpfusion/oauth';
+import type { ToolRegistry } from '@mcpfusion/core';
 
 export function registerAuth<TContext>(registry: ToolRegistry<TContext>): void {
     const clientId = process.env['OAUTH_CLIENT_ID'];
@@ -61,7 +61,7 @@ export function oauthMiddlewareTs(): string {
  *     .handle(async (input, ctx) => { /* authenticated */ });
  * \`\`\`
  */
-import { requireAuth } from '@vurb/oauth';
+import { requireAuth } from '@mcpfusion/oauth';
 
 /**
  * Pre-configured auth middleware.

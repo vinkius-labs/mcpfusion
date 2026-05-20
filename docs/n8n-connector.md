@@ -1,6 +1,6 @@
 # n8n Connector
 
-<a href="https://www.npmjs.com/package/@vurb/n8n"><img src="https://img.shields.io/npm/v/@vurb/n8n?color=blue" alt="npm" /></a>
+<a href="https://www.npmjs.com/package/@mcpfusion/n8n"><img src="https://img.shields.io/npm/v/@mcpfusion/n8n?color=blue" alt="npm" /></a>
 
 - [Install](#install)
 - [Dynamic Ingestion](#ingestion)
@@ -14,8 +14,8 @@
 Turn n8n webhook workflows into MCP tools. Tag filtering controls what the AI can see, and Presenters strip sensitive data before it leaves your process.
 
 ```typescript
-import { createN8nConnector, defineN8nTool } from '@vurb/n8n';
-import { defineTool, ToolRegistry } from '@vurb/core';
+import { createN8nConnector, defineN8nTool } from '@mcpfusion/n8n';
+import { defineTool, ToolRegistry } from '@mcpfusion/core';
 
 const n8n = await createN8nConnector({
   url: process.env.N8N_URL!,
@@ -34,10 +34,10 @@ for (const tool of n8n.tools()) {
 ## Install {#install}
 
 ```bash
-npm install @vurb/n8n
+npm install @mcpfusion/n8n
 ```
 
-Peer dependencies: `Vurb.ts` and `zod`.
+Peer dependencies: `@mcpfusion/core` and `zod`.
 
 ## Dynamic Ingestion {#ingestion}
 
@@ -155,8 +155,8 @@ process.on('SIGTERM', () => { n8n.stop(); process.exit(0); });
 ```typescript
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { defineTool, ToolRegistry, createServerAttachment } from '@vurb/core';
-import { createN8nConnector, defineN8nTool } from '@vurb/n8n';
+import { defineTool, ToolRegistry, createServerAttachment } from '@mcpfusion/core';
+import { createN8nConnector, defineN8nTool } from '@mcpfusion/n8n';
 
 const n8n = await createN8nConnector({
   url: process.env.N8N_URL!,

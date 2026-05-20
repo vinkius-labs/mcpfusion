@@ -14,11 +14,11 @@
  * @module
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 
 describe('.interactive() — FluentToolBuilder', () => {
     it('marks the built GroupedToolBuilder as interactive', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         const tool = f.mutation('deploy.execute')
             .withString('app_id', 'App ID')
@@ -31,7 +31,7 @@ describe('.interactive() — FluentToolBuilder', () => {
     });
 
     it('tools without .interactive() are NOT interactive', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         const tool = f.query('users.list')
             .withString('query', 'Search')
@@ -41,7 +41,7 @@ describe('.interactive() — FluentToolBuilder', () => {
     });
 
     it('.interactive() can be called before or after .withString()', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         // interactive() before with*
         const tool1 = f.action('a.b')
@@ -59,7 +59,7 @@ describe('.interactive() — FluentToolBuilder', () => {
     });
 
     it('.interactive() does not affect the handler execution without ask()', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const reg = f.registry();
 
         reg.register(
@@ -76,7 +76,7 @@ describe('.interactive() — FluentToolBuilder', () => {
 
 describe('.interactive() — FluentRouter inheritance', () => {
     it('all children of an interactive router are interactive', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         const admin = f.router('admin')
             .describe('Admin tools')
@@ -94,7 +94,7 @@ describe('.interactive() — FluentRouter inheritance', () => {
     });
 
     it('non-interactive router does NOT make children interactive', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         const api = f.router('api')
             .describe('API tools');
@@ -106,7 +106,7 @@ describe('.interactive() — FluentRouter inheritance', () => {
     });
 
     it('child can opt-in independently from router', () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
 
         const api = f.router('api');
 
@@ -125,7 +125,7 @@ describe('.interactive() — FluentRouter inheritance', () => {
 
 describe('.interactive() — registration and execution', () => {
     it('interactive tools can be registered and called normally', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(

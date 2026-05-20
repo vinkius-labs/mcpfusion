@@ -19,7 +19,7 @@ export function healthToolTs(): string {
  * - .handle(input, ctx) — fully typed handler
  * - export default for autoDiscover()
  */
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 import { SystemPresenter } from '../../presenters/SystemPresenter.js';
 
 export default f.query('system.health')
@@ -49,7 +49,7 @@ export function echoToolTs(): string {
  * - .handle(input, ctx) — input.message is typed as string
  * - Implicit success() wrapping — return raw data, framework wraps it
  */
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 
 export default f.query('system.echo')
     .describe('Echo a message back (connectivity test)')

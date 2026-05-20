@@ -1,25 +1,25 @@
 /**
  * LocalServer — Development-Mode YAML Server
  *
- * Compiles a `vurb.yaml` manifest and exposes it as a local MCP server.
- * Used by `vurb yaml dev` for local development and testing.
+ * Compiles a `mcpfusion.yaml` manifest and exposes it as a local MCP server.
+ * Used by `mcpfusion yaml dev` for local development and testing.
  *
  * **Open-source**: No DLP, no FinOps, no SSRF protection.
  * Secrets resolved from `process.env`. Good enough for dev — NOT for production.
  *
  * @example
  * ```typescript
- * import { loadYamlServer } from '@vurb/yaml';
+ * import { loadYamlServer } from '@mcpfusion/yaml';
  *
  * const server = await loadYamlServer(
- *   fs.readFileSync('vurb.yaml', 'utf-8'),
+ *   fs.readFileSync('mcpfusion.yaml', 'utf-8'),
  * );
  * ```
  *
  * @module
  */
-import type { VurbYamlSpec } from '../schema/VurbYamlSpec.js';
-import { parseVurbYaml, VurbYamlError } from '../parser/VurbYamlParser.js';
+import type { MCPFusionYamlSpec } from '../schema/MCPFusionYamlSpec.js';
+import { parseMCPFusionYaml, MCPFusionYamlError } from '../parser/MCPFusionYamlParser.js';
 import { resolveSecretsFromEnv } from '../schema/SecretInterpolator.js';
 import { resolveAllConnections, type ResolvedConnection } from '../compiler/ConnectionResolver.js';
 import { compileAllTools, type CompiledTool } from '../compiler/ToolCompiler.js';
@@ -29,10 +29,10 @@ import { compileAllPrompts, type CompiledPrompt } from '../compiler/PromptCompil
 /** A fully compiled YAML server — ready for MCP registration. */
 export interface CompiledYamlServer {
     /** Parsed and validated spec. */
-    readonly spec: VurbYamlSpec;
+    readonly spec: MCPFusionYamlSpec;
 
     /** Server metadata. */
-    readonly serverMeta: VurbYamlSpec['server'];
+    readonly serverMeta: MCPFusionYamlSpec['server'];
 
     /** Resolved connections. */
     readonly connections: ReadonlyMap<string, ResolvedConnection>;
@@ -47,33 +47,33 @@ export interface CompiledYamlServer {
     readonly prompts: readonly CompiledPrompt[];
 
     /** Platform settings (parsed but NOT enforced by open-source). */
-    readonly settings: VurbYamlSpec['settings'];
+    readonly settings: MCPFusionYamlSpec['settings'];
 }
 
 /**
- * Load and compile a `vurb.yaml` manifest into a server-ready object.
+ * Load and compile a `mcpfusion.yaml` manifest into a server-ready object.
  *
  * Each pipeline step is wrapped with context-rich error messages so
  * developers always know WHICH step failed and WHY.
  *
- * @param yamlString - Raw `vurb.yaml` content
+ * @param yamlString - Raw `mcpfusion.yaml` content
  * @param secrets - Pre-resolved secrets (if not provided, falls back to process.env)
  * @returns Compiled server ready for MCP registration
- * @throws {@link VurbYamlError} with actionable details on failure
+ * @throws {@link MCPFusionYamlError} with actionable details on failure
  */
 export async function loadYamlServer(
     yamlString: string,
     secrets?: Readonly<Record<string, string>>,
 ): Promise<CompiledYamlServer> {
     // ── 1. Parse and validate ────────────────────────────
-    // VurbYamlError with .details already provides good DX
-    let spec: VurbYamlSpec;
+    // MCPFusionYamlError with .details already provides good DX
+    let spec: MCPFusionYamlSpec;
     try {
-        spec = parseVurbYaml(yamlString);
+        spec = parseMCPFusionYaml(yamlString);
     } catch (e) {
-        if (e instanceof VurbYamlError) throw e;
-        throw new VurbYamlError(
-            `Failed to parse vurb.yaml: ${e instanceof Error ? e.message : String(e)}`,
+        if (e instanceof MCPFusionYamlError) throw e;
+        throw new MCPFusionYamlError(
+            `Failed to parse mcpfusion.yaml: ${e instanceof Error ? e.message : String(e)}`,
         );
     }
 
@@ -84,7 +84,7 @@ export async function loadYamlServer(
             ? { ...secrets }
             : resolveSecretsFromEnv(Object.keys(spec.secrets ?? {}));
     } catch (e) {
-        throw new VurbYamlError(
+        throw new MCPFusionYamlError(
             `Secret resolution failed: ${e instanceof Error ? e.message : String(e)}`,
             undefined,
             [
@@ -102,7 +102,7 @@ export async function loadYamlServer(
         if (missing.length > 0) {
             const requiredMissing = missing.filter(key => spec.secrets![key]?.required);
             if (requiredMissing.length > 0) {
-                throw new VurbYamlError(
+                throw new MCPFusionYamlError(
                     `Missing required secrets: ${requiredMissing.join(', ')}`,
                     undefined,
                     requiredMissing.map(key =>
@@ -122,16 +122,16 @@ export async function loadYamlServer(
 }
 
 /**
- * Load and compile from an already parsed and validated VurbYamlSpec.
+ * Load and compile from an already parsed and validated MCPFusionYamlSpec.
  * Use this in production runtimes to avoid double-serialization overhead.
  *
  * @param spec - Parsed and validated YAML spec
  * @param secrets - Pre-resolved secrets
  * @returns Compiled server ready for MCP registration
- * @throws {@link VurbYamlError} with actionable details on failure
+ * @throws {@link MCPFusionYamlError} with actionable details on failure
  */
 export function loadFromParsedSpec(
-    spec: VurbYamlSpec,
+    spec: MCPFusionYamlSpec,
     secrets: Readonly<Record<string, string>>,
 ): CompiledYamlServer {
     const resolvedSecrets = { ...secrets };
@@ -141,7 +141,7 @@ export function loadFromParsedSpec(
     try {
         connections = resolveAllConnections(spec.connections, resolvedSecrets);
     } catch (e) {
-        throw new VurbYamlError(
+        throw new MCPFusionYamlError(
             `Failed to resolve connections: ${e instanceof Error ? e.message : String(e)}`,
             undefined,
             [
@@ -157,7 +157,7 @@ export function loadFromParsedSpec(
     try {
         tools = compileAllTools(spec.tools, connections);
     } catch (e) {
-        throw new VurbYamlError(
+        throw new MCPFusionYamlError(
             `Failed to compile tools: ${e instanceof Error ? e.message : String(e)}`,
             undefined,
             [
@@ -173,7 +173,7 @@ export function loadFromParsedSpec(
     try {
         resources = compileAllResources(spec.resources, connections, resolvedSecrets);
     } catch (e) {
-        throw new VurbYamlError(
+        throw new MCPFusionYamlError(
             `Failed to compile resources: ${e instanceof Error ? e.message : String(e)}`,
             undefined,
             [
@@ -188,7 +188,7 @@ export function loadFromParsedSpec(
     try {
         prompts = compileAllPrompts(spec.prompts);
     } catch (e) {
-        throw new VurbYamlError(
+        throw new MCPFusionYamlError(
             `Failed to compile prompts: ${e instanceof Error ? e.message : String(e)}`,
             undefined,
             [

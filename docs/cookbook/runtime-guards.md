@@ -7,14 +7,14 @@
 
 ## Introduction {#introduction}
 
-Even with Presenter `.limit()` guardrails, handlers can still produce unbounded execution times or get called in aggressive loops. Vurb.ts provides built-in `.timeout()` and rate limiting to protect the server process.
+Even with Presenter `.limit()` guardrails, handlers can still produce unbounded execution times or get called in aggressive loops. MCP Fusion provides built-in `.timeout()` and rate limiting to protect the server process.
 
 ## Timeout {#timeout}
 
 Set a per-tool timeout with `.timeout()`. If the handler exceeds the duration, the `AbortSignal` fires and the handler is cancelled:
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const heavyQuery = f.query('analytics.heavy')
   .describe('Run a heavy analytics query')

@@ -16,13 +16,13 @@ const SECRET = 'test-secret-32-chars-minimum-ok!';
 function mcpContext(token: string) {
     return {
         requestInfo: {
-            headers: { 'x-vurb-delegation': token },
+            headers: { 'x-mcpfusion-delegation': token },
         },
     };
 }
 
 function plainHeaderContext(token: string) {
-    return { headers: { 'x-vurb-delegation': token } };
+    return { headers: { 'x-mcpfusion-delegation': token } };
 }
 
 // ============================================================================
@@ -63,7 +63,7 @@ describe('extractDelegationHeader — context formats', () => {
 
     it('should throw MISSING_DELEGATION_TOKEN when header is a number (not a string)', async () => {
         const middleware = requireGatewayClearance(SECRET);
-        await expect(middleware({ headers: { 'x-vurb-delegation': 42 } })).rejects.toMatchObject({
+        await expect(middleware({ headers: { 'x-mcpfusion-delegation': 42 } })).rejects.toMatchObject({
             code: 'MISSING_DELEGATION_TOKEN',
         });
     });

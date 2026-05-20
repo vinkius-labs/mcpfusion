@@ -2,7 +2,7 @@
  * Bug #84 — Deploy serverId path traversal
  *
  * Verifies that the deploy command validates serverId to
- * prevent path-traversal attacks via .vurbrc configuration.
+ * prevent path-traversal attacks via .MCPFusionrc configuration.
  *
  * @module
  */

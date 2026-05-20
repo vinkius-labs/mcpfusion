@@ -22,7 +22,7 @@ export const ansi = {
 
 /** @internal exported for testing */
 const _require = createRequire(import.meta.url);
-export const VURB_VERSION: string = (() => {
+export const MCPFUSION_VERSION: string = (() => {
     try { return (_require('../../package.json') as { version: string }).version; }
     catch { return '0.0.0'; }
 })();
@@ -40,23 +40,23 @@ export const VALID_TARGETS = ['vinkius', 'vercel', 'cloudflare'] as const;
 
 /** @internal exported for testing */
 export const HELP = `
-vurb — Vurb CLI
+MCP Fusion — MCP Fusion CLI
 
 USAGE
-  vurb create <name>                Scaffold a new Vurb server
-  vurb dev --server <entry>         Start HMR dev server with auto-reload
-  vurb lock                         Generate or update ${LOCKFILE_NAME}
-  vurb lock --check                 Verify lockfile is up to date (CI gate)
-  vurb deploy                       Bundle, compress & deploy to Edge
-  vurb remote                       Show current remote configuration
-  vurb token                        Show current token status
-  vurb inspect                      Launch the real-time TUI dashboard
-  vurb insp --demo                  Launch TUI with built-in simulator
-  vurb version                      Show CLI and installed package versions
-  vurb update                       Update all @vurb/* packages to latest
-  vurb doctor                       Run environment diagnostics
-  vurb validate                     Validate server tools, schemas & lockfile
-  vurb yaml                          Declarative MCP server engine (vurb.yaml)
+  mcpfusion create <name>                Scaffold a new MCP mcpfusion server
+  mcpfusion dev --server <entry>         Start HMR dev server with auto-reload
+  mcpfusion lock                         Generate or update ${LOCKFILE_NAME}
+  mcpfusion lock --check                 Verify lockfile is up to date (CI gate)
+  mcpfusion deploy                       Bundle, compress & deploy to Edge
+  mcpfusion remote                       Show current remote configuration
+  mcpfusion token                        Show current token status
+  mcpfusion inspect                      Launch the real-time TUI dashboard
+  mcpfusion insp --demo                  Launch TUI with built-in simulator
+  mcpfusion version                      Show CLI and installed package versions
+  mcpfusion update                       Update all @mcpfusion/* packages to latest
+  mcpfusion doctor                       Run environment diagnostics
+  mcpfusion validate                     Validate server tools, schemas & lockfile
+  mcpfusion yaml                          Declarative MCP server engine (mcpfusion.yaml)
 
 CREATE OPTIONS
   --transport <stdio|sse>  Transport layer (default: stdio)
@@ -72,19 +72,19 @@ DEV OPTIONS
 
 DEPLOY OPTIONS
   --server, -s <path>      Path to server entrypoint (default: auto-detect)
-  --token <token>          Override VURB_DEPLOY_TOKEN (connection token)
+  --token <token>          Override MCPFUSION_DEPLOY_TOKEN (connection token)
   --no-marketplace         Skip marketplace manifest (deploy code only)
   --allow-insecure         Suppress HTTP plaintext warning
 
 REMOTE OPTIONS
-  vurb remote <url>          Override API endpoint (default: Vinkius Cloud)
-  vurb remote --server-id <id>  Set target server UUID
-  --token <token>            Save deploy token to .vurbrc
+  mcpfusion remote <url>          Override API endpoint (default: Vinkius Cloud)
+  mcpfusion remote --server-id <id>  Set target server UUID
+  --token <token>            Save deploy token to .mcpfusionrc
 
 TOKEN OPTIONS
-  vurb token <token>         Save deploy token to .vurbrc
-  vurb token                 Show current token status (masked)
-  vurb token --clear         Remove token from .vurbrc
+  mcpfusion token <token>         Save deploy token to .mcpfusionrc
+  mcpfusion token                 Show current token status (masked)
+  mcpfusion token --clear         Remove token from .mcpfusionrc
 
 INSPECTOR OPTIONS
   --demo, -d               Launch with built-in simulator (no server needed)
@@ -101,26 +101,26 @@ GLOBAL
   --help, -h               Show this help message
 
 EXAMPLES
-  vurb create my-server
-  vurb create my-server -y
-  vurb create my-server --vector prisma --transport sse
-  vurb dev --server ./src/server.ts
-  vurb dev --server ./src/server.ts --dir ./src/tools
-  vurb lock --server ./src/server.ts
-  vurb deploy
-  vurb remote --server-id abc-123-def
-  vurb remote --server-id abc-123-def --token vk_live_xxx
-  vurb remote http://localhost:8080 --server-id abc-123-def
-  vurb token vk_live_9hfaJlIPOv5xZh
-  vurb token --clear
-  vurb inspect --demo
-  vurb insp --pid 12345
-  vurb version
-  vurb update
-  vurb doctor
-  vurb validate
-  vurb validate --server ./src/server.ts
-  vurb yaml validate
-  vurb yaml dev
-  vurb yaml dev --transport http --port 3001
+  mcpfusion create my-server
+  mcpfusion create my-server -y
+  mcpfusion create my-server --vector prisma --transport sse
+  mcpfusion dev --server ./src/server.ts
+  mcpfusion dev --server ./src/server.ts --dir ./src/tools
+  mcpfusion lock --server ./src/server.ts
+  mcpfusion deploy
+  mcpfusion remote --server-id abc-123-def
+  mcpfusion remote --server-id abc-123-def --token vk_live_xxx
+  mcpfusion remote http://localhost:8080 --server-id abc-123-def
+  mcpfusion token vk_live_9hfaJlIPOv5xZh
+  mcpfusion token --clear
+  mcpfusion inspect --demo
+  mcpfusion insp --pid 12345
+  mcpfusion version
+  mcpfusion update
+  mcpfusion doctor
+  mcpfusion validate
+  mcpfusion validate --server ./src/server.ts
+  mcpfusion yaml validate
+  mcpfusion yaml dev
+  mcpfusion yaml dev --transport http --port 3001
 `.trim();

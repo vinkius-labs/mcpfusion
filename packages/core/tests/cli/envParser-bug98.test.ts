@@ -20,7 +20,7 @@ const savedEnv: Record<string, string | undefined> = {};
 const keysToClean: string[] = [];
 
 beforeEach(() => {
-    tmpBase = join(tmpdir(), `vurb-env-parse-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpBase = join(tmpdir(), `mcpfusion-env-parse-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(tmpBase, { recursive: true });
 });
 

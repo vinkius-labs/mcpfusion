@@ -1,7 +1,7 @@
 /**
- * @vurb/cloudflare
+ * @mcpfusion/cloudflare
  *
- * Cloudflare Workers adapter for Vurb.
+ * Cloudflare Workers adapter for MCP Fusion.
  *
  * @module
  */

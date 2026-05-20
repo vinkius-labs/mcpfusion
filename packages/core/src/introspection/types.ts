@@ -28,7 +28,7 @@
  *     contextFactory: createContext,
  *     introspection: {
  *         enabled: process.env.NODE_ENV !== 'production',
- *         uri: 'vurb://manifest.json',
+ *         uri: 'mcpfusion://manifest.json',
  *         filter: (manifest, ctx) => {
  *             if (ctx.user.role !== 'admin') {
  *                 delete manifest.capabilities.tools['admin.delete_user'];
@@ -50,7 +50,7 @@ export interface IntrospectionConfig<TContext> {
 
     /**
      * Custom URI for the MCP Resource.
-     * @defaultValue `'vurb://manifest.json'`
+     * @defaultValue `'mcpfusion://manifest.json'`
      */
     readonly uri?: string;
 
@@ -77,8 +77,8 @@ export interface IntrospectionConfig<TContext> {
 export interface ManifestPayload {
     /** Server name (from AttachOptions or registry metadata) */
     readonly server: string;
-    /** Vurb framework version */
-    readonly vurb_version: string;
+    /** MCP Fusion framework version */
+    readonly MCPFUSION_VERSION: string;
     /** Architecture label */
     readonly architecture: 'MVA (Model-View-Agent)';
     /** Capabilities tree */
@@ -136,7 +136,7 @@ export interface ManifestPresenter {
 /**
  * Configuration for MCP Server Card generation.
  *
- * When provided, Vurb auto-generates a `/.well-known/mcp/server-card.json`
+ * When provided, MCP Fusion auto-generates a `/.well-known/mcp/server-card.json`
  * endpoint that AI clients use for auto-discovery and configuration.
  *
  * @example

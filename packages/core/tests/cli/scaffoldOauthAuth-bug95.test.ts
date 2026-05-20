@@ -16,7 +16,7 @@ import type { ProjectConfig } from '../../src/cli/types.js';
 let tmpBase: string;
 
 beforeEach(() => {
-    tmpBase = join(tmpdir(), `vurb-scaffold-oauth-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpBase = join(tmpdir(), `mcpfusion-scaffold-oauth-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(tmpBase, { recursive: true });
 });
 

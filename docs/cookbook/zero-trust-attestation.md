@@ -15,7 +15,7 @@ In enterprise environments, every tool call must be auditable and attributable. 
 Tag tools with compliance metadata:
 
 ```typescript
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const deleteCustomerData = f.mutation('gdpr.delete_customer_data')
   .describe('Permanently delete all data for a customer (GDPR Article 17)')
@@ -147,4 +147,4 @@ export const deleteData = audited.mutation('gdpr.delete')
 ```
 
 > [!IMPORTANT]
-> Zero-Trust Attestation is a framework-level pattern. Vurb.ts provides the middleware system — you bring the session management, audit storage, and compliance rules specific to your regulatory requirements (SOC 2, GDPR, HIPAA, etc.).
+> Zero-Trust Attestation is a framework-level pattern. MCP Fusion provides the middleware system — you bring the session management, audit storage, and compliance rules specific to your regulatory requirements (SOC 2, GDPR, HIPAA, etc.).

@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { createTypedRegistry, createTool, success } from '@vurb/core';
+ * import { createTypedRegistry, createTool, success } from '@mcpfusion/core';
  *
  * interface AppContext { db: Database; user: User }
  *

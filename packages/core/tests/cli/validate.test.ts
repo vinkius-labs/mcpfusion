@@ -1,5 +1,5 @@
 /**
- * `vurb validate` — Deep Unit + Integration Tests
+ * `mcpfusion validate` — Deep Unit + Integration Tests
  *
  * Strategy: Uses vi.mock to replace `runIntrospection` with controlled
  * IntrospectionReport shapes, allowing us to test every branch in:
@@ -17,7 +17,7 @@ import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
-import { parseArgs } from '../../src/cli/vurb.js';
+import { parseArgs } from '../../src/cli/mcpfusion.js';
 import type { IntrospectionReport } from '../../src/cli/commands/introspect.js';
 
 // ─── Mock runIntrospection BEFORE importing commandValidate ──────
@@ -62,7 +62,7 @@ function captureStderr(fn: () => Promise<void>): Promise<string> {
 }
 
 function makeTmp(): string {
-    const dir = join(tmpdir(), `vurb-val-deep-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = join(tmpdir(), `mcpfusion-val-deep-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     mkdirSync(dir, { recursive: true });
     return dir;
 }
@@ -100,23 +100,23 @@ function createEntrypoint(tmpDir: string): void {
 
 describe('parseArgs — validate command', () => {
     it('parses "validate"', () => {
-        expect(parseArgs(['node', 'vurb', 'validate']).command).toBe('validate');
+        expect(parseArgs(['node', 'mcpfusion', 'validate']).command).toBe('validate');
     });
 
     it('parses "validate" with --server', () => {
-        const args = parseArgs(['node', 'vurb', 'validate', '--server', 'custom.ts']);
+        const args = parseArgs(['node', 'mcpfusion', 'validate', '--server', 'custom.ts']);
         expect(args.command).toBe('validate');
         expect(args.server).toBe('custom.ts');
     });
 
     it('parses "validate" with -s shorthand', () => {
-        const args = parseArgs(['node', 'vurb', 'validate', '-s', 'custom.ts']);
+        const args = parseArgs(['node', 'mcpfusion', 'validate', '-s', 'custom.ts']);
         expect(args.command).toBe('validate');
         expect(args.server).toBe('custom.ts');
     });
 
     it('parses "validate" with --cwd', () => {
-        const args = parseArgs(['node', 'vurb', 'validate', '--cwd', '/tmp/project']);
+        const args = parseArgs(['node', 'mcpfusion', 'validate', '--cwd', '/tmp/project']);
         expect(args.command).toBe('validate');
         expect(args.cwd).toBe('/tmp/project');
     });
@@ -521,18 +521,18 @@ describe('commandValidate — lockfile drift', () => {
         process.exit = originalExit;
     });
 
-    it('warns when vurb.lock does not exist', async () => {
+    it('warns when mcpfusion.lock does not exist', async () => {
         mockRunIntrospection.mockResolvedValue(makeReport());
         const out = await captureStderr(() =>
             commandValidate({ command: 'validate', cwd: tmpDir, check: false, help: false }),
         );
-        expect(out).toContain('vurb.lock not found');
-        expect(out).toContain('vurb lock');
+        expect(out).toContain('mcpfusion.lock not found');
+        expect(out).toContain('mcpfusion lock');
     });
 
-    it('passes when vurb.lock matches live lockfile', async () => {
+    it('passes when mcpfusion.lock matches live lockfile', async () => {
         const lockContent = JSON.stringify({}, null, 2);
-        writeFileSync(join(tmpDir, 'vurb.lock'), lockContent);
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), lockContent);
 
         // The report.lockfile must produce the same JSON.stringify output
         mockRunIntrospection.mockResolvedValue(makeReport({ lockfile: {} }));
@@ -543,9 +543,9 @@ describe('commandValidate — lockfile drift', () => {
         expect(out).toContain('no drift');
     });
 
-    it('warns when vurb.lock drifted from live lockfile', async () => {
+    it('warns when mcpfusion.lock drifted from live lockfile', async () => {
         // Write lockfile with old content
-        writeFileSync(join(tmpDir, 'vurb.lock'), JSON.stringify({ old: true }, null, 2));
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), JSON.stringify({ old: true }, null, 2));
 
         // Report produces different lockfile
         mockRunIntrospection.mockResolvedValue(makeReport({ lockfile: { new: true } }));
@@ -555,13 +555,13 @@ describe('commandValidate — lockfile drift', () => {
         expect(out).toContain('drift detected');
         expect(out).toContain('disk:');
         expect(out).toContain('live:');
-        expect(out).toContain('vurb lock');
+        expect(out).toContain('mcpfusion lock');
     });
 
     it('drift displays correct 12-char hex SHAs', async () => {
         const oldContent = JSON.stringify({ version: 'old' }, null, 2);
         const newContent = { version: 'new' };
-        writeFileSync(join(tmpDir, 'vurb.lock'), oldContent);
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), oldContent);
 
         mockRunIntrospection.mockResolvedValue(makeReport({ lockfile: newContent }));
 
@@ -575,9 +575,9 @@ describe('commandValidate — lockfile drift', () => {
         expect(out).toContain(expectedNew);
     });
 
-    it('handles unreadable vurb.lock (permissions/corrupt)', async () => {
+    it('handles unreadable mcpfusion.lock (permissions/corrupt)', async () => {
         // Create directory where file is expected — readFileSync will throw
-        mkdirSync(join(tmpDir, 'vurb.lock')); // it's a directory, not a file
+        mkdirSync(join(tmpDir, 'mcpfusion.lock')); // it's a directory, not a file
 
         mockRunIntrospection.mockResolvedValue(makeReport());
         const out = await captureStderr(() =>
@@ -608,7 +608,7 @@ describe('commandValidate — summary lines', () => {
     it('shows "All checks passed ✓" when everything is green', async () => {
         // Create matching lockfile
         const lockContent = JSON.stringify({}, null, 2);
-        writeFileSync(join(tmpDir, 'vurb.lock'), lockContent);
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), lockContent);
 
         mockRunIntrospection.mockResolvedValue(makeReport({ lockfile: {} }));
         const out = await captureStderr(() =>
@@ -636,9 +636,9 @@ describe('commandValidate — summary lines', () => {
         const out = await captureStderr(() =>
             commandValidate({ command: 'validate', cwd: tmpDir, check: false, help: false }),
         );
-        // 2 warnings: "no tools" + "vurb.lock not found"
+        // 2 warnings: "no tools" + "mcpfusion.lock not found"
         expect(out).toContain('no tools registered');
-        expect(out).toContain('vurb.lock not found');
+        expect(out).toContain('mcpfusion.lock not found');
     });
 
     it('does not exit(1) for warnings-only', async () => {
@@ -697,7 +697,7 @@ describe('commandValidate — result formatting', () => {
 
     it('pass results show ✓ icon', async () => {
         const lockContent = JSON.stringify({}, null, 2);
-        writeFileSync(join(tmpDir, 'vurb.lock'), lockContent);
+        writeFileSync(join(tmpDir, 'mcpfusion.lock'), lockContent);
         mockRunIntrospection.mockResolvedValue(makeReport({ lockfile: {} }));
 
         const out = await captureStderr(() =>

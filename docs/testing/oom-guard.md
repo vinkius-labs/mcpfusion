@@ -132,4 +132,4 @@ Without OOM Guards, a single LLM request for "list all users" could:
 2. **Overflow the context window** — the LLM silently drops data or hallucinates
 3. **Run up your API bill** — each additional token is money
 
-The VurbTester lets you prove these guards exist and work — in CI/CD, in milliseconds, at zero cost.
+The MCPFusionTester lets you prove these guards exist and work — in CI/CD, in milliseconds, at zero cost.

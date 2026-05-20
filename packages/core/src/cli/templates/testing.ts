@@ -20,21 +20,21 @@ export function testSetupTs(): string {
     return `/**
  * Test Setup — In-Memory MVA Emulator
  *
- * Creates a VurbTester that runs the full pipeline
+ * Creates a MCPFusionTester that runs the full pipeline
  * (Zod → Middleware → Handler → Egress Firewall)
  * without any network transport.
  *
  * 2ms per test. $0.00 in tokens. Zero servers.
  */
 import { fileURLToPath } from 'node:url';
-import { createVurbTester } from '@vurb/testing';
-import { autoDiscover } from '@vurb/core';
-import { f } from '../src/vurb.js';
+import { createMCPFusionTester } from '@mcpfusion/testing';
+import { autoDiscover } from '@mcpfusion/core';
+import { f } from '../src/mcpfusion.js';
 
 const registry = f.registry();
 await autoDiscover(registry, fileURLToPath(new URL('../src/tools', import.meta.url)));
 
-export const tester = createVurbTester(registry, {
+export const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         role: 'ADMIN' as const,
         tenantId: 'test-tenant',
@@ -90,11 +90,11 @@ describe('System Tools', () => {
     describe('Echo Tool', () => {
         it('should echo the message back', async () => {
             const result = await tester.callAction('system', 'echo', {
-                message: 'hello vurb',
+                message: 'hello MCP Fusion',
             });
 
             expect(result.isError).toBe(false);
-            expect(result.data).toHaveProperty('echo', 'hello vurb');
+            expect(result.data).toHaveProperty('echo', 'hello MCP Fusion');
             expect(result.data).toHaveProperty('receivedAt');
         });
     });

@@ -30,7 +30,7 @@ import { execFileSync } from 'node:child_process';
 // ============================================================================
 
 export interface TokenManagerConfig {
-    /** Directory name inside user's home (e.g., '.myapp'). Default: '.vurb' */
+    /** Directory name inside user's home (e.g., '.myapp'). Default: '.mcpfusion' */
     readonly configDir?: string;
     /** Token filename. Default: 'token.json' */
     readonly tokenFile?: string;
@@ -51,7 +51,7 @@ export type TokenSource = 'environment' | 'file' | null;
 // Constants
 // ============================================================================
 
-const DEFAULT_CONFIG_DIR = '.vurb';
+const DEFAULT_CONFIG_DIR = '.mcpfusion';
 const DEFAULT_TOKEN_FILE = 'token.json';
 const DEFAULT_PENDING_FILE = 'pending-auth.json';
 const DIR_MODE = 0o700;

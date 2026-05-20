@@ -1,7 +1,7 @@
 # Cost Reduction & Anti-Hallucination
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Before & After](#before-after)
@@ -41,7 +41,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 50 tools × ~200 tokens each = ~10,000 tokens of schemas. Plus a ~2,000-token system prompt with rules for every domain entity — sent even when the agent just calls `tasks.list`. Total: ~12,000 tokens of prompt tax per turn, mostly irrelevant.
 
-**After — Vurb.ts with MVA:**
+**After — MCP Fusion with MVA:**
 
 ```text
 Tool 1/5: users     — 350 tokens (6 actions)
@@ -73,7 +73,7 @@ Cost and hallucination are two symptoms of the same root cause: too many tokens 
 
 If your goal is to **Reduce LLM API Costs** and **Prevent AI Hallucinations in Production**, the solution is not better prompting. The solution is structural. 
 
-Without **Context DDoS Prevention**, raw MCP servers routinely trigger **LLM OOM (Out of Memory)** failures or bankrupt companies with runaway API bills from Anthropic and OpenAI. By employing the MVA architecture to implement strict **LLM Token Economics** — aggressively tree-shaking the context window and shrinking the API surface — Vurb.ts protects your infrastructure while dramatically increasing agent accuracy.
+Without **Context DDoS Prevention**, raw MCP servers routinely trigger **LLM OOM (Out of Memory)** failures or bankrupt companies with runaway API bills from Anthropic and OpenAI. By employing the MVA architecture to implement strict **LLM Token Economics** — aggressively tree-shaking the context window and shrinking the API surface — MCP Fusion protects your infrastructure while dramatically increasing agent accuracy.
 
 ## The 8 Mechanisms {#mechanisms}
 
@@ -93,9 +93,9 @@ Without **Context DDoS Prevention**, raw MCP servers routinely trigger **LLM OOM
 Operations grouped behind a single tool with a discriminator enum. Schema surface shrinks significantly:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const list = f.query('projects.list')
   .describe('List projects')
@@ -280,7 +280,7 @@ Every block deterministic — from the builder, not the LLM. Domain rules appear
 
 ## How They Compound {#compounding}
 
-| Metric | Raw MCP Server | With Vurb.ts |
+| Metric | Raw MCP Server | With MCP Fusion |
 |---|---|---|
 | Tools in `tools/list` | 50 | 5 (grouped) |
 | Prompt schema tokens | ~10,000 | ~1,670 |

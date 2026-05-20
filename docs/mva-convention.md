@@ -1,7 +1,7 @@
 # MVA Convention
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 The MVA Convention maps each architectural layer — Model, View, Agent — to a file-system layout. Two generators produce this layout automatically: the OpenAPI generator creates three directories, the Prisma generator creates a flat structure.
@@ -23,7 +23,7 @@ src/
 └── server.ts             ← attachToServer() bootstrap
 ```
 
-Each layer imports only from the layer above: `agents/` → `views/` → `models/` → `@vurb/core`. One file per domain entity, named `{Entity}Model.ts`. The barrel and server file are both generated — you don't hand-write them.
+Each layer imports only from the layer above: `agents/` → `views/` → `models/` → `@mcpfusion/core`. One file per domain entity, named `{Entity}Model.ts`. The barrel and server file are both generated — you don't hand-write them.
 
 Prompts are not generated. `autoDiscover()` only finds tool builders. See [Routing](/routing) for discovery details.
 
@@ -46,7 +46,7 @@ Models are defined with `defineModel()` — a single closure that declares field
 
 ```typescript
 // models/PetModel.ts
-import { defineModel } from '@vurb/core';
+import { defineModel } from '@mcpfusion/core';
 
 export const PetModel = defineModel('Pet', m => {
   m.casts({
@@ -80,7 +80,7 @@ Presenters pair a Model's schema with perception logic — rules, UI blocks, aff
 
 ```typescript
 // views/pet.presenter.ts — OpenAPI generator
-import { createPresenter, ui } from '@vurb/core';
+import { createPresenter, ui } from '@mcpfusion/core';
 import { PetSchema } from '../models/PetModel.js';
 
 export const PetPresenter = createPresenter('Pet')
@@ -95,7 +95,7 @@ The Prisma generator uses the fluent builder instead:
 
 ```typescript
 // userPresenter.ts — Prisma generator
-import { createPresenter } from '@vurb/core';
+import { createPresenter } from '@mcpfusion/core';
 import { UserSchema } from './UserModel.js';
 
 export const UserPresenter = createPresenter('User')
@@ -111,11 +111,11 @@ Tools import their Presenter, declare input, and attach a handler. The handler r
 
 ```typescript
 // agents/pet.tool.ts
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 import { PetModel } from '../models/PetModel.js';
 import { PetPresenter } from '../views/pet.presenter.js';
 
-const f = initVurb<ApiContext>();
+const f = initMCPFusion<ApiContext>();
 
 export const getPet = f.query('pet.get_by_id')
   .describe('Get a pet by ID')
@@ -148,7 +148,7 @@ Models import nothing. Views import Models. Agents import Views. Tests import th
 
 ## Test Structure {#tests}
 
-Recommended convention for `@vurb/testing`. Neither generator creates test files.
+Recommended convention for `@mcpfusion/testing`. Neither generator creates test files.
 
 ```text
 tests/
@@ -156,7 +156,7 @@ tests/
 ├── guards/         ← Middleware & OOM guard tests
 ├── rules/          ← System rules verification
 ├── blocks/         ← UI blocks & truncation tests
-└── setup.ts        ← Shared VurbTester instance
+└── setup.ts        ← Shared MCPFusionTester instance
 ```
 
 Use `.firewall.test.ts`, `.guard.test.ts`, `.rules.test.ts`, and `.blocks.test.ts` suffixes to match each concern.

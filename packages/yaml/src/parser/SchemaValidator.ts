@@ -8,8 +8,8 @@
  * @module
  */
 import { z } from 'zod';
-import type { VurbYamlSpec } from '../schema/VurbYamlSpec.js';
-import { VurbYamlError } from './VurbYamlParser.js';
+import type { MCPFusionYamlSpec } from '../schema/MCPFusionYamlSpec.js';
+import { MCPFusionYamlError } from './MCPFusionYamlParser.js';
 
 // ── Zod Sub-Schemas ──────────────────────────────────────
 
@@ -178,7 +178,7 @@ const SettingsSchema = z.object({
 
 // ── Root Schema ──────────────────────────────────────────
 
-const VurbYamlRootSchema = z.object({
+const MCPFusionYamlRootSchema = z.object({
     version: z.literal('1.0'),
     server: ServerMetaSchema,
     secrets: z.record(SecretDefSchema).optional(),
@@ -200,22 +200,22 @@ const VurbYamlRootSchema = z.object({
  *
  * @internal
  */
-export function validateYamlSchema(raw: Record<string, unknown>): VurbYamlSpec {
-    const result = VurbYamlRootSchema.safeParse(raw);
+export function validateYamlSchema(raw: Record<string, unknown>): MCPFusionYamlSpec {
+    const result = MCPFusionYamlRootSchema.safeParse(raw);
 
     if (!result.success) {
         const messages = result.error.issues.map(
             (issue) => `  - ${issue.path.join('.')}: ${issue.message}`,
         );
-        throw new VurbYamlError(
-            `vurb.yaml schema validation failed:\n${messages.join('\n')}`,
+        throw new MCPFusionYamlError(
+            `mcpfusion.yaml schema validation failed:\n${messages.join('\n')}`,
             undefined,
             messages,
         );
     }
 
-    return result.data as unknown as VurbYamlSpec;
+    return result.data as unknown as MCPFusionYamlSpec;
 }
 
 /** Re-export for advanced use (e.g. IDE integrations). */
-export { VurbYamlRootSchema };
+export { MCPFusionYamlRootSchema };

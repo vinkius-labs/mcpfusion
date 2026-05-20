@@ -1,12 +1,12 @@
 # Common Issues in Agentic Systems
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 AI agents are stochastic — they hallucinate parameters, misformat inputs, retry blindly, and lose context between calls. A raw MCP server treats each tool call as independent, leaving your application vulnerable to data corruption, token waste, and unpredictable failures.
 
-This page catalogs the most common failure modes in agentic systems and shows how Vurb.ts solves each one **at the framework level** — before they reach your application code.
+This page catalogs the most common failure modes in agentic systems and shows how MCP Fusion solves each one **at the framework level** — before they reach your application code.
 
 - [Partial Failure in Multi-Step Operations](#partial-failure)
 - [Parameter Hallucination](#parameter-hallucination)
@@ -35,14 +35,14 @@ The user was charged but never received their access credentials. The database i
 
 This happens because **AI is stochastic**. The agent can misformat Zod parameters, hallucinate field names, or hit a timeout. And the MCP protocol has no concept of a transaction spanning multiple tool calls.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **Compose the workflow into a single tool** using the Fluent API. The agent calls one tool — the server orchestrates all steps internally and handles failure atomically:
 
 ```typescript
-import { initVurb, toolError, success } from '@vurb/core';
+import { initMCPFusion, toolError, success } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export default f.mutation('onboarding.provision')
   .describe('Provision a new user with billing and welcome email')
@@ -117,7 +117,7 @@ The agent invents parameters that don't exist in the schema:
 
 None of these fields exist. A raw MCP server silently ignores them — or worse, passes them to the database.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 Every tool schema is compiled with Zod `.strict()` at build time. Undeclared fields are **rejected before they reach your handler** with an actionable correction prompt:
 
@@ -153,7 +153,7 @@ The AI corrects itself on the next attempt — no blind retries, no leaked inval
 
 The LLM fires 5 identical `billing.charge` requests in the same millisecond. Without protection, all 5 execute concurrently — charging the customer 5 times.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 Two complementary guards:
 
@@ -189,7 +189,7 @@ Concurrent calls to the same mutation are serialized in FIFO order. The second c
 
 An agent queries `tasks.list` and the database returns 10,000 rows. At ~500 tokens per row, that's **5,000,000 tokens** — enough to overflow the context window, trigger an OOM error, or cost hundreds of dollars in a single API call.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **Cognitive Guardrails** via Presenter `.limit()`:
 
@@ -225,7 +225,7 @@ The Presenter validates, truncates, and strips undeclared fields — all in RAM 
 
 The agent reads a project, updates it, but then acts on the cached (stale) version of the data. The AI doesn't know the data changed.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **State Sync** — RFC 7234-inspired cache invalidation at the protocol layer:
 
@@ -260,7 +260,7 @@ f.query('tasks.list').stale().handle(...);        // volatile — always re-fetc
 
 An agent calls `billing.charge` with an invalid invoice ID. The raw MCP server returns `"Error: not found"`. The agent retries with the same ID. And again. And again. 3 retries wasted — and the agent still doesn't know what to do.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **Self-Healing Errors** with structured recovery instructions:
 
@@ -310,7 +310,7 @@ The agent calls `billing.list_invoices`, finds the correct ID, and retries succe
 
 A handler returns a full database record: password hash, internal flags, tenant IDs, API keys. All of it reaches the LLM context window — a privacy and security nightmare.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **Presenter Egress Firewall** — Zod `.strip()` validation removes undeclared fields in RAM before the response is serialized:
 
@@ -335,7 +335,7 @@ The handler can return the full database object — `{ id, name, email, role, pa
 
 Two concurrent requests: one deletes user `#42`, the other updates user `#42`. Without serialization, the update succeeds against a ghost record — or worse, re-creates a partial entry.
 
-### How Vurb.ts Solves It
+### How MCP Fusion Solves It
 
 **Mutation Serializer** — zero-config for all `f.mutation()` tools:
 
@@ -363,7 +363,7 @@ Promise-chaining per action key. No external locks. No shared memory. Zero overh
 
 ## Summary
 
-| Issue | Root Cause | Vurb.ts Mechanism |
+| Issue | Root Cause | MCP Fusion Mechanism |
 |---|---|---|
 | Partial failure in multi-step ops | No transaction across tool calls | Compose as single tool with manual compensation |
 | Parameter hallucination | LLM generates invalid schema | Zod `.strict()` rejects undeclared fields |

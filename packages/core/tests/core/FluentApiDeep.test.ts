@@ -18,7 +18,7 @@
  * - .details(), .retryAfter(), full chain, .content/.isError getters
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success } from '../../src/core/response.js';
 import { createPresenter } from '../../src/presenter/Presenter.js';
 import { suggest } from '../../src/presenter/suggest.js';
@@ -40,7 +40,7 @@ const ctx: AppContext = { userId: 'u-1', role: 'admin' };
 
 describe('FluentToolBuilder — semantic annotations on f.action()', () => {
     it('.readOnly() on f.action() overrides to readOnly', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.action('safe.read')
             .describe('Read-only action')
             .readOnly()
@@ -51,7 +51,7 @@ describe('FluentToolBuilder — semantic annotations on f.action()', () => {
     });
 
     it('.destructive() on f.action() sets destructive', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.action('unsafe.delete')
             .describe('Destructive action')
             .destructive()
@@ -62,7 +62,7 @@ describe('FluentToolBuilder — semantic annotations on f.action()', () => {
     });
 
     it('.idempotent() on f.action() sets idempotent', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.action('safe.sync')
             .describe('Idempotent sync')
             .idempotent()
@@ -73,7 +73,7 @@ describe('FluentToolBuilder — semantic annotations on f.action()', () => {
     });
 
     it('readOnly + idempotent combined on f.action()', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.action('safe.check')
             .readOnly()
             .idempotent()
@@ -92,7 +92,7 @@ describe('FluentToolBuilder — semantic annotations on f.action()', () => {
 
 describe('FluentToolBuilder — .annotations()', () => {
     it('sets custom annotation keys', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.query('meta.annotated')
             .describe('Annotated tool')
             .annotations({ openWorldHint: true, title: 'List Projects' })
@@ -104,7 +104,7 @@ describe('FluentToolBuilder — .annotations()', () => {
     });
 
     it('preserves semantic defaults alongside custom annotations', () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.query('meta.combined')
             .annotations({ title: 'Combined' })
             .handle(async () => success('ok'));
@@ -121,7 +121,7 @@ describe('FluentToolBuilder — .annotations()', () => {
 
 describe('FluentToolBuilder — state sync inline', () => {
     it('.invalidates() chains and builds without error', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.mutation('sync.update')
             .describe('Update sprint')
             .invalidates('sprints.*', 'tasks.*')
@@ -133,7 +133,7 @@ describe('FluentToolBuilder — state sync inline', () => {
     });
 
     it('.cached() chains and builds without error', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.query('sync.countries')
             .cached()
             .handle(async () => success('countries'));
@@ -143,7 +143,7 @@ describe('FluentToolBuilder — state sync inline', () => {
     });
 
     it('.stale() chains and builds without error', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.query('sync.balance')
             .stale()
             .handle(async () => success('balance'));
@@ -153,7 +153,7 @@ describe('FluentToolBuilder — state sync inline', () => {
     });
 
     it('.invalidates() with single pattern chains correctly', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         const tool = f.mutation('sync.single')
             .invalidates('projects.*')
             .handle(async () => success('ok'));
@@ -169,7 +169,7 @@ describe('FluentToolBuilder — state sync inline', () => {
 
 describe('FluentToolBuilder — handler execution', () => {
     it('optional params default to undefined', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         let captured: Record<string, unknown> = {};
 
         const tool = f.query('exec.optional')
@@ -188,7 +188,7 @@ describe('FluentToolBuilder — handler execution', () => {
     });
 
     it('optional params are passed when provided', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         let captured: Record<string, unknown> = {};
 
         const tool = f.query('exec.full')
@@ -207,7 +207,7 @@ describe('FluentToolBuilder — handler execution', () => {
     });
 
     it('withArray handler receives the array correctly', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         let captured: string[] = [];
 
         const tool = f.mutation('exec.array')
@@ -222,7 +222,7 @@ describe('FluentToolBuilder — handler execution', () => {
     });
 
     it('withEnum validates at runtime', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
 
         const tool = f.query('exec.enum_val')
             .withEnum('priority', ['low', 'medium', 'high'] as const)
@@ -238,7 +238,7 @@ describe('FluentToolBuilder — handler execution', () => {
     });
 
     it('withOptionalEnum allows absence', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         let captured: string | undefined;
 
         const tool = f.query('exec.opt_enum')
@@ -253,7 +253,7 @@ describe('FluentToolBuilder — handler execution', () => {
     });
 
     it('withOptionalArray handler receives undefined when absent', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
         let captured: number[] | undefined;
 
         const tool = f.mutation('exec.opt_array')
@@ -274,7 +274,7 @@ describe('FluentToolBuilder — handler execution', () => {
 
 describe('FluentToolBuilder — .returns() with Presenter', () => {
     it('.returns() chains correctly and tool executes without error', async () => {
-        const f = initVurb<AppContext>();
+        const f = initMCPFusion<AppContext>();
 
         const ProjectPresenter = createPresenter('ProjectDeepE2E')
             .schema({ id: t.string, name: t.string })
@@ -285,13 +285,13 @@ describe('FluentToolBuilder — .returns() with Presenter', () => {
             .returns(ProjectPresenter)
             .handle(async (input) => ({
                 id: input.id,
-                name: 'vurb',
+                name: 'mcpfusion',
             }));
 
         // The tool should execute without error
         const result = await tool.execute(ctx, { action: 'project', id: 'P1' });
         expect(result.isError).toBeUndefined();
-        expect(result.content[0]?.text).toContain('vurb');
+        expect(result.content[0]?.text).toContain('mcpfusion');
     });
 
     it('.returns() Presenter standalone make() validates and formats', () => {

@@ -1,5 +1,5 @@
 // ============================================================================
-// ToolSynthesizer — WebhookConfig → Vurb ToolBuilder
+// ToolSynthesizer — WebhookConfig → MCP Fusion ToolBuilder
 // ============================================================================
 
 import { z } from 'zod';
@@ -8,7 +8,7 @@ import type { N8nClient } from './N8nClient.js';
 import { inferSchema } from './SchemaInferrer.js';
 
 /**
- * Synthesizes Vurb tool definitions from discovered n8n webhook workflows.
+ * Synthesizes MCP Fusion tool definitions from discovered n8n webhook workflows.
  *
  * Uses `defineTool()` pattern — returns config objects that the consumer
  * feeds to their own ToolRegistry. This is the IoC boundary:
@@ -57,7 +57,7 @@ export function toToolName(workflowName: string): string {
 }
 
 /**
- * Synthesize a Vurb tool definition from a webhook config.
+ * Synthesize a MCP Fusion tool definition from a webhook config.
  */
 export function synthesizeTool(
     webhook: WebhookConfig,

@@ -5,7 +5,7 @@
  * domain-specific telemetry events for the Shadow Socket transport.
  *
  * These events are emitted over an IPC channel (Named Pipe on Windows,
- * Unix Domain Socket on POSIX) and consumed by `vurb top`.
+ * Unix Domain Socket on POSIX) and consumed by `mcpfusion top`.
  * They NEVER touch stdio — the MCP JSON-RPC channel is 100% safe.
  *
  * Design rules:

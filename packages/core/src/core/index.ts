@@ -46,9 +46,9 @@ export type { SandboxConfig, SandboxResult, SandboxErrorCode } from '../sandbox/
 export { defineMiddleware, resolveMiddleware } from './middleware/index.js';
 export type { MiddlewareDefinition, MergeContext, InferContextOut } from './middleware/index.js';
 
-// ── Vurb Initializer (tRPC-style) ─────────────────────
-export { initVurb } from './initVurb.js';
-export type { VurbInstance } from './initVurb.js';
+// ── MCP mcpfusion Initializer (tRPC-style) ─────────────────────
+export { initMCPFusion } from './initMCPFusion.js';
+export type { MCPFusionInstance } from './initMCPFusion.js';
 
 // ── Functional Core ──────────────────────────────────────
 export { createGroup } from './createGroup.js';
@@ -60,5 +60,5 @@ export {
 } from './StandardSchema.js';
 export type {
     StandardSchemaV1, StandardSchemaIssue, InferStandardOutput,
-    VurbValidator, ValidationResult,
+    MCPFusionValidator, ValidationResult,
 } from './StandardSchema.js';

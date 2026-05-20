@@ -1,33 +1,33 @@
 <p align="center">
-  <h1 align="center">@vurb/testing</h1>
+  <h1 align="center">@mcpfusion/testing</h1>
   <p align="center">
-    <strong>MCP Server Testing Framework — Vurb.ts</strong> — A framework for testing MCP servers in-memory<br/>
+    <strong>MCP Server Testing Framework — MCP Fusion</strong> — A framework for testing MCP servers in-memory<br/>
     Full MVA pipeline · Egress Firewall audit · PII redaction checks · Middleware guards · Vitest · Jest · Mocha
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/testing"><img src="https://img.shields.io/npm/v/@vurb/testing?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/testing"><img src="https://img.shields.io/npm/v/@mcpfusion/testing?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="Zero Dependencies" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Server Testing Framework — Vurb.ts**, the Model Context Protocol framework for building production MCP servers. In-memory MVA lifecycle emulator — runs the full execution pipeline without network transport. Zero runtime dependencies. Runner agnostic (Vitest, Jest, Mocha, `node:test`).
+> **MCP Server Testing Framework — MCP Fusion**, the Model Context Protocol framework for building production MCP servers. In-memory MVA lifecycle emulator — runs the full execution pipeline without network transport. Zero runtime dependencies. Runner agnostic (Vitest, Jest, Mocha, `node:test`).
 
 ## Why
 
 Every MCP server today is tested with HTTP mocks, raw `JSON.stringify` assertions, and string matching. That's like testing a REST API by reading TCP packets.
 
-**Vurb.ts** applications have **five auditable layers** (Zod Validation → Middleware Chain → Handler → Presenter Egress Firewall → System Rules). The `VurbTester` lets you assert each layer independently, in-memory, without starting a server.
+**MCP Fusion** applications have **five auditable layers** (Zod Validation → Middleware Chain → Handler → Presenter Egress Firewall → System Rules). The `MCPFusionTester` lets you assert each layer independently, in-memory, without starting a server.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    VurbTester                          │
+│                    MCPFusionTester                          │
 │                                                         │
 │  ┌──────────┐   ┌────────────┐   ┌─────────┐           │
 │  │   Zod    │──▶│ Middleware  │──▶│ Handler │           │
@@ -51,7 +51,7 @@ Every MCP server today is tested with HTTP mocks, raw `JSON.stringify` assertion
 
 ## What You Can Audit
 
-| MVA Layer | What VurbTester asserts | SOC2 Relevance |
+| MVA Layer | What MCPFusionTester asserts | SOC2 Relevance |
 |---|---|---|
 | **Egress Firewall** | Hidden fields (`passwordHash`, `tenantId`) are physically absent from `result.data` | Data leak prevention |
 | **OOM Guard** | Zod rejects `take: 10000` before it reaches the handler | Memory exhaustion protection |
@@ -65,10 +65,10 @@ Every MCP server today is tested with HTTP mocks, raw `JSON.stringify` assertion
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createVurbTester } from '@vurb/testing';
+import { createMCPFusionTester } from '@mcpfusion/testing';
 import { registry } from './server/registry.js';
 
-const tester = createVurbTester(registry, {
+const tester = createMCPFusionTester(registry, {
     contextFactory: () => ({
         prisma: mockPrisma,
         tenantId: 't_enterprise_42',
@@ -102,15 +102,15 @@ describe('User MVA Audit', () => {
 
 ## API Reference
 
-### `createVurbTester(registry, options)`
+### `createMCPFusionTester(registry, options)`
 
-Factory function — creates a `VurbTester` instance.
+Factory function — creates a `MCPFusionTester` instance.
 
 ```typescript
-function createVurbTester<TContext>(
+function createMCPFusionTester<TContext>(
     registry: ToolRegistry<TContext>,
     options: TesterOptions<TContext>,
-): VurbTester<TContext>;
+): MCPFusionTester<TContext>;
 ```
 
 | Parameter | Type | Description |
@@ -217,7 +217,7 @@ it('raw response follows MCP shape', async () => {
 
 ## How It Works
 
-The `VurbTester` runs the **real** execution pipeline — the exact same code path as your production MCP server:
+The `MCPFusionTester` runs the **real** execution pipeline — the exact same code path as your production MCP server:
 
 ```
 ToolRegistry.routeCall()
@@ -230,29 +230,29 @@ ToolRegistry.routeCall()
               → Egress Guard
 ```
 
-The key insight: `ResponseBuilder.build()` attaches structured MVA metadata via a **global Symbol** (`MVA_META_SYMBOL`). Symbols are ignored by `JSON.stringify`, so the MCP transport never sees them — but the `VurbTester` reads them in RAM.
+The key insight: `ResponseBuilder.build()` attaches structured MVA metadata via a **global Symbol** (`MVA_META_SYMBOL`). Symbols are ignored by `JSON.stringify`, so the MCP transport never sees them — but the `MCPFusionTester` reads them in RAM.
 
 **No XML regex. No string parsing. Zero coupling to response formatting.**
 
 ## Installation
 
 ```bash
-npm install @vurb/testing
+npm install @mcpfusion/testing
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^2.0.0` |
+| `@mcpfusion/core` | `^2.0.0` |
 | `zod` | `^3.25.1 \|\| ^4.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
 - **TypeScript** 5.7+
-- **Vurb.ts** ≥ 2.0.0 (peer dependency)
+- **MCP Fusion** ≥ 2.0.0 (peer dependency)
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)

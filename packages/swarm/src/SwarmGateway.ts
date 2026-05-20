@@ -19,8 +19,8 @@ import {
     mintDelegationToken,
     InMemoryHandoffStateStore,
     toolError,
-} from '@vurb/core';
-import type { HandoffPayload, HandoffStateStore, ToolResponse } from '@vurb/core';
+} from '@mcpfusion/core';
+import type { HandoffPayload, HandoffStateStore, ToolResponse } from '@mcpfusion/core';
 import { UpstreamMcpClient } from './UpstreamMcpClient.js';
 import { NamespaceRewriter, NamespaceError } from './NamespaceRewriter.js';
 import { injectReturnTripTool } from './ReturnTripInjector.js';
@@ -87,14 +87,14 @@ type SessionState =
  *
  * @example
  * ```typescript
- * import { SwarmGateway } from '@vurb/swarm';
+ * import { SwarmGateway } from '@mcpfusion/swarm';
  *
  * const gateway = new SwarmGateway({
  *     registry: {
  *         finance: 'http://finance-agent:8081',
  *         devops:  'http://devops-agent:8082',
  *     },
- *     delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+ *     delegationSecret: process.env.MCPFUSION_DELEGATION_SECRET!,
  * });
  *
  * // Pass to attachToServer:
@@ -118,7 +118,7 @@ export class SwarmGateway {
         if (emptyUriKeys.length > 0) {
             throw Object.assign(
                 new Error(
-                    `[vurb/swarm] Registry entries with empty URIs: ${emptyUriKeys.join(', ')}. ` +
+                    `[mcpfusion/swarm] Registry entries with empty URIs: ${emptyUriKeys.join(', ')}. ` +
                     'All registry values must be non-empty URI strings.',
                 ),
                 { code: 'REGISTRY_INVALID_URI' },
@@ -169,7 +169,7 @@ export class SwarmGateway {
         if (this._sessions.size >= this._config.maxSessions) {
             throw Object.assign(
                 new Error(
-                    `[vurb/swarm] Session limit of ${this._config.maxSessions} reached. ` +
+                    `[mcpfusion/swarm] Session limit of ${this._config.maxSessions} reached. ` +
                     'Close existing sessions before activating more.',
                 ),
                 { code: 'SESSION_LIMIT_EXCEEDED' },
@@ -299,7 +299,7 @@ export class SwarmGateway {
             // The LLM must not see internal error details (security + UX), but errors must
             // surface somewhere so bugs are diagnosable in production.
             console.warn(
-                `[vurb/swarm] proxyToolsCall unexpected error for tool "${name}" in domain "${session.domain}":`,
+                `[mcpfusion/swarm] proxyToolsCall unexpected error for tool "${name}" in domain "${session.domain}":`,
                 err,
             );
             return toolError('HANDOFF_UPSTREAM_UNAVAILABLE', {
@@ -412,7 +412,7 @@ export class SwarmGateway {
         // contain a '' key, we would silently accept it and produce confusing logs.
         if (!target) {
             throw Object.assign(
-                new Error('[vurb/swarm] Handoff target must not be an empty string.'),
+                new Error('[mcpfusion/swarm] Handoff target must not be an empty string.'),
                 { code: 'REGISTRY_LOOKUP_FAILED' },
             );
         }
@@ -438,7 +438,7 @@ export class SwarmGateway {
         const safeTarget = String(target).replace(/[\x00-\x1f\x7f]/g, '').slice(0, 200);
         throw Object.assign(
             new Error(
-                `[vurb/swarm] Unknown handoff target "${safeTarget}". ` +
+                `[mcpfusion/swarm] Unknown handoff target "${safeTarget}". ` +
                 'All targets must be registered in SwarmGatewayConfig.registry.',
             ),
             { code: 'REGISTRY_LOOKUP_FAILED' },

@@ -177,8 +177,8 @@ describe('IntrospectionResource: Handler Registration', () => {
         const result = await server.callListResources();
 
         expect(result.resources).toHaveLength(1);
-        expect(result.resources[0].uri).toBe('vurb://manifest.json');
-        expect(result.resources[0].name).toBe('Vurb Manifest');
+        expect(result.resources[0].uri).toBe('mcpfusion://manifest.json');
+        expect(result.resources[0].name).toBe('mcpfusion:manifest');
         expect(result.resources[0].mimeType).toBe('application/json');
     });
 
@@ -193,15 +193,15 @@ describe('IntrospectionResource: Handler Registration', () => {
             { values: () => registry.getBuilders() },
         );
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
 
         expect(result.contents).toHaveLength(1);
-        expect(result.contents[0].uri).toBe('vurb://manifest.json');
+        expect(result.contents[0].uri).toBe('mcpfusion://manifest.json');
         expect(result.contents[0].mimeType).toBe('application/json');
 
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
         expect(manifest.server).toBe('my-server');
-        expect(manifest.vurb_version).toBe('1.1.0');
+        expect(manifest.MCPFUSION_VERSION).toBe('1.1.0');
         expect(manifest.architecture).toBe('MVA (Model-View-Agent)');
     });
 
@@ -214,7 +214,7 @@ describe('IntrospectionResource: Handler Registration', () => {
             { values: () => registry.getBuilders() },
         );
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
 
         expect(Object.keys(manifest.capabilities.tools)).toHaveLength(3);
@@ -232,7 +232,7 @@ describe('IntrospectionResource: Handler Registration', () => {
             { values: () => registry.getBuilders() },
         );
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
 
         expect(manifest.capabilities.presenters['Invoice']).toBeDefined();
@@ -249,7 +249,7 @@ describe('IntrospectionResource: Handler Registration', () => {
             { values: () => registry.getBuilders() },
         );
 
-        const result = await server.callReadResource('vurb://unknown.json');
+        const result = await server.callReadResource('mcpfusion://unknown.json');
 
         expect(result.contents).toHaveLength(0);
     });
@@ -266,21 +266,21 @@ describe('IntrospectionResource: Custom URI', () => {
 
         registerIntrospectionResource(
             server,
-            { enabled: true, uri: 'vurb://custom/v2/manifest.json' },
+            { enabled: true, uri: 'mcpfusion://custom/v2/manifest.json' },
             'srv',
             { values: () => registry.getBuilders() },
         );
 
         // list should advertise the custom URI
         const listResult = await server.callListResources();
-        expect(listResult.resources[0].uri).toBe('vurb://custom/v2/manifest.json');
+        expect(listResult.resources[0].uri).toBe('mcpfusion://custom/v2/manifest.json');
 
         // read should respond to custom URI
-        const readResult = await server.callReadResource('vurb://custom/v2/manifest.json');
+        const readResult = await server.callReadResource('mcpfusion://custom/v2/manifest.json');
         expect(readResult.contents).toHaveLength(1);
 
         // read should NOT respond to default URI
-        const defaultResult = await server.callReadResource('vurb://manifest.json');
+        const defaultResult = await server.callReadResource('mcpfusion://manifest.json');
         expect(defaultResult.contents).toHaveLength(0);
     });
 });
@@ -316,7 +316,7 @@ describe('IntrospectionResource: RBAC Filter Integration', () => {
 
         // Simulate admin request
         const adminResult = await server.callReadResource(
-            'vurb://manifest.json',
+            'mcpfusion://manifest.json',
             { role: 'admin', tenantId: 'acme' },
         );
         const adminManifest: ManifestPayload = JSON.parse(adminResult.contents[0].text);
@@ -327,7 +327,7 @@ describe('IntrospectionResource: RBAC Filter Integration', () => {
 
         // Simulate viewer request
         const viewerResult = await server.callReadResource(
-            'vurb://manifest.json',
+            'mcpfusion://manifest.json',
             { role: 'viewer', tenantId: 'acme' },
         );
         const viewerManifest: ManifestPayload = JSON.parse(viewerResult.contents[0].text);
@@ -357,12 +357,12 @@ describe('IntrospectionResource: RBAC Filter Integration', () => {
         );
 
         // First read — destructive filter wipes everything
-        const r1 = await server.callReadResource('vurb://manifest.json');
+        const r1 = await server.callReadResource('mcpfusion://manifest.json');
         const m1: ManifestPayload = JSON.parse(r1.contents[0].text);
         expect(Object.keys(m1.capabilities.tools)).toHaveLength(0);
 
         // Second read — should still have all tools (original not mutated)
-        const r2 = await server.callReadResource('vurb://manifest.json');
+        const r2 = await server.callReadResource('mcpfusion://manifest.json');
         const m2: ManifestPayload = JSON.parse(r2.contents[0].text);
         // The filter still runs on a fresh clone, so it will also be empty
         expect(Object.keys(m2.capabilities.tools)).toHaveLength(0);
@@ -389,7 +389,7 @@ describe('IntrospectionResource: RBAC Filter Integration', () => {
             undefined, // no context factory
         );
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
 
         // Filter should NOT be called when contextFactory is absent
@@ -460,7 +460,7 @@ describe('attachToServer: Introspection Wiring', () => {
         expect(resourcesResult.resources).toHaveLength(1);
 
         // Manifest is accessible
-        const readResult = await server.callReadResource('vurb://manifest.json');
+        const readResult = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(readResult.contents[0].text);
         expect(manifest.server).toBe('coexist-test');
     });
@@ -474,9 +474,9 @@ describe('attachToServer: Introspection Wiring', () => {
             // no serverName
         });
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
-        expect(manifest.server).toBe('vurb-server');
+        expect(manifest.server).toBe('mcpfusion-server');
     });
 
     it('should pass contextFactory to RBAC filter via attachToServer', async () => {
@@ -501,7 +501,7 @@ describe('attachToServer: Introspection Wiring', () => {
 
         // Admin sees everything
         const adminResult = await server.callReadResource(
-            'vurb://manifest.json',
+            'mcpfusion://manifest.json',
             { role: 'admin', tenantId: 'acme' },
         );
         const adminManifest: ManifestPayload = JSON.parse(adminResult.contents[0].text);
@@ -509,7 +509,7 @@ describe('attachToServer: Introspection Wiring', () => {
 
         // Viewer sees no admin tools
         const viewerResult = await server.callReadResource(
-            'vurb://manifest.json',
+            'mcpfusion://manifest.json',
             { role: 'viewer', tenantId: 'acme' },
         );
         const viewerManifest: ManifestPayload = JSON.parse(viewerResult.contents[0].text);
@@ -549,7 +549,7 @@ describe('IntrospectionResource: Concurrency', () => {
 
         // Alternate between admin and viewer roles
         const promises = Array.from({ length: 20 }, (_, i) =>
-            server.callReadResource('vurb://manifest.json', {
+            server.callReadResource('mcpfusion://manifest.json', {
                 role: i % 2 === 0 ? 'admin' : 'viewer',
             }),
         );
@@ -592,7 +592,7 @@ describe('IntrospectionResource: Dynamic Registry', () => {
         );
 
         // Initially empty
-        const r1 = await server.callReadResource('vurb://manifest.json');
+        const r1 = await server.callReadResource('mcpfusion://manifest.json');
         const m1: ManifestPayload = JSON.parse(r1.contents[0].text);
         expect(Object.keys(m1.capabilities.tools)).toHaveLength(0);
 
@@ -607,7 +607,7 @@ describe('IntrospectionResource: Dynamic Registry', () => {
         );
 
         // Manifest should now include the late tool
-        const r2 = await server.callReadResource('vurb://manifest.json');
+        const r2 = await server.callReadResource('mcpfusion://manifest.json');
         const m2: ManifestPayload = JSON.parse(r2.contents[0].text);
         expect(Object.keys(m2.capabilities.tools)).toHaveLength(1);
         expect(m2.capabilities.tools['late_tool']).toBeDefined();
@@ -629,12 +629,12 @@ describe('IntrospectionResource: Manifest Payload Structure', () => {
             { values: () => registry.getBuilders() },
         );
 
-        const result = await server.callReadResource('vurb://manifest.json');
+        const result = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(result.contents[0].text);
 
         // Top-level structure
         expect(manifest).toHaveProperty('server', 'arch-test');
-        expect(manifest).toHaveProperty('vurb_version', '1.1.0');
+        expect(manifest).toHaveProperty('MCPFUSION_VERSION', '1.1.0');
         expect(manifest).toHaveProperty('architecture', 'MVA (Model-View-Agent)');
         expect(manifest).toHaveProperty('capabilities');
         expect(manifest.capabilities).toHaveProperty('tools');
@@ -700,7 +700,7 @@ describe('Bug #4 Regression: Introspection merged with ResourceRegistry', () => 
         // Both the user resource AND the introspection manifest must appear
         expect(names).toContain('status');
         const manifestEntry = result.resources.find(
-            (r: { uri: string }) => r.uri === 'vurb://manifest.json',
+            (r: { uri: string }) => r.uri === 'mcpfusion://manifest.json',
         );
         expect(manifestEntry).toBeDefined();
     });
@@ -724,7 +724,7 @@ describe('Bug #4 Regression: Introspection merged with ResourceRegistry', () => 
         });
 
         // Manifest must be readable
-        const manifestResult = await server.callReadResource('vurb://manifest.json');
+        const manifestResult = await server.callReadResource('mcpfusion://manifest.json');
         const manifest: ManifestPayload = JSON.parse(manifestResult.contents[0].text);
         expect(manifest.server).toBe('read-merge-test');
         expect(manifest.capabilities.tools['projects']).toBeDefined();
@@ -760,14 +760,14 @@ describe('Bug #4 Regression: Introspection merged with ResourceRegistry', () => 
 
         // Admin sees admin tools
         const adminResult = await server.callReadResource(
-            'vurb://manifest.json', { role: 'admin' },
+            'mcpfusion://manifest.json', { role: 'admin' },
         );
         const adminManifest: ManifestPayload = JSON.parse(adminResult.contents[0].text);
         expect(adminManifest.capabilities.tools['admin']).toBeDefined();
 
         // Viewer does not see admin tools
         const viewerResult = await server.callReadResource(
-            'vurb://manifest.json', { role: 'viewer' },
+            'mcpfusion://manifest.json', { role: 'viewer' },
         );
         const viewerManifest: ManifestPayload = JSON.parse(viewerResult.contents[0].text);
         expect(viewerManifest.capabilities.tools['admin']).toBeUndefined();

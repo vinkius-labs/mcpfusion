@@ -6,7 +6,7 @@
  *
  * @module
  */
-import type { YamlParamDef } from '../schema/VurbYamlSpec.js';
+import type { YamlParamDef } from '../schema/MCPFusionYamlSpec.js';
 
 /** JSON Schema property definition. */
 interface JsonSchemaProperty {

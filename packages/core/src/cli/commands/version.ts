@@ -1,10 +1,10 @@
 /**
- * `vurb version` — display CLI version and installed @vurb/* packages.
+ * `mcpfusion version` — display CLI version and installed @mcpfusion/* packages.
  * @module
  */
 import type { CliArgs } from '../args.js';
-import { ansi, VURB_VERSION } from '../constants.js';
-import { scanInstalledVurbPackages } from '../npm-registry.js';
+import { ansi, MCPFUSION_VERSION } from '../constants.js';
+import { scanInstalledFusionPackages } from '../npm-registry.js';
 
 export async function commandVersion(args: CliArgs): Promise<void> {
     const cwd = args.cwd;
@@ -13,12 +13,12 @@ export async function commandVersion(args: CliArgs): Promise<void> {
     const nodeVersion = process.version;
 
     process.stderr.write('\n');
-    process.stderr.write(`  ${ansi.bold('Vurb CLI')}         ${ansi.cyan(VURB_VERSION)}\n`);
+    process.stderr.write(`  ${ansi.bold('MCP Fusion CLI')}         ${ansi.cyan(MCPFUSION_VERSION)}\n`);
     process.stderr.write(`  ${ansi.bold('Node.js')}          ${nodeVersion}\n`);
     process.stderr.write(`  ${ansi.bold('OS')}               ${process.platform}-${process.arch}\n`);
 
     // ── Installed packages ──
-    const packages = scanInstalledVurbPackages(cwd);
+    const packages = scanInstalledFusionPackages(cwd);
 
     if (packages.length > 0) {
         process.stderr.write(`\n  ${ansi.dim('Installed Packages:')}\n`);

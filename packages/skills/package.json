@@ -1,5 +1,5 @@
 {
-  "name": "@vurb/skills",
+  "name": "@mcpfusion/skills",
   "description": "Agent Skills distribution via MCP. Progressive disclosure (search → load → read) for teaching AI agents domain-specific procedures through the SKILL.md standard.",
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
   },
   "keywords": [
     "mcp",
-    "vurb",
+    "mcpfusion",
     "skills",
     "agent-skills",
     "progressive-disclosure",
@@ -28,13 +28,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/skills"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md"
@@ -46,7 +46,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6",
+    "@mcpfusion/core": "^4.0.0",
     "minisearch": "^7.1.1"
   },
   "peerDependencies": {
@@ -54,5 +54,5 @@
   },
   "devDependencies": {},
   "license": "Apache-2.0",
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

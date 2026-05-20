@@ -1,6 +1,6 @@
 {
-  "name": "@vurb/swarm",
-  "description": "Federated Handoff Protocol for Vurb — SwarmGateway B2BUA, multi-agent orchestration, zero-trust delegation, and upstream MCP client tunneling.",
+  "name": "@mcpfusion/swarm",
+  "description": "Federated Handoff Protocol for MCP Fusion — SwarmGateway B2BUA, multi-agent orchestration, zero-trust delegation, and upstream MCP client tunneling.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "keywords": [
     "mcp",
-    "vurb",
+    "mcpfusion",
     "swarm",
     "multi-agent",
     "handoff",
@@ -32,13 +32,13 @@
   "author": "Renato Marinho",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vinkius-labs/vurb.ts.git",
+    "url": "git+https://github.com/vinkius-labs/mcpfusion.git",
     "directory": "packages/swarm"
   },
   "bugs": {
-    "url": "https://github.com/vinkius-labs/vurb.ts/issues"
+    "url": "https://github.com/vinkius-labs/mcpfusion/issues"
   },
-  "homepage": "https://vurb.vinkius.com/",
+  "homepage": "https://mcpfusion.vinkius.com/",
   "files": [
     "dist",
     "README.md",
@@ -51,7 +51,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vurb/core": "^3.19.6"
+    "@mcpfusion/core": "^4.0.0"
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1"
@@ -61,5 +61,5 @@
     "rimraf": "^6.0.0",
     "vitest": "^3.0.0"
   },
-  "version": "3.19.6"
+  "version": "4.0.0"
 }

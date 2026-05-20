@@ -1,16 +1,16 @@
 /**
- * @vurb/yaml — Declarative MCP Server Engine
+ * @mcpfusion/yaml — Declarative MCP Server Engine
  *
- * Define MCP servers with zero code. Write a `vurb.yaml` manifest
+ * Define MCP servers with zero code. Write a `mcpfusion.yaml` manifest
  * and the engine compiles it into a fully compliant MCP server
  * with tools, resources, and prompts.
  *
  * @example
  * ```typescript
- * import { parseVurbYaml, loadYamlServer } from '@vurb/yaml';
+ * import { parseMCPFusionYaml, loadYamlServer } from '@mcpfusion/yaml';
  *
  * // Parse and validate
- * const spec = parseVurbYaml(yamlString);
+ * const spec = parseMCPFusionYaml(yamlString);
  *
  * // Compile into a server-ready object
  * const server = await loadYamlServer(yamlString);
@@ -24,7 +24,7 @@
 
 // ── Schema — The Specification Types ─────────────────────
 export type {
-    VurbYamlSpec,
+    MCPFusionYamlSpec,
     YamlServerMeta,
     YamlCapabilities,
     YamlSecretDef,
@@ -52,11 +52,11 @@ export type {
     YamlCircuitBreakerSettings,
     YamlLifecycleSettings,
     YamlExposition,
-} from './schema/VurbYamlSpec.js';
+} from './schema/MCPFusionYamlSpec.js';
 
 // ── Parser ───────────────────────────────────────────────
-export { parseVurbYaml, VurbYamlError } from './parser/VurbYamlParser.js';
-export { validateYamlSchema, VurbYamlRootSchema } from './parser/SchemaValidator.js';
+export { parseMCPFusionYaml, MCPFusionYamlError } from './parser/MCPFusionYamlParser.js';
+export { validateYamlSchema, MCPFusionYamlRootSchema } from './parser/SchemaValidator.js';
 export { validateCrossRefs } from './parser/CrossRefValidator.js';
 
 // ── Schema Utilities ─────────────────────────────────────

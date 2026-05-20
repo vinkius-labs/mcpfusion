@@ -1,7 +1,7 @@
 /**
  * Shared npm-registry utilities — fetch latest versions, scan installed packages.
  *
- * Used by `vurb version`, `vurb update`, and `vurb doctor`.
+ * Used by `mcpfusion version`, `mcpfusion update`, and `mcpfusion doctor`.
  * @module
  */
 import { resolve, join } from 'node:path';
@@ -9,8 +9,8 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 
 // ─── Constants ───────────────────────────────────────────────────
 
-/** Scope prefix for Vurb packages. */
-export const VURB_SCOPE = '@vurb';
+/** Scope prefix for MCP Fusion packages. */
+export const MCPFUSION_SCOPE = '@mcpfusion';
 
 /** npm registry URL for fetching latest versions. */
 const NPM_REGISTRY = 'https://registry.npmjs.org';
@@ -26,12 +26,12 @@ export interface PackageVersion {
 // ─── Local Scanning ──────────────────────────────────────────────
 
 /**
- * Read `@vurb/*` dependencies from the project's `package.json`.
+ * Read `@mcpfusion/*` dependencies from the project's `package.json`.
  *
  * Returns a deduplicated list of package names found across
  * `dependencies`, `devDependencies`, and `peerDependencies`.
  */
-export function scanDeclaredVurbPackages(cwd: string): string[] {
+export function scanDeclaredFusionPackages(cwd: string): string[] {
     const pkgPath = resolve(cwd, 'package.json');
     if (!existsSync(pkgPath)) return [];
     try {
@@ -41,7 +41,7 @@ export function scanDeclaredVurbPackages(cwd: string): string[] {
             const deps: Record<string, string> | undefined = pkg[section];
             if (!deps) continue;
             for (const name of Object.keys(deps)) {
-                if (name.startsWith(`${VURB_SCOPE}/`)) names.add(name);
+                if (name.startsWith(`${MCPFUSION_SCOPE}/`)) names.add(name);
             }
         }
         return [...names].sort();
@@ -61,22 +61,22 @@ export function getInstalledVersion(cwd: string, pkgName: string): string | unde
 }
 
 /**
- * Scan `node_modules/@vurb/` to discover all installed Vurb packages.
+ * Scan `node_modules/@mcpfusion/` to discover all installed MCP Fusion packages.
  *
  * Combines packages declared in `package.json` with those physically
  * present in `node_modules` for a complete view.
  */
-export function scanInstalledVurbPackages(cwd: string): PackageVersion[] {
-    const declared = scanDeclaredVurbPackages(cwd);
+export function scanInstalledFusionPackages(cwd: string): PackageVersion[] {
+    const declared = scanDeclaredFusionPackages(cwd);
     const found = new Set<string>(declared);
 
     // Also discover transitive installs not in package.json
-    const scopeDir = join(cwd, 'node_modules', VURB_SCOPE);
+    const scopeDir = join(cwd, 'node_modules', MCPFUSION_SCOPE);
     try {
         for (const entry of readdirSync(scopeDir, { withFileTypes: true })) {
-            if (entry.isDirectory()) found.add(`${VURB_SCOPE}/${entry.name}`);
+            if (entry.isDirectory()) found.add(`${MCPFUSION_SCOPE}/${entry.name}`);
         }
-    } catch { /* no @vurb scope installed */ }
+    } catch { /* no @mcpfusion scope installed */ }
 
     const results: PackageVersion[] = [];
     for (const name of [...found].sort()) {

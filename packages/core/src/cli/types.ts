@@ -2,7 +2,7 @@
  * CLI Types — Shared Configuration Types
  *
  * Configuration types collected from the interactive wizard
- * or CLI flags for the `vurb create` command.
+ * or CLI flags for the `mcpfusion create` command.
  *
  * @module
  */
@@ -32,19 +32,19 @@ export interface ProjectConfig {
     /** Primary ingestion vector */
     readonly vector: IngestionVector;
 
-    /** Include @vurb/testing + Vitest */
+    /** Include @mcpfusion/testing + Vitest */
     readonly testing: boolean;
 
     /** Deploy target platform (default: 'vinkius') */
     readonly target?: DeployTarget;
 }
 
-/** Remote cloud configuration stored in .vurbrc (gitignored) */
+/** Remote cloud configuration stored in .MCPFusionrc (gitignored) */
 export interface RemoteConfig {
     /** API base URL (e.g., https://api.cloud.vinkius.com) */
     readonly remote: string;
     /** Target server UUID */
     readonly serverId: string;
-    /** Deploy / connection token (sensitive — .vurbrc is gitignored) */
+    /** Deploy / connection token (sensitive — .MCPFusionrc is gitignored) */
     readonly token: string;
 }

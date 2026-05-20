@@ -5,7 +5,7 @@
  * when API key authentication fails due to missing or invalid keys.
  */
 import { describe, it, expect, vi } from 'vitest';
-import type { ToolResponse } from '@vurb/core';
+import type { ToolResponse } from '@mcpfusion/core';
 import { requireApiKey } from '../src/middleware.js';
 
 const VALID_KEY = 'sk_live_validkey12345678';

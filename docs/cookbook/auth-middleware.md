@@ -1,7 +1,7 @@
 # Authentication Middleware
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -13,26 +13,26 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-Every production MCP server needs authentication. Without it, anyone with transport access can invoke destructive tools, read sensitive data, or impersonate other tenants. Vurb.ts's middleware system lets you protect tools with a single `.use()` call — no copy-pasting auth checks into every handler.
+Every production MCP server needs authentication. Without it, anyone with transport access can invoke destructive tools, read sensitive data, or impersonate other tenants. MCP Fusion's middleware system lets you protect tools with a single `.use()` call — no copy-pasting auth checks into every handler.
 
-Middleware in Vurb.ts follows the **onion model**: each layer wraps the next, and the returned object gets merged into `ctx` for downstream layers and handlers. Define it once, apply it everywhere.
+Middleware in MCP Fusion follows the **onion model**: each layer wraps the next, and the returned object gets merged into `ctx` for downstream layers and handlers. Define it once, apply it everywhere.
 
 > [!TIP]
-> Need OAuth Device Flow (RFC 8628) instead of raw JWT? Use [@vurb/oauth](/oauth) — it provides `createAuthTool()` and `requireAuth()` out of the box. Scaffold with `vurb create my-api --vector oauth`.
+> Need OAuth Device Flow (RFC 8628) instead of raw JWT? Use [@mcpfusion/oauth](/oauth) — it provides `createAuthTool()` and `requireAuth()` out of the box. Scaffold with `mcpfusion create my-api --vector oauth`.
 
 ## Defining Middleware {#defining}
 
 Use `f.middleware()` to create a reusable middleware function. It receives the current `ctx` and returns an object to merge into context:
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   token: string;
   db: DatabaseClient;
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const withAuth = f.middleware(async (ctx) => {
   const user = await verifyJwtToken(ctx.token);
@@ -152,13 +152,13 @@ registry.attachToServer(server, {
 On serverless, `contextFactory` receives the HTTP request instead.
 
 ::: tip Vinkius Cloud — One Command Deploy
-`vurb deploy` publishes your server to Vinkius Cloud's global edge with built-in DLP, kill switch, and audit logging — no infrastructure changes needed. [Learn more →](https://docs.vinkius.com/getting-started)
+`mcpfusion deploy` publishes your server to Vinkius Cloud's global edge with built-in DLP, kill switch, and audit logging — no infrastructure changes needed. [Learn more →](https://docs.vinkius.com/getting-started)
 :::
 
 ### Vercel — Extract Token from Headers
 
 ```typescript
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 
 export const POST = vercelAdapter({
   registry,
@@ -172,7 +172,7 @@ export const POST = vercelAdapter({
 ### Cloudflare Workers — Token + D1 from Env Bindings
 
 ```typescript
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 
 export default cloudflareWorkersAdapter({
   registry,

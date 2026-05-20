@@ -15,9 +15,9 @@
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { connect } from 'node:net';
-import type { TelemetryEvent } from '@vurb/core';
+import type { TelemetryEvent } from '@mcpfusion/core';
 import { startSimulator } from '../src/Simulator.js';
-import type { TelemetryBusInstance } from '@vurb/core';
+import type { TelemetryBusInstance } from '@mcpfusion/core';
 import { parseInspectorArgs } from '../src/cli/inspector.js';
 import { platform } from 'node:os';
 
@@ -66,8 +66,8 @@ let _testPathCounter = 0;
 function uniqueTestPath(): string {
     const id = `${process.pid}-${Date.now()}-${_testPathCounter++}`;
     return platform() === 'win32'
-        ? `\\\\.\\pipe\\vurb-simtest-${id}`
-        : `/tmp/vurb-simtest-${id}.sock`;
+        ? `\\\\.\\pipe\\mcpfusion-simtest-${id}`
+        : `/tm./mcpfusion-simtest-${id}.sock`;
 }
 
 // ============================================================================
@@ -102,8 +102,8 @@ describe('Simulator — Lifecycle', () => {
 
     it('should start with custom IPC path', async () => {
         const customPath = process.platform === 'win32'
-            ? `\\\\.\\pipe\\vurb-sim-test-${Date.now()}`
-            : `/tmp/vurb-sim-test-${Date.now()}.sock`;
+            ? `\\\\.\\pipe\\mcpfusion-sim-test-${Date.now()}`
+            : `/tm./mcpfusion-sim-test-${Date.now()}.sock`;
 
         sim = await startSimulator({ rps: 1, path: customPath });
         expect(sim.path).toBe(customPath);
@@ -128,7 +128,7 @@ describe('Simulator — Event Emission', () => {
         expect(topos.length).toBeGreaterThanOrEqual(1);
 
         const topo = topos[0] as any;
-        expect(topo.serverName).toBe('vurb Simulator');
+        expect(topo.serverName).toBe('mcpfusion-simulator');
         expect(topo.pid).toBe(process.pid);
         expect(topo.tools).toBeDefined();
         expect(Array.isArray(topo.tools)).toBe(true);

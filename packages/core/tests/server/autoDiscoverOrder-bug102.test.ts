@@ -16,7 +16,7 @@ describe('Bug #102 — autoDiscover deterministic order', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-        tempDir = join(tmpdir(), `vurb-order-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        tempDir = join(tmpdir(), `mcpfusion-order-${Date.now()}-${Math.random().toString(36).slice(2)}`);
         await fs.mkdir(tempDir, { recursive: true });
     });
 

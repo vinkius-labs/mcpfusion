@@ -12,7 +12,7 @@ import { autoDiscoverSkills } from '../src/discovery/autoDiscoverSkills.js';
 let testDir: string;
 
 beforeEach(async () => {
-    testDir = join(tmpdir(), `vurb-skills-test-${Date.now()}`);
+    testDir = join(tmpdir(), `mcpfusion-skills-test-${Date.now()}`);
     await fs.mkdir(testDir, { recursive: true });
 });
 

@@ -1,7 +1,7 @@
 # Context-Aware Rules
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -15,14 +15,14 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 In a traditional MCP server, domain rules live in the system prompt — sent on every turn regardless of relevance. "amount_cents is in CENTS" appears even when the agent is just listing projects. This wastes context window space and dilutes attention.
 
-Vurb.ts's system rules travel **with the data**. They appear only when the entity is in the response — a technique called **Context Tree-Shaking**. And because rules can be dynamic functions, they adapt to the user's role, tenant configuration, and locale in real-time.
+MCP Fusion's system rules travel **with the data**. They appear only when the entity is in the response — a technique called **Context Tree-Shaking**. And because rules can be dynamic functions, they adapt to the user's role, tenant configuration, and locale in real-time.
 
 ## Static Rules {#static}
 
 For rules that always apply to an entity, pass an array of strings to `.rules()`:
 
 ```typescript
-import { createPresenter, t } from '@vurb/core';
+import { createPresenter, t } from '@mcpfusion/core';
 
 const InvoicePresenter = createPresenter('Invoice')
   .schema({

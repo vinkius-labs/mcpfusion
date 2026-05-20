@@ -1,7 +1,7 @@
-# VurbClient
+# MCPFusionClient
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -18,16 +18,16 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 
 MCP tool calls are stringly-typed — you pass a tool name and an `arguments` object, and hope the shape is correct. There's no compile-time validation, no autocomplete, nothing stopping you from sending `"projetcs.create"` (typo) or missing a required field.
 
-VurbClient brings **tRPC-style type inference** to MCP. Export a router type from the server, import it on the client — every `client.execute()` call gets full autocomplete and compile-time argument validation. Zero runtime cost.
+MCPFusionClient brings **tRPC-style type inference** to MCP. Export a router type from the server, import it on the client — every `client.execute()` call gets full autocomplete and compile-time argument validation. Zero runtime cost.
 
 ## Server — Export the Router Type {#server}
 
 ```typescript
 // server.ts
-import { initVurb, createTypedRegistry } from '@vurb/core';
-import type { InferRouter } from '@vurb/core';
+import { initMCPFusion, createTypedRegistry } from '@mcpfusion/core';
+import type { InferRouter } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const listProjects = f.query('projects.list')
   .describe('List projects')
@@ -57,10 +57,10 @@ export type AppRouter = InferRouter<typeof registry>;
 
 ```typescript
 // agent.ts
-import { createVurbClient } from '@vurb/core';
+import { createMCPFusionClient } from '@mcpfusion/core';
 import type { AppRouter } from './server.js';
 
-const client = createVurbClient<AppRouter>(transport);
+const client = createMCPFusionClient<AppRouter>(transport);
 
 const result = await client.execute('projects.create', {
   workspace_id: 'ws_1',
@@ -88,10 +88,10 @@ transport.callTool('projects', { action: 'create', workspace_id: 'ws_1', name: '
 
 ## Transport {#transport}
 
-Any object implementing `VurbTransport`:
+Any object implementing `MCPFusionTransport`:
 
 ```typescript
-interface VurbTransport {
+interface MCPFusionTransport {
   callTool(name: string, args: Record<string, unknown>): Promise<ToolResponse>;
 }
 ```
@@ -102,19 +102,19 @@ interface VurbTransport {
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 
 const mcpClient = new Client(/* ... */);
-const transport: VurbTransport = {
+const transport: MCPFusionTransport = {
   callTool: (name, args) => mcpClient.callTool({ name, arguments: args }),
 };
-const client = createVurbClient<AppRouter>(transport);
+const client = createMCPFusionClient<AppRouter>(transport);
 ```
 
 **Direct Registry (testing):**
 
 ```typescript
-const transport: VurbTransport = {
+const transport: MCPFusionTransport = {
   callTool: (name, args) => registry.routeCall(testContext, name, args),
 };
-const client = createVurbClient<AppRouter>(transport);
+const client = createMCPFusionClient<AppRouter>(transport);
 ```
 
 ## Client Middleware {#middleware}
@@ -122,7 +122,7 @@ const client = createVurbClient<AppRouter>(transport);
 Onion-pattern interceptors for every outgoing call:
 
 ```typescript
-import type { ClientMiddleware } from '@vurb/core';
+import type { ClientMiddleware } from '@mcpfusion/core';
 
 const authMiddleware: ClientMiddleware = async (action, args, next) => {
   return next(action, { ...args, _token: await getToken() });
@@ -135,7 +135,7 @@ const logMiddleware: ClientMiddleware = async (action, args, next) => {
   return result;
 };
 
-const client = createVurbClient<AppRouter>(transport, {
+const client = createMCPFusionClient<AppRouter>(transport, {
   middleware: [authMiddleware, logMiddleware],
 });
 ```
@@ -144,17 +144,17 @@ Compiled once at creation — O(1) per call.
 
 ## Error Handling {#errors}
 
-Enable `throwOnError` to parse `<tool_error>` XML into `VurbClientError`:
+Enable `throwOnError` to parse `<tool_error>` XML into `MCPFusionClientError`:
 
 ```typescript
-import { createVurbClient, VurbClientError } from '@vurb/core';
+import { createMCPFusionClient, MCPFusionClientError } from '@mcpfusion/core';
 
-const client = createVurbClient<AppRouter>(transport, { throwOnError: true });
+const client = createMCPFusionClient<AppRouter>(transport, { throwOnError: true });
 
 try {
   await client.execute('billing.get_invoice', { id: 'inv_999' });
 } catch (err) {
-  if (err instanceof VurbClientError) {
+  if (err instanceof MCPFusionClientError) {
     err.code;             // 'NOT_FOUND'
     err.message;          // 'Invoice inv_999 not found.'
     err.recovery;         // 'Call billing.list first.'
@@ -181,6 +181,6 @@ Parallel by default (`Promise.all`). Use `{ sequential: true }` for ordered exec
 
 ## API Reference {#api}
 
-**Runtime:** `createVurbClient(transport, options?)`, `createTypedRegistry<TContext>()`, `VurbClientError`.
+**Runtime:** `createMCPFusionClient(transport, options?)`, `createTypedRegistry<TContext>()`, `MCPFusionClientError`.
 
-**Types:** `VurbClient<TRouter>`, `VurbTransport`, `InferRouter<T>`, `TypedToolRegistry<TContext, TBuilders>`, `ClientMiddleware` (`(action, args, next) => Promise<ToolResponse>`), `VurbClientOptions` (`{ middleware?, throwOnError? }`), `RouterMap`.
+**Types:** `MCPFusionClient<TRouter>`, `MCPFusionTransport`, `InferRouter<T>`, `TypedToolRegistry<TContext, TBuilders>`, `ClientMiddleware` (`(action, args, next) => Promise<ToolResponse>`), `MCPFusionClientOptions` (`{ middleware?, throwOnError? }`), `RouterMap`.

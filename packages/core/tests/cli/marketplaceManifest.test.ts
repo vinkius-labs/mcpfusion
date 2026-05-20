@@ -22,7 +22,7 @@ import {
 let tmpDir: string;
 
 beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'vurb-mkt-test-'));
+    tmpDir = mkdtempSync(join(tmpdir(), 'mcpfusion-mkt-test-'));
 });
 
 afterEach(() => {

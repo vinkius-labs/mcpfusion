@@ -12,7 +12,7 @@
  * @module
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 
 interface TestCtx { userId: string }
 const ctx: TestCtx = { userId: 'u-1' };
@@ -20,7 +20,7 @@ const ctx: TestCtx = { userId: 'u-1' };
 describe('Bug #78: FluentToolBuilder .use() prototype pollution guard', () => {
 
     it('merges safe enriched context properties', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('safe.enrich')
             .describe('Test safe enrichment')
@@ -40,7 +40,7 @@ describe('Bug #78: FluentToolBuilder .use() prototype pollution guard', () => {
     });
 
     it('blocks __proto__ key from enriched context', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         // Construct a payload that would attempt prototype pollution
         const malicious = JSON.parse('{"__proto__": {"polluted": true}, "safe": "ok"}');
@@ -67,7 +67,7 @@ describe('Bug #78: FluentToolBuilder .use() prototype pollution guard', () => {
     });
 
     it('blocks constructor key from enriched context', async () => {
-        const f = initVurb<TestCtx>();
+        const f = initMCPFusion<TestCtx>();
 
         const tool = f.action('ctor.attack')
             .describe('Test constructor pollution guard')

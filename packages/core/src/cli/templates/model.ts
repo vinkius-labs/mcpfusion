@@ -17,7 +17,7 @@ export function systemModelTs(): string {
  * The Presenter references this Model instead of raw z.object(),
  * keeping a single source of truth for the data shape.
  */
-import { defineModel } from '@vurb/core';
+import { defineModel } from '@mcpfusion/core';
 
 export const SystemModel = defineModel('SystemHealth', m => {
     m.casts({

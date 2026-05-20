@@ -7,9 +7,9 @@
 export function prismaSchema(): string {
     return `// Prisma Schema — Database-Driven MCP Server
 //
-// The @vurb/prisma-gen generator reads annotations
+// The @mcpfusion/prisma-gen generator reads annotations
 // and auto-generates Presenters + ToolBuilders with:
-// - Field-level security (/// @vurb.hide)
+// - Field-level security (/// @mcpfusion.hide)
 // - Tenant isolation
 // - OOM protection
 
@@ -17,8 +17,8 @@ generator client {
     provider = "prisma-client-js"
 }
 
-generator vurb {
-    provider = "@vurb/prisma-gen"
+generator mcpfusion {
+    provider = "@mcpfusion/prisma-gen"
 }
 
 datasource db {
@@ -31,7 +31,7 @@ model User {
     email     String   @unique
     name      String
 
-    /// @vurb.hide — Stripped by the Egress Firewall before reaching the LLM
+    /// @mcpfusion.hide — Stripped by the Egress Firewall before reaching the LLM
     password  String
 
     role      String   @default("USER")
@@ -64,7 +64,7 @@ export function dbUsersToolTs(): string {
  * - .handle(input, ctx) — input.take is typed as number | undefined
  * - Implicit success() wrapping
  */
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 
 export default f.query('db.list_users')
     .describe('List users from the database')

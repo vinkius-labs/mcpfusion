@@ -153,9 +153,9 @@ In traditional MVC, the View is **tool-level** — each controller action has it
 In MVA, the Presenter is **domain-level**. You don't create a Presenter per tool. You create a Presenter per **domain entity**:
 
 ```typescript
-import { initVurb, definePresenter } from '@vurb/core';
+import { initMCPFusion, definePresenter } from '@mcpfusion/core';
 
-const f = initVurb<Ctx>();
+const f = initMCPFusion<Ctx>();
 
 // This Presenter is shared across EVERY tool that returns invoices
 const InvoicePresenter = definePresenter({

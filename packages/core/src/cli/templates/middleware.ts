@@ -21,8 +21,8 @@ export function authMiddlewareTs(): string {
  * In production, replace with JWT validation,
  * API key checks, or OAuth token verification.
  */
-import { f } from '../vurb.js';
-import { error } from '@vurb/core';
+import { f } from '../mcpfusion.js';
+import { error } from '@mcpfusion/core';
 
 export const withAuth = f.middleware(async (ctx) => {
     if (ctx.role === 'GUEST') {

@@ -130,7 +130,7 @@ export async function mintDelegationToken(
     scope: string,
     ttlSeconds: number,
     secret: string,
-    issuer = 'vurb-gateway',
+    issuer = 'mcpfusion-gateway',
     carryOverState?: Record<string, unknown>,
     store?: HandoffStateStore,
     traceparent?: string,
@@ -152,7 +152,7 @@ export async function mintDelegationToken(
         if (byteLength(carryOverState) > CLAIM_CHECK_THRESHOLD_BYTES) {
             if (!store) {
                 throw new Error(
-                    '[vurb/core] carryOverState exceeds 2 KB but no HandoffStateStore was provided. ' +
+                    '[mcpfusion/core] carryOverState exceeds 2 KB but no HandoffStateStore was provided. ' +
                     'Pass a store to SwarmGatewayConfig.stateStore.',
                 );
             }

@@ -1,7 +1,7 @@
 # Result Monad
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -12,7 +12,7 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-MCP tool handlers need to communicate success and failure without relying on JavaScript exceptions. Vurb.ts provides a Result Monad pattern: `success()` wraps data into a `ToolResponse`, `error()` wraps failures with `isError: true`, and `toolError()` creates structured recovery envelopes.
+MCP tool handlers need to communicate success and failure without relying on JavaScript exceptions. MCP Fusion provides a Result Monad pattern: `success()` wraps data into a `ToolResponse`, `error()` wraps failures with `isError: true`, and `toolError()` creates structured recovery envelopes.
 
 You don't *have* to use them — returning raw data from a handler auto-wraps it in `success()`. But when you need explicit error branches or structured recovery, the monad helpers make intent crystal clear.
 
@@ -21,9 +21,9 @@ You don't *have* to use them — returning raw data from a handler auto-wraps it
 The simplest pattern: return `success(data)` on the happy path, `error(message)` on failure:
 
 ```typescript
-import { initVurb, success, error } from '@vurb/core';
+import { initMCPFusion, success, error } from '@mcpfusion/core';
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 export const getProject = f.query('projects.get')
   .describe('Get a project by ID')
@@ -48,7 +48,7 @@ export const getProject = f.query('projects.get')
 When a simple error message isn't enough, `toolError()` creates a machine-readable error envelope with recovery instructions. See the [Self-Healing Errors](/cookbook/error-handling) cookbook for the full pattern.
 
 ```typescript
-import { toolError, success } from '@vurb/core';
+import { toolError, success } from '@mcpfusion/core';
 
 export const chargeInvoice = f.mutation('billing.charge')
   .describe('Process a payment')
@@ -77,7 +77,7 @@ export const chargeInvoice = f.mutation('billing.charge')
 For complex responses that need UI blocks, rules, and hints, use the `response()` builder. See the [Custom Responses](/cookbook/custom-responses) cookbook for the full pattern.
 
 ```typescript
-import { response, ui } from '@vurb/core';
+import { response, ui } from '@mcpfusion/core';
 
 export const getDashboard = f.query('analytics.dashboard')
   .describe('Get analytics dashboard')

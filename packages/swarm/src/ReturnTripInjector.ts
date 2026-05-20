@@ -35,7 +35,7 @@ export function injectReturnTripTool(tools: McpTool[], gatewayName: string): Mcp
     // which violates the MCP tool name pattern ^[a-zA-Z0-9_-]{1,64}$ and confuses the LLM.
     if (!gatewayName) {
         throw new Error(
-            '[vurb/swarm] gatewayName must be a non-empty string — received: ' +
+            '[mcpfusion/swarm] gatewayName must be a non-empty string — received: ' +
             JSON.stringify(gatewayName),
         );
     }

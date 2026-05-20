@@ -82,10 +82,10 @@ describe('Claims — structure', () => {
         expect(claims.traceparent).toBeUndefined();
     });
 
-    it('default issuer should be "vurb-gateway"', async () => {
+    it('default issuer should be "mcpfusion-gateway"', async () => {
         const token = await mintDelegationToken('finance', 60, SECRET);
         const claims = await verifyDelegationToken(token, SECRET);
-        expect(claims.iss).toBe('vurb-gateway');
+        expect(claims.iss).toBe('mcpfusion-gateway');
     });
 });
 

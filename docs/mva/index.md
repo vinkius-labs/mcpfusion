@@ -42,7 +42,7 @@ When all five are present, the agent perceives the domain consistently. Hallucin
 ## Quick Reference: MVA in Code
 
 ```typescript
-import { defineModel, createPresenter, ui, initVurb } from '@vurb/core';
+import { defineModel, createPresenter, ui, initMCPFusion } from '@mcpfusion/core';
 
 // ── MODEL: Single source of truth via defineModel() ──
 const InvoiceModel = defineModel('Invoice', m => {
@@ -80,7 +80,7 @@ const InvoicePresenter = createPresenter('Invoice')
     );
 
 // ── AGENT: Tools use .fromModel() for input params ──
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const getInvoice = f.query('billing.get_invoice')
     .describe('Get an invoice by ID')

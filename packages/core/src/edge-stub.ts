@@ -41,7 +41,7 @@ export class Socket extends EventEmitter {}
 export class IncomingMessage extends Readable {}
 export class ServerResponse extends Writable {}
 
-// AsyncLocalStorage — @vurb/core's ask.ts does `new AsyncLocalStorage()` at
+// AsyncLocalStorage — @mcpfusion/core's ask.ts does `new AsyncLocalStorage()` at
 // module load time. Must be a real class (constructable), not a Proxy arrow fn.
 export class AsyncLocalStorage<T = unknown> {
     private _store: T | undefined = undefined;

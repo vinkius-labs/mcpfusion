@@ -1,11 +1,11 @@
 ---
 title: "Command-Line Runner"
-description: "Run, filter, watch, and report — every CLI option for the VurbTester pipeline."
+description: "Run, filter, watch, and report — every CLI option for the MCPFusionTester pipeline."
 ---
 
 # Command-Line Runner
 
-The VurbTester is **runner-agnostic** — it returns plain JavaScript objects. You can use any test runner you want: **Vitest**, **Jest**, **Mocha**, or Node's native `node:test`. This page documents the most common CLI patterns using Vitest (recommended).
+The MCPFusionTester is **runner-agnostic** — it returns plain JavaScript objects. You can use any test runner you want: **Vitest**, **Jest**, **Mocha**, or Node's native `node:test`. This page documents the most common CLI patterns using Vitest (recommended).
 
 ## Running Tests
 
@@ -294,4 +294,4 @@ node --test tests/firewall/user.firewall.test.ts
 node --test --test-name-pattern="passwordHash" tests/
 ```
 
-Notice what's missing from every command above: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `CLAUDE_API_KEY`. The VurbTester runs 100% in RAM. No LLM calls. No token costs. No rate limits. No flaky tests from API outages.
+Notice what's missing from every command above: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `CLAUDE_API_KEY`. The MCPFusionTester runs 100% in RAM. No LLM calls. No token costs. No rate limits. No flaky tests from API outages.

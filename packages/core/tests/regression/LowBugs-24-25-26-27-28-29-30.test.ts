@@ -3,7 +3,7 @@
  *
  * #24 — `.strict()` overrides consumer's unknown-keys policy
  * #25 — `retryAfter` not validated for finite/positive values
- * #26 — `VurbClient` error text includes `"undefined"` for non-text content
+ * #26 — `MCPFusionClient` error text includes `"undefined"` for non-text content
  * #27 — `EgressGuard` missing suffix when bytes consumed exactly at limit
  * #28 — `ContextDerivation` mutates shared context via `Object.assign`
  * #29 — Duck-type check false positive for domain objects with `content` array
@@ -127,11 +127,11 @@ describe('Bug #25 — retryAfter validates finite positive values', () => {
     });
 });
 
-// ── Bug #26: VurbClient filters non-text content ───────────────
+// ── Bug #26: MCPFusionClient filters non-text content ───────────────
 
 describe('Bug #26 — non-text content blocks filtered before join', () => {
-    // NOTE: This is a unit-level simulation of the VurbClient behavior.
-    // The actual fix is in VurbClient.ts executeInternal().
+    // NOTE: This is a unit-level simulation of the MCPFusionClient behavior.
+    // The actual fix is in MCPFusionClient.ts executeInternal().
     // We test the pattern: .filter(c => c.type === 'text').map(c => c.text)
 
     it('should only include text from text-type blocks', () => {

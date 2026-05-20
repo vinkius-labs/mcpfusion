@@ -1,18 +1,18 @@
 /**
- * @vurb/swarm — Federated Handoff Protocol
+ * @mcpfusion/swarm — Federated Handoff Protocol
  *
- * Multi-agent orchestration for Vurb MCP servers.
+ * Multi-agent orchestration for MCP mcpfusion Servers.
  * Implements the SwarmGateway B2BUA pattern for secure, efficient
  * agent handoffs with zero-trust delegation and distributed tracing.
  *
  * @example Gateway setup
  * ```typescript
- * import { SwarmGateway } from '@vurb/swarm';
- * import { f } from '@vurb/core';
+ * import { SwarmGateway } from '@mcpfusion/swarm';
+ * import { f } from '@mcpfusion/core';
  *
  * const gateway = new SwarmGateway({
  *     registry: { finance: 'http://finance-agent:8081' },
- *     delegationSecret: process.env.VURB_DELEGATION_SECRET!,
+ *     delegationSecret: process.env.MCPFUSION_DELEGATION_SECRET!,
  * });
  *
  * export const triage = f.tool('system.triage')
@@ -26,10 +26,10 @@
  *
  * @example Upstream micro-server
  * ```typescript
- * import { requireGatewayClearance } from '@vurb/core';
+ * import { requireGatewayClearance } from '@mcpfusion/core';
  *
  * export const refund = f.tool('finance.refund')
- *     .use(requireGatewayClearance(process.env.VURB_DELEGATION_SECRET!))
+ *     .use(requireGatewayClearance(process.env.MCPFUSION_DELEGATION_SECRET!))
  *     .withString('invoiceId', 'Invoice ID')
  *     .handle(async (input, ctx) => success(await stripe.refund(input.invoiceId)));
  * ```
@@ -49,18 +49,18 @@ export type { UpstreamMcpClientConfig, ProgressForwarder, ProgressNotification }
 export { NamespaceRewriter, NamespaceError } from './NamespaceRewriter.js';
 export { injectReturnTripTool, formatSafeReturn } from './ReturnTripInjector.js';
 
-// ── FHP primitives (re-exported from @vurb/core) ────────
-// Provided here for convenience — teams importing from @vurb/swarm
-// get the full FHP API surface without a separate @vurb/core import.
-// The canonical source is always @vurb/core.
+// ── FHP primitives (re-exported from @mcpfusion/core) ────────
+// Provided here for convenience — teams importing from @mcpfusion/swarm
+// get the full FHP API surface without a separate @mcpfusion/core import.
+// The canonical source is always @mcpfusion/core.
 export {
     handoff, isHandoffResponse,
     mintDelegationToken, verifyDelegationToken, HandoffAuthError,
     InMemoryHandoffStateStore,
     requireGatewayClearance,
-} from '@vurb/core';
+} from '@mcpfusion/core';
 export type {
     HandoffPayload, HandoffResponse, HandoffStateStore,
     DelegationClaims,
     GatewayClearanceContext,
-} from '@vurb/core';
+} from '@mcpfusion/core';

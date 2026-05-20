@@ -1,5 +1,5 @@
 /**
- * Vercel Templates — Next.js App Router scaffold for @vurb/vercel
+ * Vercel Templates — Next.js App Router scaffold for @mcpfusion/vercel
  *
  * Generates a complete Next.js project that exposes an MCP server
  * via `vercelAdapter()`. Deploy with `vercel deploy`.
@@ -13,8 +13,8 @@ import { CORE_VERSION, MCP_SDK_VERSION, VERCEL_ADAPTER_VERSION, ZOD_VERSION, TES
 export function vercelPackageJson(config: ProjectConfig): string {
     const deps: Record<string, string> = {
         '@modelcontextprotocol/sdk': MCP_SDK_VERSION,
-        '@vurb/core': CORE_VERSION,
-        '@vurb/vercel': VERCEL_ADAPTER_VERSION,
+        '@mcpfusion/core': CORE_VERSION,
+        '@mcpfusion/vercel': VERCEL_ADAPTER_VERSION,
         'next': '^15.0.0',
         'react': '^19.0.0',
         'react-dom': '^19.0.0',
@@ -23,10 +23,10 @@ export function vercelPackageJson(config: ProjectConfig): string {
 
     if (config.vector === 'prisma') {
         deps['@prisma/client'] = '^6.0.0';
-        deps['@vurb/prisma-gen'] = '^1.0.0';
+        deps['@mcpfusion/prisma-gen'] = '^1.0.0';
     }
     if (config.vector === 'oauth') {
-        deps['@vurb/oauth'] = '^1.0.0';
+        deps['@mcpfusion/oauth'] = '^1.0.0';
     }
 
     const devDeps: Record<string, string> = {
@@ -40,7 +40,7 @@ export function vercelPackageJson(config: ProjectConfig): string {
     }
     if (config.testing) {
         devDeps['vitest'] = '^3.0.5';
-        devDeps['@vurb/testing'] = TESTING_VERSION;
+        devDeps['@mcpfusion/testing'] = TESTING_VERSION;
     }
 
     const scripts: Record<string, string> = {
@@ -113,10 +113,10 @@ export function vercelRouteTs(config: ProjectConfig): string {
     return `/**
  * MCP Endpoint — Vercel Adapter
  *
- * This route exposes your Vurb tools as a stateless MCP server.
+ * This route exposes your MCP Fusion tools as a stateless MCP server.
  * Connect any MCP client to: POST /api/mcp
  */
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 import { registry } from '@/mcp/registry.js';
 import { createContext } from '@/mcp/context.js';
 
@@ -136,7 +136,7 @@ export function vercelRegistryTs(): string {
  * Registered tools are compiled once during cold start.
  * Warm requests only instantiate McpServer + Transport.
  */
-import { f } from './vurb.js';
+import { f } from './mcpfusion.js';
 import healthTool from './tools/system/health.js';
 import echoTool from './tools/system/echo.js';
 
@@ -146,18 +146,18 @@ registry.register(echoTool);
 `;
 }
 
-/** Generate `src/mcp/vurb.ts` — initVurb instance */
-export function vercelVurbTs(): string {
+/** Generate `src/mcp/mcpfusion.ts` — initMCPFusion instance */
+export function vercelFusionTs(): string {
     return `/**
- * Vurb Instance — Context Initialization
+ * MCP Fusion Instance — Context Initialization
  *
  * Define your context type ONCE. Every f.query(), f.mutation(),
  * and f.presenter() call inherits AppContext.
  */
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 import type { AppContext } from './context.js';
 
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 `;
 }
 
@@ -195,7 +195,7 @@ export function createContext(): AppContext {
 
 /** Generate `.env.example` for Vercel */
 export function vercelEnvExample(config: ProjectConfig): string {
-    let env = `# ── Vurb + Vercel Environment ──────────────────
+    let env = `# ── MCP Fusion + Vercel Environment ──────────────────
 # Copy this to .env.local and fill in your values.
 
 NODE_ENV=development
@@ -236,7 +236,7 @@ coverage/
 export function vercelReadme(config: ProjectConfig): string {
     return `# ${config.name}
 
-MCP Server built with [Vurb](https://vurb.vinkius.com/) — deployed to Vercel.
+MCP Server built with [mcpfusion](https://mcpfusion.vinkius.com/) — deployed to Vercel.
 
 ## Quick Start
 
@@ -286,7 +286,7 @@ Add to your \`claude_desktop_config.json\`:
 \`\`\`
 src/
 └── mcp/
-    ├── vurb.ts           # initVurb<AppContext>()
+    ├── mcpfusion.ts           # initMCPFusion<AppContext>()
     ├── context.ts         # AppContext type + factory
     ├── registry.ts        # Tool registry (cold-start)
     └── tools/
@@ -304,7 +304,7 @@ app/
 1. Create a tool in \`src/mcp/tools/\`:
 
 \`\`\`typescript
-import { f } from '../../vurb.js';
+import { f } from '../../mcpfusion.js';
 
 export default f.query('my_tool')
     .describe('What this tool does')
@@ -331,8 +331,8 @@ export const runtime = 'edge';
 
 ## Documentation
 
-- [Vurb Docs](https://vurb.vinkius.com/)
-- [Vercel Adapter](https://vurb.vinkius.com/vercel-adapter)
-- [Presenter — Egress Firewall](https://vurb.vinkius.com/presenter)
+- [MCP Fusion Docs](https://mcpfusion.vinkius.com/)
+- [Vercel Adapter](https://mcpfusion.vinkius.com/vercel-adapter)
+- [Presenter — Egress Firewall](https://mcpfusion.vinkius.com/presenter)
 `;
 }

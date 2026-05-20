@@ -1,22 +1,22 @@
 /**
- * Simulator — Realistic Vurb Telemetry Emitter
+ * Simulator — Realistic MCP Fusion Telemetry Emitter
  *
  * Spins up a TelemetryBus and emits a continuous stream of realistic
- * telemetry events that mimic a live Vurb server. Use with
- * `vurb inspect --demo` to test/demo the TUI without a real server.
+ * telemetry events that mimic a live MCP mcpfusion server. Use with
+ * `mcpfusion inspect --demo` to test/demo the TUI without a real server.
  *
  * Usage:
- *   vurb dv --demo                # Built-in simulator + TUI
- *   vurb dv --out stderr --demo   # Headless simulator output
+ *   mcpfusion dv --demo                # Built-in simulator + TUI
+ *   mcpfusion dv --out stderr --demo   # Headless simulator output
  *
  * @module
  */
-import { createTelemetryBus } from '@vurb/core';
+import { createTelemetryBus } from '@mcpfusion/core';
 import type {
     TelemetryEvent,
     TopologyTool,
     TelemetryBusInstance,
-} from '@vurb/core';
+} from '@mcpfusion/core';
 
 // ============================================================================
 // Fake Tool Registry
@@ -329,7 +329,7 @@ export async function startSimulator(options: SimulatorOptions = {}): Promise<Te
         ...(options.path !== undefined && { path: options.path }),
         onConnect: (): TelemetryEvent => ({
             type: 'topology' as const,
-            serverName: 'vurb Simulator',
+            serverName: 'mcpfusion-simulator',
             pid: process.pid,
             tools: TOOLS,
             timestamp: Date.now(),
@@ -339,7 +339,7 @@ export async function startSimulator(options: SimulatorOptions = {}): Promise<Te
     // Emit topology
     bus.emit({
         type: 'topology',
-        serverName: 'vurb Simulator',
+        serverName: 'mcpfusion-simulator',
         pid: process.pid,
         tools: TOOLS,
         timestamp: Date.now(),
@@ -404,9 +404,9 @@ const isMainModule = process.argv[1]?.includes('Simulator');
 if (isMainModule) {
     startSimulator().then((bus) => {
         process.stderr.write(
-            `\n\x1b[1m\x1b[36m  vurb Simulator RUNNING\x1b[0m\n` +
+            `\n\x1b[1m\x1b[36m  mcpfusion-simulator RUNNING\x1b[0m\n` +
             `  PID: ${process.pid}  Path: ${bus.path}\n` +
-            `  In another terminal: \x1b[1mnpx vurb dv --pid ${process.pid}\x1b[0m\n\n` +
+            `  In another terminal: \x1b[1mnpx mcpfusion dv --pid ${process.pid}\x1b[0m\n\n` +
             `\x1b[2m  Ctrl+C to stop.\x1b[0m\n\n`,
         );
         process.on('SIGINT', async () => {

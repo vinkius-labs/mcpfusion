@@ -1,11 +1,11 @@
 /**
  * API Key Auth Tool Factory — Pre-built API Key Validation Tool
  *
- * Creates a complete vurb tool with validate and status actions.
+ * Creates a complete MCP Fusion tool with validate and status actions.
  *
  * @example
  * ```ts
- * import { createApiKeyTool } from '@vurb/api-key';
+ * import { createApiKeyTool } from '@mcpfusion/api-key';
  *
  * const apiKeyTool = createApiKeyTool({
  *     keys: ['sk_live_abc123'],
@@ -13,8 +13,8 @@
  * ```
  */
 
-import { createTool } from '@vurb/core';
-import type { ToolResponse } from '@vurb/core';
+import { createTool } from '@mcpfusion/core';
+import type { ToolResponse } from '@mcpfusion/core';
 import { ApiKeyManager } from './ApiKeyManager.js';
 import type { ApiKeyManagerConfig } from './ApiKeyManager.js';
 

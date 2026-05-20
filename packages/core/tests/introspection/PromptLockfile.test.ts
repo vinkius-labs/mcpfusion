@@ -573,7 +573,7 @@ describe('Prompt Lockfile — checkLockfile with prompts', () => {
         expect(result.ok).toBe(false);
         expect(result.message).toContain('tools removed');
         expect(result.message).toContain('prompts added');
-        expect(result.message).toContain('vurb lock');
+        expect(result.message).toContain('mcpfusion lock');
     });
 });
 

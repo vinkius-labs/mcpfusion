@@ -1,5 +1,5 @@
 /**
- * .vurbrc management — local cloud config, .env loading.
+ * .MCPFusionrc management — local cloud config, .env loading.
  * @module
  */
 import { resolve } from 'node:path';
@@ -9,7 +9,7 @@ import { ansi } from './constants.js';
 
 // ─── Constants ───────────────────────────────────────────────────
 
-export const VURBRC = '.vurbrc';
+export const mcpfusionrc = '.MCPFusionrc';
 
 // ─── Environment ─────────────────────────────────────────────────
 
@@ -39,26 +39,26 @@ export function loadEnv(cwd: string): void {
 
 // ─── .gitignore ──────────────────────────────────────────────────
 
-/** Ensure .vurbrc is listed in .gitignore. */
+/** Ensure .MCPFusionrc is listed in .gitignore. */
 export function ensureGitignore(cwd: string): void {
     const gitignorePath = resolve(cwd, '.gitignore');
     try {
         const content = existsSync(gitignorePath)
             ? readFileSync(gitignorePath, 'utf-8')
             : '';
-        if (!content.split('\n').some(l => l.trim() === VURBRC)) {
+        if (!content.split('\n').some(l => l.trim() === mcpfusionrc)) {
             const nl = content.length > 0 && !content.endsWith('\n') ? '\n' : '';
-            writeFileSync(gitignorePath, `${content}${nl}${VURBRC}\n`);
-            process.stderr.write(`  ${ansi.yellow('⚠')} Added ${VURBRC} to .gitignore\n`);
+            writeFileSync(gitignorePath, `${content}${nl}${mcpfusionrc}\n`);
+            process.stderr.write(`  ${ansi.yellow('⚠')} Added ${mcpfusionrc} to .gitignore\n`);
         }
     } catch { /* No git project — skip silently */ }
 }
 
 // ─── Read / Write ────────────────────────────────────────────────
 
-/** Read .vurbrc from project root. */
-export function readVurbRc(cwd: string): Partial<RemoteConfig> {
-    const rcPath = resolve(cwd, VURBRC);
+/** Read .MCPFusionrc from project root. */
+export function readMCPFusionrc(cwd: string): Partial<RemoteConfig> {
+    const rcPath = resolve(cwd, mcpfusionrc);
     if (!existsSync(rcPath)) return {};
     try {
         return JSON.parse(readFileSync(rcPath, 'utf-8'));
@@ -67,14 +67,14 @@ export function readVurbRc(cwd: string): Partial<RemoteConfig> {
     }
 }
 
-/** Write .vurbrc and ensure .gitignore coverage. */
-export function writeVurbRc(cwd: string, config: Partial<RemoteConfig>): void {
-    const existing = readVurbRc(cwd);
+/** Write .MCPFusionrc and ensure .gitignore coverage. */
+export function writeMCPFusionrc(cwd: string, config: Partial<RemoteConfig>): void {
+    const existing = readMCPFusionrc(cwd);
     const merged = { ...existing, ...config };
     // Strip explicitly-undefined keys (e.g. token: undefined from --clear)
     for (const key of Object.keys(merged) as Array<keyof typeof merged>) {
         if (merged[key] === undefined) delete merged[key];
     }
-    writeFileSync(resolve(cwd, VURBRC), JSON.stringify(merged, null, 2) + '\n');
+    writeFileSync(resolve(cwd, mcpfusionrc), JSON.stringify(merged, null, 2) + '\n');
     ensureGitignore(cwd);
 }

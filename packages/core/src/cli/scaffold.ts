@@ -73,7 +73,7 @@ function buildFileList(config: ProjectConfig): ScaffoldFile[] {
     }
 
     // ── Core source ──────────────────────────────────────
-    files.push({ path: 'src/vurb.ts', content: tpl.vurbTs() });
+    files.push({ path: 'src/mcpfusion.ts', content: tpl.mcpfusionTs() });
     files.push({ path: 'src/context.ts', content: tpl.contextTs() });
     files.push({ path: 'src/server.ts', content: tpl.serverTs(config) });
 
@@ -154,7 +154,7 @@ function buildVercelFileList(config: ProjectConfig): ScaffoldFile[] {
     files.push({ path: 'app/api/mcp/route.ts', content: tpl.vercelRouteTs(config) });
 
     // ── MCP source (under src/mcp/) ──
-    files.push({ path: 'src/mcp/vurb.ts', content: tpl.vercelVurbTs() });
+    files.push({ path: 'src/mcp/mcpfusion.ts', content: tpl.vercelFusionTs() });
     files.push({ path: 'src/mcp/context.ts', content: tpl.vercelContextTs() });
     files.push({ path: 'src/mcp/registry.ts', content: tpl.vercelRegistryTs() });
 
@@ -196,7 +196,7 @@ function buildCloudflareFileList(config: ProjectConfig): ScaffoldFile[] {
     files.push({ path: 'src/worker.ts', content: tpl.cloudflareWorkerTs(config) });
 
     // ── MCP source ──
-    files.push({ path: 'src/vurb.ts', content: tpl.cloudflareVurbTs() });
+    files.push({ path: 'src/mcpfusion.ts', content: tpl.cloudflareFusionTs() });
     files.push({ path: 'src/context.ts', content: tpl.cloudflareContextTs() });
     files.push({ path: 'src/registry.ts', content: tpl.cloudflareRegistryTs() });
 

@@ -10,7 +10,7 @@
  *
  * @example
  * ```typescript
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  *
  * f.query('users.list')
  *   .input({
@@ -38,7 +38,7 @@ import type {
  * Symbol used to detect fluent schema helpers at runtime.
  * @internal
  */
-export const FLUENT_DESCRIPTOR = Symbol.for('vurb.fluent-descriptor');
+export const FLUENT_DESCRIPTOR = Symbol.for('mcpfusion.fluent-descriptor');
 
 /**
  * Base interface for all fluent descriptors.

@@ -1,7 +1,7 @@
 # Without MVA vs With MVA
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 ---
@@ -10,14 +10,14 @@ Install Vurb.ts before following this guide: `npm install @vurb/core @modelconte
 <div style="margin:48px 0;padding:56px 40px;background:#09090f;border:1px solid rgba(255,255,255,0.05);border-radius:12px;position:relative;overflow:hidden">
 <div style="position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(239,68,68,0.3),transparent)"></div>
 <span style="font-size:9px;color:rgba(239,68,68,0.6);letter-spacing:3px;font-weight:700">THE AHA MOMENT</span>
-<div style="font-size:36px;color:#fff;font-weight:700;font-family:Inter,system-ui,sans-serif;letter-spacing:-1.5px;margin-top:12px;line-height:1.1">See the difference in 3 seconds.<br><span style="color:rgba(255,255,255,0.25)">Raw MCP vs Vurb.</span></div>
-<div style="font-size:14px;color:rgba(255,255,255,0.4);margin-top:16px;max-width:540px;line-height:1.7;font-family:Inter,sans-serif">Every tool response in raw MCP is <code style="font-size:12px;color:rgba(239,68,68,0.6)">JSON.stringify()</code> — the AI gets a flat blob and guesses. Vurb replaces guessing with structured perception.</div>
+<div style="font-size:36px;color:#fff;font-weight:700;font-family:Inter,system-ui,sans-serif;letter-spacing:-1.5px;margin-top:12px;line-height:1.1">See the difference in 3 seconds.<br><span style="color:rgba(255,255,255,0.25)">Raw MCP vs MCP Fusion.</span></div>
+<div style="font-size:14px;color:rgba(255,255,255,0.4);margin-top:16px;max-width:540px;line-height:1.7;font-family:Inter,sans-serif">Every tool response in raw MCP is <code style="font-size:12px;color:rgba(239,68,68,0.6)">JSON.stringify()</code> — the AI gets a flat blob and guesses. MCP Fusion replaces guessing with structured perception.</div>
 </div>
 
 <!-- Summary comparison table -->
 <div style="margin:32px 0">
 
-| Aspect | Raw MCP | Vurb MVA |
+| Aspect | Raw MCP | MCP Fusion MVA |
 |---|---|---|
 | **Tool count** | 50 individual tools. Token explosion. | Action consolidation — `module.action` discriminator |
 | **Response** | `JSON.stringify()` — AI guesses | Structured perception — data + rules + UI + affordances |
@@ -66,7 +66,7 @@ server.setRequestHandler(async (request) => {
 
 <!-- RIGHT: safe -->
 <div style="border:1px solid rgba(52,211,153,0.2);background:rgba(52,211,153,0.03);padding:24px">
-<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">VURB MVA</span>
+<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">MCP Fusion MVA</span>
 <div style="margin-top:12px">
 
 ```typescript
@@ -120,7 +120,7 @@ case 'list_users':
 </div>
 
 <div style="border:1px solid rgba(52,211,153,0.2);background:rgba(52,211,153,0.03);padding:24px">
-<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">VURB — SMART TRUNCATION</span>
+<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">MCP Fusion — SMART TRUNCATION</span>
 <div style="margin-top:12px">
 
 ```typescript
@@ -168,7 +168,7 @@ if (!invoice) {
 </div>
 
 <div style="border:1px solid rgba(52,211,153,0.2);background:rgba(52,211,153,0.03);padding:24px">
-<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">VURB — SELF-HEALS</span>
+<span style="font-size:9px;color:rgba(52,211,153,0.7);letter-spacing:2px;font-weight:700">MCP Fusion — SELF-HEALS</span>
 <div style="margin-top:12px">
 
 ```typescript

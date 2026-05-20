@@ -2,7 +2,7 @@
 
 LLMs can't ask follow-up questions. When a tool needs user confirmation, a deployment region, or an OAuth token, the handler is stuck — guess, fail, or hard-code.
 
-MCP Elicitation fixes this. Vurb.ts wraps it in a zero-boilerplate DSL: **one import, one call, full type inference**.
+MCP Elicitation fixes this. MCP Fusion wraps it in a zero-boilerplate DSL: **one import, one call, full type inference**.
 
 > [!IMPORTANT]
 > **The first MCP framework where tools can pause, ask the human, and resume — with zero context injection.**
@@ -23,16 +23,16 @@ MCP Elicitation fixes this. Vurb.ts wraps it in a zero-boilerplate DSL: **one im
 ## Quick Start {#quick-start}
 
 ::: info Prerequisites
-Install Vurb.ts before following this guide: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this guide: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 ### Step 1 — Mark the tool as interactive
 
 ```typescript
-import { initVurb, ask } from '@vurb/core';
+import { initMCPFusion, ask } from '@mcpfusion/core';
 
 interface AppContext { db: PrismaClient; userId: string }
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 
 const deploy = f.mutation('infra.deploy')
     .describe('Deploy an application to production')
@@ -106,7 +106,7 @@ Handler resumes        ← AskResponse<T> with typed .data
 `ask` is a **Callable Namespace** — it's both a function and an object with factory methods:
 
 ```typescript
-import { ask } from '@vurb/core';
+import { ask } from '@mcpfusion/core';
 
 // As a function — send a form to the user
 const result = await ask('Choose your preferences:', {
@@ -300,8 +300,8 @@ Test elicitation flows by injecting a mock transport via `_elicitStore`:
 
 ```typescript
 import { describe, it, expect, vi } from 'vitest';
-import { _elicitStore } from '@vurb/core/elicitation';
-import { ask } from '@vurb/core';
+import { _elicitStore } from '@mcpfusion/core/elicitation';
+import { ask } from '@mcpfusion/core';
 
 describe('deploy tool — elicitation', () => {
     it('deploys to user-selected region', async () => {

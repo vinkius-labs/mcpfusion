@@ -12,10 +12,10 @@
  * @module
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/index.js';
+import { initMCPFusion } from '../../src/index.js';
 
 describe('Bug #13 Regression: _addParam prototype chain', () => {
-    const f = initVurb();
+    const f = initMCPFusion();
 
     it('should accept parameter named "constructor"', () => {
         expect(() => {

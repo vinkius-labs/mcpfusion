@@ -1,11 +1,11 @@
 # Testing
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
-- [VurbTester Setup](#setup)
+- [MCPFusionTester Setup](#setup)
 - [Executing Tools](#executing)
 - [Firewall Tests — Field Whitelist](#firewall)
 - [Rules Verification](#rules)
@@ -14,21 +14,21 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-Vurb.ts ships `@vurb/testing` — a dedicated testing harness that enables **Automated AI Tool Testing**. It lets you execute tools, inspect responses, verify Presenter rules, and assert on field whitelists without spinning up a full MCP server.
+MCP Fusion ships `@mcpfusion/testing` — a dedicated testing harness that enables **Automated AI Tool Testing**. It lets you execute tools, inspect responses, verify Presenter rules, and assert on field whitelists without spinning up a full MCP server.
 
 The philosophy: **test perception, not plumbing**. Instead of testing "does `findMany` return rows?", test "does the AI receive exactly the fields it should, with the right rules attached?" This focuses your testing on guaranteeing **Deterministic LLM Output** and ensuring absolute **Data Exfiltration Prevention** before your agents ever reach production.
 
-## VurbTester Setup {#setup}
+## MCPFusionTester Setup {#setup}
 
 Create a shared tester instance in your test setup file:
 
 ```typescript
 // tests/setup.ts
-import { VurbTester } from '@vurb/testing';
+import { MCPFusionTester } from '@mcpfusion/testing';
 import { registry } from '../src/index.js';
 
 export function createTester(contextOverrides?: Partial<AppContext>) {
-  return new VurbTester(registry, {
+  return new MCPFusionTester(registry, {
     db: createTestDatabase(),
     tenantId: 'test-tenant',
     userId: 'test-user',
@@ -37,7 +37,7 @@ export function createTester(contextOverrides?: Partial<AppContext>) {
 }
 ```
 
-`VurbTester` wraps your registry with a test-friendly API. It executes tools with the same middleware chain, Presenter pipeline, and response builder as production — but without the MCP transport layer.
+`MCPFusionTester` wraps your registry with a test-friendly API. It executes tools with the same middleware chain, Presenter pipeline, and response builder as production — but without the MCP transport layer.
 
 ## Executing Tools {#executing}
 

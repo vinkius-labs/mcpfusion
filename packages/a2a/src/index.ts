@@ -1,5 +1,5 @@
 /**
- * @vurb/a2a — A2A Protocol Bridge for Vurb MCP Servers
+ * @mcpfusion/a2a — A2A Protocol Bridge for MCP mcpfusion Servers
  *
  * Expose any MCP server as an A2A-compliant agent with automatic
  * Agent Card generation, JSON-RPC task delegation, and structured
@@ -7,7 +7,7 @@
  *
  * @example Quick start
  * ```typescript
- * import { compileAgentCard, A2AHandler, AGENT_CARD_PATH } from '@vurb/a2a';
+ * import { compileAgentCard, A2AHandler, AGENT_CARD_PATH } from '@mcpfusion/a2a';
  *
  * // 1. Compile Agent Card from MCP registry
  * const card = compileAgentCard(

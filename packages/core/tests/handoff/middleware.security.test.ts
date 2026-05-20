@@ -28,12 +28,12 @@ const SECRET_B = 'other-secret-32-chars-minimum-b!';
 // ============================================================================
 
 describe('SECURITY: Header extraction — adversarial shapes', () => {
-    it('header with wrong case (X-VURB-DELEGATION) should be handled gracefully', async () => {
+    it('header with wrong case (x-mcpfusion-delegation) should be handled gracefully', async () => {
         const token = await mintDelegationToken('finance', 60, SECRET);
         const mw = requireGatewayClearance(SECRET);
         // HTTP headers are case-insensitive; the implementation may or may not handle this
         // The test documents the actual behaviour
-        const ctx = { requestInfo: { headers: { 'X-VURB-DELEGATION': token } } };
+        const ctx = { requestInfo: { headers: { 'x-mcpfusion-delegation': token } } };
         const result = await mw(ctx).catch((e: HandoffAuthError) => e);
         // Either succeeds (case-insensitive handling) or throws MISSING_DELEGATION_TOKEN
         if (result instanceof HandoffAuthError) {
@@ -47,7 +47,7 @@ describe('SECURITY: Header extraction — adversarial shapes', () => {
         const token = await mintDelegationToken('finance', 60, SECRET);
         const mw = requireGatewayClearance(SECRET);
         // Token with surrounding spaces
-        const ctx = { headers: { 'x-vurb-delegation': `  ${token}  ` } };
+        const ctx = { headers: { 'x-mcpfusion-delegation': `  ${token}  ` } };
         const result = await mw(ctx).catch((e: HandoffAuthError) => e);
         // Either trims and succeeds, or fails with INVALID_SIGNATURE/INVALID_DELEGATION_TOKEN
         if (result instanceof HandoffAuthError) {
@@ -64,8 +64,8 @@ describe('SECURITY: Header extraction — adversarial shapes', () => {
 
         // Both paths present with different tokens
         const ctx = {
-            requestInfo: { headers: { 'x-vurb-delegation': tokenA } },
-            headers: { 'x-vurb-delegation': tokenB },
+            requestInfo: { headers: { 'x-mcpfusion-delegation': tokenA } },
+            headers: { 'x-mcpfusion-delegation': tokenB },
         };
         const result = await mw(ctx);
         // MCP SDK path (requestInfo.headers) should take priority
@@ -76,7 +76,7 @@ describe('SECURITY: Header extraction — adversarial shapes', () => {
         const token = await mintDelegationToken('finance', 60, SECRET);
         const mw = requireGatewayClearance(SECRET);
         // Some frameworks give arrays for multi-value headers
-        const ctx = { headers: { 'x-vurb-delegation': [token, 'second-value'] } };
+        const ctx = { headers: { 'x-mcpfusion-delegation': [token, 'second-value'] } };
         const result = await mw(ctx).catch((e: HandoffAuthError) => e);
         // Should either take the first value or throw MISSING/INVALID
         if (result instanceof HandoffAuthError) {
@@ -87,7 +87,7 @@ describe('SECURITY: Header extraction — adversarial shapes', () => {
     it('prototype pollution via __proto__ in context should not affect extraction', async () => {
         const mw = requireGatewayClearance(SECRET);
         // Simulate a prototype-polluted context object
-        const ctx = Object.create({ 'x-vurb-delegation': 'polluted' });
+        const ctx = Object.create({ 'x-mcpfusion-delegation': 'polluted' });
         ctx.requestInfo = { headers: {} };
         await expect(mw(ctx)).rejects.toMatchObject({ code: 'MISSING_DELEGATION_TOKEN' });
     });
@@ -112,8 +112,8 @@ describe('CONCURRENCY: Mixed valid/invalid parallel verification', () => {
 
         const calls = Array.from({ length: 40 }, (_, i) =>
             i % 2 === 0
-                ? mw({ headers: { 'x-vurb-delegation': validToken } }).then(() => 'ok')
-                : mw({ headers: { 'x-vurb-delegation': expiredToken } }).catch((e: HandoffAuthError) => e.code)
+                ? mw({ headers: { 'x-mcpfusion-delegation': validToken } }).then(() => 'ok')
+                : mw({ headers: { 'x-mcpfusion-delegation': expiredToken } }).catch((e: HandoffAuthError) => e.code)
         );
 
         const results = await Promise.all(calls);
@@ -135,7 +135,7 @@ describe('CONCURRENCY: Mixed valid/invalid parallel verification', () => {
 
         // Verify all three concurrently with the same middleware instance
         const [r1, r2, r3] = await Promise.all(
-            tokens.map(t => mw({ headers: { 'x-vurb-delegation': t } }))
+            tokens.map(t => mw({ headers: { 'x-mcpfusion-delegation': t } }))
         );
 
         expect(r1!.handoffScope).toBe('scope-1');
@@ -153,7 +153,7 @@ describe('CONCURRENCY: Mixed valid/invalid parallel verification', () => {
         let failures = 0;
         for (let i = 0; i < 100; i++) {
             try {
-                await mw({ headers: { 'x-vurb-delegation': token } });
+                await mw({ headers: { 'x-mcpfusion-delegation': token } });
             } catch {
                 failures++;
             }
@@ -175,7 +175,7 @@ describe('SECURITY: Token replay attacks', () => {
 
         const mw = requireGatewayClearance(SECRET);
         await expect(
-            mw({ headers: { 'x-vurb-delegation': token } })
+            mw({ headers: { 'x-mcpfusion-delegation': token } })
         ).rejects.toMatchObject({ code: 'EXPIRED_DELEGATION_TOKEN' });
 
         vi.useRealTimers();
@@ -188,14 +188,14 @@ describe('SECURITY: Token replay attacks', () => {
         const mw = requireGatewayClearance(SECRET, store);
 
         // First use: state is hydrated correctly
-        const first = await mw({ headers: { 'x-vurb-delegation': token } });
+        const first = await mw({ headers: { 'x-mcpfusion-delegation': token } });
         expect((first.handoffState as { secret: string }).secret).toBe('sensitive');
 
         // Second use: state_id no longer in store (one-shot = already deleted).
         // A replay must be rejected — returning empty state would silently grant access
         // without the carry-over context the upstream expects.
         await expect(
-            mw({ headers: { 'x-vurb-delegation': token } })
+            mw({ headers: { 'x-mcpfusion-delegation': token } })
         ).rejects.toMatchObject({ code: 'EXPIRED_DELEGATION_TOKEN' });
     });
 });
@@ -210,7 +210,7 @@ describe('SECURITY: Gateway isolation — cross-gateway token confusion', () => 
         const mwB = requireGatewayClearance(SECRET_B);
 
         await expect(
-            mwB({ headers: { 'x-vurb-delegation': tokenA } })
+            mwB({ headers: { 'x-mcpfusion-delegation': tokenA } })
         ).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
     });
 
@@ -218,7 +218,7 @@ describe('SECURITY: Gateway isolation — cross-gateway token confusion', () => 
         const tokenA = await mintDelegationToken('finance', 60, SECRET);
         const mwB = requireGatewayClearance(SECRET_B);
 
-        const err = await mwB({ headers: { 'x-vurb-delegation': tokenA } }).catch(e => e);
+        const err = await mwB({ headers: { 'x-mcpfusion-delegation': tokenA } }).catch(e => e);
         expect(err).toBeInstanceOf(HandoffAuthError);
         // The message should be generic — not reveal internal details
         expect((err as HandoffAuthError).message).not.toContain(SECRET);
@@ -234,7 +234,7 @@ describe('SECURITY: Context output — field isolation contract', () => {
     it('context output should never contain the raw token', async () => {
         const token = await mintDelegationToken('finance', 60, SECRET, 'gw', { data: 'private' });
         const mw = requireGatewayClearance(SECRET);
-        const result = await mw({ headers: { 'x-vurb-delegation': token } });
+        const result = await mw({ headers: { 'x-mcpfusion-delegation': token } });
 
         // Walk all string values in the result
         const allValues = JSON.stringify(result);
@@ -244,7 +244,7 @@ describe('SECURITY: Context output — field isolation contract', () => {
     it('context output should never contain the secret', async () => {
         const token = await mintDelegationToken('finance', 60, SECRET);
         const mw = requireGatewayClearance(SECRET);
-        const result = await mw({ headers: { 'x-vurb-delegation': token } });
+        const result = await mw({ headers: { 'x-mcpfusion-delegation': token } });
 
         const allValues = JSON.stringify(result);
         expect(allValues).not.toContain(SECRET);
@@ -254,7 +254,7 @@ describe('SECURITY: Context output — field isolation contract', () => {
         const state = { userId: 'u-1', plan: 'pro' };
         const token = await mintDelegationToken('finance', 60, SECRET, 'gw', state);
         const mw = requireGatewayClearance(SECRET);
-        const result = await mw({ headers: { 'x-vurb-delegation': token } });
+        const result = await mw({ headers: { 'x-mcpfusion-delegation': token } });
 
         expect(result.handoffState).toEqual(state);
         expect(Object.keys(result.handoffState ?? {})).toHaveLength(2);

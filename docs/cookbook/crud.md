@@ -1,7 +1,7 @@
 # CRUD Tools
 
 ::: info Prerequisites
-Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcontextprotocol/sdk zod` — or scaffold a project with [`vurb create`](/quickstart-lightspeed).
+Install MCP Fusion before following this recipe: `npm install @mcpfusion/core @modelcontextprotocol/sdk` — or scaffold a project with [`mcpfusion create`](/quickstart-lightspeed).
 :::
 
 - [Introduction](#introduction)
@@ -13,19 +13,19 @@ Install Vurb.ts before following this recipe: `npm install @vurb/core @modelcont
 
 ## Introduction {#introduction}
 
-Every SaaS application has entities — projects, invoices, users, tasks. Vurb.ts's Fluent API makes defining CRUD operations for these entities a joy. Instead of writing verbose JSON schemas or tangled Zod objects, you declare your tool's intent with semantic verbs and chainable parameter methods.
+Every SaaS application has entities — projects, invoices, users, tasks. MCP Fusion's Fluent API makes defining CRUD operations for these entities a joy. Instead of writing verbose JSON schemas or tangled Zod objects, you declare your tool's intent with semantic verbs and chainable parameter methods.
 
 > [!TIP]
-> Already using Prisma? Skip manual tool definitions — [@vurb/prisma-gen](/prisma-gen) auto-generates CRUD tools directly from your `prisma/schema.prisma`. Scaffold a Prisma project with `vurb create my-api --vector prisma`.
+> Already using Prisma? Skip manual tool definitions — [@mcpfusion/prisma-gen](/prisma-gen) auto-generates CRUD tools directly from your `prisma/schema.prisma`. Scaffold a Prisma project with `mcpfusion create my-api --vector prisma`.
 
 By the end of this page you'll have a complete, production-ready CRUD module that any developer can read and understand in seconds.
 
 ## Defining Your Context {#context}
 
-Before building tools, define the **application context** — the shared state every tool handler receives. This is the foundation of type safety in Vurb.ts: once you declare it, every `.handle()` callback knows exactly what `ctx` contains.
+Before building tools, define the **application context** — the shared state every tool handler receives. This is the foundation of type safety in MCP Fusion: once you declare it, every `.handle()` callback knows exactly what `ctx` contains.
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext {
   db: DatabaseClient;
@@ -33,11 +33,11 @@ interface AppContext {
   userId: string;
 }
 
-const f = initVurb<AppContext>();
+const f = initMCPFusion<AppContext>();
 ```
 
 > [!TIP]
-> Define `f` in a shared file (e.g. `src/vurb.ts`) and import it across your tool files. The generic parameter flows through every builder — zero annotations needed downstream.
+> Define `f` in a shared file (e.g. `src/MCP Fusion`) and import it across your tool files. The generic parameter flows through every builder — zero annotations needed downstream.
 
 ## Read Operations — Queries {#queries}
 
@@ -48,7 +48,7 @@ Use `f.query()` for any operation that **reads data without side effects**. The 
 Before building query tools, define a Presenter for the entity. The Presenter handles validation, truncation, and formatting — so your tools stay lean:
 
 ```typescript
-import { createPresenter, t } from '@vurb/core';
+import { createPresenter, t } from '@mcpfusion/core';
 
 export const ProjectPresenter = createPresenter('Project')
   .schema({
@@ -101,7 +101,7 @@ export const getProject = f.query('projects.get')
 
 ## Write Operations — Actions & Mutations {#writes}
 
-Vurb.ts distinguishes between **actions** (creates, updates — reversible) and **mutations** (deletes — destructive and irreversible). The LLM sees `[DESTRUCTIVE]` tags on mutations, triggering confirmation workflows in MCP clients.
+MCP Fusion distinguishes between **actions** (creates, updates — reversible) and **mutations** (deletes — destructive and irreversible). The LLM sees `[DESTRUCTIVE]` tags on mutations, triggering confirmation workflows in MCP clients.
 
 ### Creating a Record
 
@@ -168,7 +168,7 @@ You don't need to tell the AI to "confirm before deleting" — the framework han
 Once your tools are built, registration is a single line:
 
 ```typescript
-import { ToolRegistry } from '@vurb/core';
+import { ToolRegistry } from '@mcpfusion/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
@@ -196,7 +196,7 @@ The same registry deploys to production with zero tool code changes:
 ### Vinkius Cloud — One Command Deploy
 
 ```bash
-vurb deploy
+mcpfusion deploy
 ```
 
 No infrastructure to manage. Built-in DLP, kill switch, audit logging, and managed MCP token. [Learn more →](https://docs.vinkius.com/getting-started)
@@ -206,14 +206,14 @@ No infrastructure to manage. Built-in DLP, kill switch, audit logging, and manag
 #### Vercel — CRUD API as a Route Handler
 
 ```typescript
-import { vercelAdapter } from '@vurb/vercel';
+import { vercelAdapter } from '@mcpfusion/vercel';
 export const POST = vercelAdapter({ registry, contextFactory });
 ```
 
 #### Cloudflare Workers — CRUD at the Edge
 
 ```typescript
-import { cloudflareWorkersAdapter } from '@vurb/cloudflare';
+import { cloudflareWorkersAdapter } from '@mcpfusion/cloudflare';
 export default cloudflareWorkersAdapter({ registry, contextFactory });
 ```
 

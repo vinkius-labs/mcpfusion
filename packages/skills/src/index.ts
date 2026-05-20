@@ -1,5 +1,5 @@
 /**
- * @vurb/skills — Agent Skills Distribution via MCP
+ * @mcpfusion/skills — Agent Skills Distribution via MCP
  *
  * Progressive disclosure of domain-specific instructions for AI agents.
  * Search → Load → Read: three layers of skill delivery, optimized for
@@ -7,10 +7,10 @@
  *
  * @example
  * ```typescript
- * import { initVurb, ToolRegistry, defineTool } from '@vurb/core';
- * import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@vurb/skills';
+ * import { initMCPFusion, ToolRegistry, defineTool } from '@mcpfusion/core';
+ * import { SkillRegistry, autoDiscoverSkills, createSkillTools } from '@mcpfusion/skills';
  *
- * const f = initVurb<AppContext>();
+ * const f = initMCPFusion<AppContext>();
  *
  * // 1. Load skills from server's local directory
  * const skills = new SkillRegistry();

@@ -1,5 +1,5 @@
 /**
- * defineModel — Eloquent-inspired Model Definition for Vurb.ts
+ * defineModel — Eloquent-inspired Model Definition for MCP Fusion
  *
  * Synthesizes the best DX patterns from 10 globally acclaimed frameworks:
  *   • Laravel:  $casts, $fillable, $hidden, $guarded, timestamps()
@@ -15,7 +15,7 @@
  *
  * @example
  * ```typescript
- * import { defineModel } from '@vurb/core';
+ * import { defineModel } from '@mcpfusion/core';
  *
  * export const TaskModel = defineModel('Task', m => {
  *   m.casts({

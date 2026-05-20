@@ -87,7 +87,7 @@ describe('DevServer — watcher error handler (Bug #61)', () => {
 
         // The watcher should have an error handler attached
         expect(src).toContain("watcher.on('error'");
-        expect(src).toContain('[vurb dev] Watcher error');
+        expect(src).toContain('[mcpfusion dev] Watcher error');
     });
 
     it('createDevServer does not crash on creation (smoke test)', async () => {

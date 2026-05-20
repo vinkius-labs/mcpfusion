@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 /**
- * Inspector CLI — Vurb Inspector
+ * Inspector CLI — mcpfusion inspector
  *
  * Launch the interactive TUI or headless stderr logger that connects
- * to a running Vurb server via Shadow Socket IPC.
+ * to a running MCP mcpfusion server via Shadow Socket IPC.
  *
  * USAGE
- *   vurb inspect             Auto-discover and connect (TUI)
- *   vurb insp                Alias for inspect
- *   vurb inspect --demo      Launch with built-in simulator
- *   vurb inspect --out stderr Headless log stream (ECS/K8s/CI)
- *   vurb inspect --pid <pid> Connect to a specific server process
- *   vurb inspect --path <path> Connect via custom IPC path
- *   vurb inspect --help      Show help
+ *   mcpfusion inspect             Auto-discover and connect (TUI)
+ *   mcpfusion insp                Alias for inspect
+ *   mcpfusion inspect --demo      Launch with built-in simulator
+ *   mcpfusion inspect --out stderr Headless log stream (ECS/K8s/CI)
+ *   mcpfusion inspect --pid <pid> Connect to a specific server process
+ *   mcpfusion inspect --path <path> Connect via custom IPC path
+ *   mcpfusion inspect --help      Show help
  *
  * @module
  */
@@ -77,19 +77,19 @@ export function parseInspectorArgs(argv: string[]): InspectorArgs {
 // ============================================================================
 
 export const INSPECTOR_HELP = `
-\x1b[1m\x1b[36mvurb inspect\x1b[0m — Vurb Inspector
+\x1b[1m\x1b[36mfusion inspect\x1b[0m — mcpfusion inspector
 
-  Real-time interactive terminal dashboard for Vurb servers.
+  Real-time interactive terminal dashboard for MCP mcpfusion servers.
   Connects via Shadow Socket (IPC) for zero stdio interference.
 
 \x1b[1mUSAGE\x1b[0m
-  vurb inspect               Auto-discover and connect (TUI)
-  vurb insp                  Alias for inspect
-  vurb inspect --demo        Launch with built-in simulator
-  vurb inspect --out stderr  Headless log stream (ECS/K8s/CI)
-  vurb inspect --out stderr --demo  Simulator + stderr output
-  vurb inspect --pid <pid>   Connect to a specific server PID
-  vurb inspect --path <path> Connect via custom IPC path
+  mcpfusion inspect               Auto-discover and connect (TUI)
+  mcpfusion insp                  Alias for inspect
+  mcpfusion inspect --demo        Launch with built-in simulator
+  mcpfusion inspect --out stderr  Headless log stream (ECS/K8s/CI)
+  mcpfusion inspect --out stderr --demo  Simulator + stderr output
+  mcpfusion inspect --pid <pid>   Connect to a specific server PID
+  mcpfusion inspect --path <path> Connect via custom IPC path
 
 \x1b[1mOPTIONS\x1b[0m
   --demo               Launch built-in simulator (no server needed)
@@ -103,12 +103,12 @@ export const INSPECTOR_HELP = `
   q / Ctrl+C            Exit
 
 \x1b[1mEXAMPLES\x1b[0m
-  vurb inspect --demo                      \x1b[2m# Interactive demo\x1b[0m
-  vurb inspect --out stderr --demo         \x1b[2m# Headless demo (ECS/K8s)\x1b[0m
-  vurb inspect --pid 12345                 \x1b[2m# Connect to running server\x1b[0m
-  vurb inspect --out stderr | tee log.txt  \x1b[2m# Stream + save\x1b[0m
+  mcpfusion inspect --demo                      \x1b[2m# Interactive demo\x1b[0m
+  mcpfusion inspect --out stderr --demo         \x1b[2m# Headless demo (ECS/K8s)\x1b[0m
+  mcpfusion inspect --pid 12345                 \x1b[2m# Connect to running server\x1b[0m
+  mcpfusion inspect --out stderr | tee log.txt  \x1b[2m# Stream + save\x1b[0m
 
-\x1b[2mhttps://vurb.vinkius.com/\x1b[0m
+\x1b[2mhttps://mcpfusion.vinkius.com/\x1b[0m
 `.trim();
 
 
@@ -119,9 +119,9 @@ export const INSPECTOR_HELP = `
 
 /**
  * Execute the inspect command.
- * Called from the core `vurb` CLI or directly.
+ * Called from the core `mcpfusion` CLI or directly.
  *
- * @param argv - Command arguments (without the `vurb inspect` prefix)
+ * @param argv - Command arguments (without the `mcpfusion inspect` prefix)
  */
 export async function runInspector(argv: string[]): Promise<void> {
     const args = parseInspectorArgs(argv);
@@ -189,7 +189,7 @@ export async function runInspector(argv: string[]): Promise<void> {
 
 
 // ── Standalone execution ──────────────────────────────────
-const isMainModule = process.argv[1]?.includes('inspector') || process.argv[1]?.includes('vurb-inspect');
+const isMainModule = process.argv[1]?.includes('inspector') || process.argv[1]?.includes('mcpfusion-inspect');
 if (isMainModule) {
     runInspector(process.argv.slice(2)).catch((err: Error) => {
         console.error(`\x1b[31m✗\x1b[0m ${err.message}`);

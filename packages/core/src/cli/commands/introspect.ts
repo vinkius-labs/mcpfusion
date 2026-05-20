@@ -86,7 +86,7 @@ export async function resolveEsbuild(projectRoot: string): Promise<typeof import
 // ─── Pipeline ────────────────────────────────────────────────────
 
 /**
- * Boot the server via `VURB_INTROSPECT=1`, compile contracts, and
+ * Boot the server via `MCPFUSION_INTROSPECT=1`, compile contracts, and
  * generate the lockfile manifest.
  *
  * @param absEntry - Absolute path to the server entrypoint.
@@ -110,7 +110,7 @@ export async function runIntrospection(absEntry: string, projectRoot?: string): 
         write: false,
         logLevel: 'silent',
         // Native addons (.node binaries) cannot be bundled by esbuild.
-        // This surfaces when @vurb/core is npm-linked (development) and
+        // This surfaces when @mcpfusion/core is npm-linked (development) and
         // transitive native deps like isolated-vm are in the resolution tree.
         external: ['isolated-vm'],
     });
@@ -127,8 +127,8 @@ export async function runIntrospection(absEntry: string, projectRoot?: string): 
     const introspectReady = new Promise<IntrospectResult>(resolve => {
         resolveIntrospect = resolve;
     });
-    g.__vurb_introspect_resolve = resolveIntrospect;
-    process.env['VURB_INTROSPECT'] = '1';
+    g.__MCPFUSION_INTROSPECT_resolve = resolveIntrospect;
+    process.env['MCPFUSION_INTROSPECT'] = '1';
 
     const { join, dirname } = await import('node:path');
     const { writeFileSync, unlinkSync } = await import('node:fs');
@@ -139,7 +139,7 @@ export async function runIntrospection(absEntry: string, projectRoot?: string): 
     // lives in a temp directory, relative paths like './agents' resolve
     // to non-existent locations. Placing it next to the original file
     // preserves the correct directory context for all URL-relative lookups.
-    const tmpBundle = join(dirname(absEntry), `.vurb-introspect-${Date.now()}.mjs`);
+    const tmpBundle = join(dirname(absEntry), `.mcpfusion-introspect-${Date.now()}.mjs`);
     writeFileSync(tmpBundle, introspectCode, 'utf-8');
 
     try {
@@ -159,18 +159,18 @@ export async function runIntrospection(absEntry: string, projectRoot?: string): 
     const bootTimeMs = Date.now() - bootStart;
 
     // Clean up
-    delete process.env['VURB_INTROSPECT'];
-    delete g.__vurb_introspect_resolve;
-    delete g.__vurb_introspect_result;
+    delete process.env['MCPFUSION_INTROSPECT'];
+    delete g.__MCPFUSION_INTROSPECT_resolve;
+    delete g.__MCPFUSION_INTROSPECT_result;
 
     // ── 3. Compile contracts + generate lockfile ──
     const { compileContracts } = await import('../../introspection/ToolContract.js');
     const { generateLockfile } = await import('../../introspection/CapabilityLockfile.js');
-    const { VURB_VERSION } = await import('../constants.js');
+    const { MCPFUSION_VERSION } = await import('../constants.js');
 
     const builders = [...result.registry.getBuilders()];
     const contracts = await compileContracts(builders as Parameters<typeof compileContracts>[0]);
-    const lockfile = await generateLockfile(result.serverName, contracts, VURB_VERSION);
+    const lockfile = await generateLockfile(result.serverName, contracts, MCPFUSION_VERSION);
 
     // ── 4. Extract tool names ──
     const tools: ToolEntry[] = [];

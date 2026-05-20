@@ -5,7 +5,7 @@
  *
  * @example
  * ```typescript
- * import { parseAnnotations, emitPresenter, emitTool } from '@vurb/prisma-gen';
+ * import { parseAnnotations, emitPresenter, emitTool } from '@mcpfusion/prisma-gen';
  * ```
  *
  * @module

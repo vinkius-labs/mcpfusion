@@ -172,7 +172,7 @@ export function compileRedactor(config: RedactConfig): RedactFn | undefined {
                 // never return unredacted data — throw explicitly.
                 // The caller must handle the error rather than silently leaking PII.
                 throw new Error(
-                    `[Vurb] PII redaction failed: ${toErrorMessage(err)}. ` +
+                    `[mcpfusion] PII redaction failed: ${toErrorMessage(err)}. ` +
                     'Data withheld to prevent PII leak.',
                     { cause: err },
                 );
@@ -189,7 +189,7 @@ export function compileRedactor(config: RedactConfig): RedactFn | undefined {
 /**
  * Pre-load the `fast-redact` module.
  *
- * Called during `initVurb()` boot sequence alongside other
+ * Called during `initMCPFusion()` boot sequence alongside other
  * optional dependencies. Not required — the engine degrades
  * gracefully if `fast-redact` is not installed.
  *

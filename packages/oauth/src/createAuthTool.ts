@@ -1,12 +1,12 @@
 /**
  * Auth Tool Factory — Pre-built Device Flow Authentication Tool
  *
- * Creates a complete vurb tool with login, complete, status, and logout actions.
+ * Creates a complete MCP Fusion tool with login, complete, status, and logout actions.
  * Consumers only need to provide their client_id and endpoint URLs.
  *
  * @example
  * ```ts
- * import { createAuthTool } from '@vurb/oauth';
+ * import { createAuthTool } from '@mcpfusion/oauth';
  *
  * const authTool = createAuthTool({
  *     clientId: '9e8d7c6b-5a4f-3e2d-1c0b-a9b8c7d6e5f4',
@@ -21,7 +21,7 @@
  * ```
  */
 
-import { createTool, success, TOOL_RESPONSE_BRAND, type ToolResponse } from '@vurb/core';
+import { createTool, success, TOOL_RESPONSE_BRAND, type ToolResponse } from '@mcpfusion/core';
 import { DeviceAuthenticator } from './DeviceAuthenticator.js';
 import type { DeviceCodeResponse, TokenResponse } from './DeviceAuthenticator.js';
 import { TokenManager } from './TokenManager.js';

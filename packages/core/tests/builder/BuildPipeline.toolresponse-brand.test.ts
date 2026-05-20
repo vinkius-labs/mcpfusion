@@ -14,7 +14,7 @@
  * @module
  */
 import { describe, it, expect } from 'vitest';
-import { initVurb } from '../../src/core/initVurb.js';
+import { initMCPFusion } from '../../src/core/initMCPFusion.js';
 import { success, error, toolError, required, toonSuccess, TOOL_RESPONSE_BRAND } from '../../src/core/response.js';
 import { ToolRegistry } from '../../src/core/registry/ToolRegistry.js';
 
@@ -30,7 +30,7 @@ async function callTool(
 describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the sole detection mechanism', () => {
 
     it('objects with ToolResponse shape are wrapped by success() (not passed through)', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         // This object matches the OLD shape heuristic exactly:
@@ -64,7 +64,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('objects with ToolResponse shape AND isError field are wrapped, not passed through', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         // This matches the old heuristic with isError — could cause data loss
@@ -87,7 +87,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('brand-stamped success() response passes through correctly', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -102,7 +102,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('brand-stamped error() response passes through with isError=true', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -117,7 +117,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('brand-stamped toolError() response passes through correctly', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -132,7 +132,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('brand-stamped required() response passes through correctly', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -147,7 +147,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('brand-stamped toonSuccess() response passes through correctly', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -162,7 +162,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('raw string return is wrapped with success()', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -177,7 +177,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('raw object return is JSON-serialized via success()', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -193,7 +193,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('null return is mapped to success("OK")', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -208,7 +208,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     });
 
     it('undefined return is mapped to success("OK")', async () => {
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         registry.register(
@@ -230,7 +230,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
 
         // But it must NOT appear in JSON (non-enumerable)
         const json = JSON.stringify(resp);
-        expect(json).not.toContain('vurb.ToolResponse');
+        expect(json).not.toContain('mcpfusion.ToolResponse');
 
         // And Object.keys() must only show content (and isError when present)
         const keys = Object.keys(resp);
@@ -240,7 +240,7 @@ describe('Bug Fix Regression: BuildPipeline — ToolResponse brand symbol is the
     it('manually constructed ToolResponse lookalike is treated as domain data', async () => {
         // Simulate a developer returning a manually constructed object
         // without using the framework helpers (no brand stamp)
-        const f = initVurb<void>();
+        const f = initMCPFusion<void>();
         const registry = f.registry();
 
         const manualLookAlike = {

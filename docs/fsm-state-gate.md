@@ -2,7 +2,7 @@
 
 LLMs are chaotic. Even with HATEOAS `suggestActions`, a model can ignore the suggestion and call `cart.pay` with an empty cart. Zod validates the **format** — but the **timing** (state) is wrong. The AI enters an error loop.
 
-Vurb.ts's FSM State Gate makes temporal hallucination **physically impossible**: if the workflow state is `empty`, the `cart.pay` tool doesn't exist in `tools/list`. The LLM literally cannot call it. When the user adds an item, the FSM advances, the framework emits `notifications/tools/list_changed`, and `cart.pay` magically appears.
+MCP Fusion's FSM State Gate makes temporal hallucination **physically impossible**: if the workflow state is `empty`, the `cart.pay` tool doesn't exist in `tools/list`. The LLM literally cannot call it. When the user adds an item, the FSM advances, the framework emits `notifications/tools/list_changed`, and `cart.pay` magically appears.
 
 > [!IMPORTANT]
 > **The first framework where it is physically impossible for an AI to execute tools out of order.**
@@ -10,7 +10,7 @@ Vurb.ts's FSM State Gate makes temporal hallucination **physically impossible**:
 
 ## The Thesis: Three Layers of Anti-Hallucination
 
-Vurb.ts now has three complementary layers that, together, make temporal hallucination nearly impossible:
+MCP Fusion now has three complementary layers that, together, make temporal hallucination nearly impossible:
 
 | Layer | Tech | What It Does |
 |---|---|---|
@@ -66,10 +66,10 @@ npm install xstate
 ### Step 1 — Define the FSM
 
 ```typescript
-import { initVurb } from '@vurb/core';
+import { initMCPFusion } from '@mcpfusion/core';
 
 interface AppContext { db: PrismaClient; userId: string }
-export const f = initVurb<AppContext>();
+export const f = initMCPFusion<AppContext>();
 
 // Define the checkout workflow
 const gate = f.fsm({
@@ -160,7 +160,7 @@ When `transition` is provided, the framework automatically calls `gate.transitio
 MCP is stateless by nature. On platforms like Vercel or Cloudflare Workers, the FSM state must survive across requests. The framework provides `fsmStore` for this:
 
 ```typescript
-import type { FsmStateStore } from '@vurb/core';
+import type { FsmStateStore } from '@mcpfusion/core';
 
 // Redis-backed state store
 const fsmStore: FsmStateStore = {
@@ -238,7 +238,7 @@ After `add_item` succeeds:
 For maximum performance, pre-load the XState engine at application bootstrap:
 
 ```typescript
-import { initFsmEngine } from '@vurb/core';
+import { initFsmEngine } from '@mcpfusion/core';
 
 // Call once at boot — loads xstate into memory
 const hasXState = await initFsmEngine();
@@ -252,7 +252,7 @@ This ensures the dynamic `import('xstate')` is resolved before the first request
 For custom pipelines or testing, use `StateMachineGate` directly:
 
 ```typescript
-import { StateMachineGate } from '@vurb/core';
+import { StateMachineGate } from '@mcpfusion/core';
 
 const gate = new StateMachineGate({
     id: 'approval',

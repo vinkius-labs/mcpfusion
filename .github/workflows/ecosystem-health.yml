@@ -34,25 +34,25 @@ jobs:
                   cd smoke-test
                   npm init -y --silent
 
-            - name: Install @vurb ecosystem from registry
+            - name: Install @fusion ecosystem from registry
               working-directory: smoke-test
               shell: bash
               run: |
                   npm install --save \
-                    @vurb/core \
-                    @vurb/cloudflare \
-                    @vurb/vercel \
-                    @vurb/swarm \
-                    @vurb/testing \
-                    @vurb/inspector \
-                    @vurb/jwt \
-                    @vurb/api-key \
-                    @vurb/aws \
-                    @vurb/n8n \
-                    @vurb/openapi-gen \
-                    @vurb/prisma-gen \
-                    @vurb/skills \
-                    @vurb/oauth \
+                    @mcpfusion/core \
+                    @mcpfusion/cloudflare \
+                    @mcpfusion/vercel \
+                    @mcpfusion/swarm \
+                    @mcpfusion/testing \
+                    @mcpfusion/inspector \
+                    @mcpfusion/jwt \
+                    @mcpfusion/api-key \
+                    @mcpfusion/aws \
+                    @mcpfusion/n8n \
+                    @mcpfusion/openapi-gen \
+                    @mcpfusion/prisma-gen \
+                    @mcpfusion/skills \
+                    @mcpfusion/oauth \
                     @modelcontextprotocol/sdk \
                     zod
 
@@ -62,20 +62,20 @@ jobs:
               run: |
                   node --input-type=module -e "
                     const packages = [
-                      '@vurb/core',
-                      '@vurb/cloudflare',
-                      '@vurb/vercel',
-                      '@vurb/swarm',
-                      '@vurb/testing',
-                      '@vurb/inspector',
-                      '@vurb/jwt',
-                      '@vurb/api-key',
-                      '@vurb/aws',
-                      '@vurb/n8n',
-                      '@vurb/openapi-gen',
-                      '@vurb/prisma-gen',
-                      '@vurb/skills',
-                      '@vurb/oauth',
+                      '@mcpfusion/core',
+                      '@mcpfusion/cloudflare',
+                      '@mcpfusion/vercel',
+                      '@mcpfusion/swarm',
+                      '@mcpfusion/testing',
+                      '@mcpfusion/inspector',
+                      '@mcpfusion/jwt',
+                      '@mcpfusion/api-key',
+                      '@mcpfusion/aws',
+                      '@mcpfusion/n8n',
+                      '@mcpfusion/openapi-gen',
+                      '@mcpfusion/prisma-gen',
+                      '@mcpfusion/skills',
+                      '@mcpfusion/oauth',
                     ];
 
                     let failed = 0;

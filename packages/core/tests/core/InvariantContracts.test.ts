@@ -15,8 +15,8 @@
  *   7. Concurrent Registry Stress — parallel routeCall interleaving
  *   8. Metadata Contract Completeness — every action covered in metadata
  *   9. defineTool + createTool Equivalence — same config = same schema
- *  10. Generator + Validation vurb — validate BEFORE generator starts
- *  11. VurbClient Invariants — transport contract, path splitting edge cases
+ *  10. Generator + Validation MCP Fusion — validate BEFORE generator starts
+ *  11. MCPFusionClient Invariants — transport contract, path splitting edge cases
  *  12. Registry Abuse — clear, has, size, double-register, route-after-clear
  *  13. Middleware Return-Value Contracts — must return ToolResponse
  *  14. Schema Collision Path — field type conflicts across actions
@@ -29,7 +29,7 @@ import { ToolRegistry } from '../../src/core/registry/ToolRegistry.js';
 import { success, error, toolError } from '../../src/core/response.js';
 import { progress, isProgressEvent } from '../../src/core/execution/ProgressHelper.js';
 import { defineMiddleware, isMiddlewareDefinition, resolveMiddleware } from '../../src/core/middleware/ContextDerivation.js';
-import { createVurbClient } from '../../src/client/VurbClient.js';
+import { createMCPFusionClient } from '../../src/client/MCPFusionClient.js';
 import type { MiddlewareFn } from '../../src/core/types.js';
 
 // ============================================================================
@@ -745,7 +745,7 @@ describe('Invariant: API Equivalence', () => {
 });
 
 // ============================================================================
-// 10. Generator + Validation vurb — Validation BEFORE generator starts
+// 10. Generator + Validation MCP Fusion — Validation BEFORE generator starts
 // ============================================================================
 
 describe('Invariant: Generator + Validation Ordering', () => {
@@ -789,10 +789,10 @@ describe('Invariant: Generator + Validation Ordering', () => {
 });
 
 // ============================================================================
-// 11. VurbClient Contract Invariants
+// 11. MCPFusionClient Contract Invariants
 // ============================================================================
 
-describe('Invariant: VurbClient Contract', () => {
+describe('Invariant: MCPFusionClient Contract', () => {
     it('should split dotted paths correctly', async () => {
         const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
         const transport = {
@@ -802,7 +802,7 @@ describe('Invariant: VurbClient Contract', () => {
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         await client.execute('projects.list', { workspace_id: 'w1' });
         await client.execute('billing.charge', { amount: 42 });
@@ -825,7 +825,7 @@ describe('Invariant: VurbClient Contract', () => {
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         await client.execute('simple', { data: 'x' });
 
         // Non-dotted: tool name = 'simple', action = 'simple' (same segment)
@@ -837,7 +837,7 @@ describe('Invariant: VurbClient Contract', () => {
             callTool: async () => error('transport failed'),
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         const r = await client.execute('test.run', {});
         expect(r.isError).toBe(true);
     });

@@ -14,7 +14,7 @@ import { ToolRegistry } from '../../src/core/registry/ToolRegistry.js';
 import { success, error, toolError } from '../../src/core/response.js';
 import { progress } from '../../src/core/execution/ProgressHelper.js';
 import { defineMiddleware } from '../../src/core/middleware/ContextDerivation.js';
-import { createVurbClient, type VurbTransport } from '../../src/client/VurbClient.js';
+import { createMCPFusionClient, type MCPFusionTransport } from '../../src/client/MCPFusionClient.js';
 import { type MiddlewareFn } from '../../src/core/types.js';
 
 // ============================================================================
@@ -365,10 +365,10 @@ describe('E2E: Self-healing errors', () => {
 });
 
 // ============================================================================
-// E2E: VurbClient → ToolRegistry (simulated transport)
+// E2E: MCPFusionClient → ToolRegistry (simulated transport)
 // ============================================================================
 
-describe('E2E: VurbClient → ToolRegistry', () => {
+describe('E2E: MCPFusionClient → ToolRegistry', () => {
     it('should type-safe client call a real registry', async () => {
         const projects = defineTool('projects', {
             actions: {
@@ -391,7 +391,7 @@ describe('E2E: VurbClient → ToolRegistry', () => {
         registry.register(billing);
 
         // Create a transport that routes to our registry
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool(name, args) {
                 return registry.routeCall(undefined, name, args);
             },
@@ -403,7 +403,7 @@ describe('E2E: VurbClient → ToolRegistry', () => {
             'billing.status': Record<string, never>;
         };
 
-        const client = createVurbClient<AppRouter>(transport);
+        const client = createMCPFusionClient<AppRouter>(transport);
 
         const r1 = await client.execute('projects.list', {});
         expect(r1.content[0].text).toBe('project list');
@@ -428,13 +428,13 @@ describe('E2E: VurbClient → ToolRegistry', () => {
         const registry = new ToolRegistry();
         registry.register(tool);
 
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool(name, args) {
                 return registry.routeCall(undefined, name, args);
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         const fail = await client.execute('strict.run', { count: 'not_a_number' } as any);
         expect(fail.isError).toBe(true);
@@ -458,13 +458,13 @@ describe('E2E: VurbClient → ToolRegistry', () => {
         const registry = new ToolRegistry();
         registry.register(tool);
 
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool(name, args) {
                 return registry.routeCall(undefined, name, args);
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
         const result = await client.execute('guarded.get', { id: 'x' } as any);
         expect(result.isError).toBe(true);
         expect(result.content[0].text).toContain('code="NotFound"');
@@ -536,13 +536,13 @@ describe('E2E: Full stack scenario', () => {
         registry.register(deploy);
 
         // Wire up client
-        const transport: VurbTransport = {
+        const transport: MCPFusionTransport = {
             async callTool(name, args) {
                 return registry.routeCall(createCtx({ isAdmin: true }), name, args);
             },
         };
 
-        const client = createVurbClient(transport);
+        const client = createMCPFusionClient(transport);
 
         // Test users.list
         const listResult = await client.execute('users.list', { limit: 5 } as any);

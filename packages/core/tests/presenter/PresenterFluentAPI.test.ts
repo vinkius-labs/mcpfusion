@@ -218,13 +218,13 @@ describe('Presenter .schema() with object shape (t.* namespace)', () => {
                 stars: t.number,
             });
 
-        const result = presenter.make({ id: 'P1', name: 'vurb', stars: 100 });
+        const result = presenter.make({ id: 'P1', name: 'mcpfusion', stars: 100 });
         expect(isResponseBuilder(result)).toBe(true);
 
         const built = result.build();
         const parsed = JSON.parse(built.content[0].text);
         expect(parsed.id).toBe('P1');
-        expect(parsed.name).toBe('vurb');
+        expect(parsed.name).toBe('mcpfusion');
         expect(parsed.stars).toBe(100);
     });
 

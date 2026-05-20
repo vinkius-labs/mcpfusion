@@ -1,6 +1,6 @@
 # Observability & Audit
 
-Vurb.ts provides structured observability through `createDebugObserver()` — a typed event stream that emits one event per pipeline stage, capturing the full request lifecycle. This is the foundation for enterprise **AI Agent Telemetry** and precise **LLM Cost Attribution** across autonomous operations.
+MCP Fusion provides structured observability through `createDebugObserver()` — a typed event stream that emits one event per pipeline stage, capturing the full request lifecycle. This is the foundation for enterprise **AI Agent Telemetry** and precise **LLM Cost Attribution** across autonomous operations.
 
 
 ## createDebugObserver {#debug-observer}
@@ -96,7 +96,7 @@ Middleware failures become `WARN` (expected security events). Handler errors bec
 
 ### SOC 2 Control Mapping
 
-| SOC 2 Control | Vurb.ts Mechanism | Event Type |
+| SOC 2 Control | MCP Fusion Mechanism | Event Type |
 |---|---|---|
 | CC6.1 — Logical access | Middleware + tag filtering | `middleware`, `route` |
 | CC6.2 — Authentication | `contextFactory` + JWT | `middleware` (on failure) |
@@ -115,7 +115,7 @@ For security operations teams using Splunk, Elastic, or Datadog, the observer ca
 debug: createDebugObserver(async (event) => {
   if (event.type === 'execute' || event.type === 'error') {
     await siem.send({
-      source: 'Vurb.ts',
+      source: 'MCP Fusion',
       severity: event.type === 'error' && event.step === 'middleware' ? 'WARN' : 'ERROR',
       tool: event.tool,
       timestamp: event.timestamp,
@@ -124,7 +124,7 @@ debug: createDebugObserver(async (event) => {
 }),
 ```
 
-The event shape is stable across Vurb.ts versions — it's part of the public API. Your SIEM integration won't break on upgrades.
+The event shape is stable across fusion versions — it's part of the public API. Your SIEM integration won't break on upgrades.
 
 For high-throughput servers, batch writes instead of one HTTP request per event. Buffer in memory, flush every N seconds or N events:
 
@@ -142,7 +142,7 @@ setInterval(() => {
 
 ```typescript
 import { trace } from '@opentelemetry/api';
-const tracer = trace.getTracer('Vurb.ts', '1.0.0');
+const tracer = trace.getTracer('MCP Fusion', '1.0.0');
 
 attachToServer(server, registry, { tracing: tracer });
 ```
@@ -197,7 +197,7 @@ These events prove compliance: the lockfile was verified before deployment, atte
 
 ## Introspection API {#introspection}
 
-The `introspection` option exposes runtime metadata as an MCP Resource at `Vurb.ts://manifest.json`. Compliance dashboards and monitoring systems can query the server's capability surface programmatically:
+The `introspection` option exposes runtime metadata as an MCP Resource at `MCP Fusion://manifest.json`. Compliance dashboards and monitoring systems can query the server's capability surface programmatically:
 
 ```typescript
 attachToServer(server, registry, {
@@ -210,9 +210,9 @@ The manifest includes all tool names, tags, input/output schemas, and [MCP annot
 
 ## SOC 2 Alignment {#soc2}
 
-Vurb.ts's observability primitives map directly to SOC 2 trust service criteria:
+MCP Fusion's observability primitives map directly to SOC 2 trust service criteria:
 
-| SOC 2 Control | Vurb.ts Mechanism | Evidence |
+| SOC 2 Control | MCP Fusion Mechanism | Evidence |
 |---|---|---|
 | **CC6.1** — Logical access | Middleware + tag filtering | `middleware` and `route` events |
 | **CC6.2** — Authentication | `contextFactory` + JWT | `middleware` failure events |
@@ -223,4 +223,4 @@ Vurb.ts's observability primitives map directly to SOC 2 trust service criteria:
 
 Each row represents an auditor question you can answer with evidence generated automatically. The framework provides the mechanisms; your team configures and retains them.
 
-Vurb.ts provides the _mechanisms_ for SOC 2 compliance, not the _certification_. You still need to configure correctly, retain logs, and demonstrate ongoing operational compliance.
+MCP Fusion provides the _mechanisms_ for SOC 2 compliance, not the _certification_. You still need to configure correctly, retain logs, and demonstrate ongoing operational compliance.

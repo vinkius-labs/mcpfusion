@@ -1,22 +1,22 @@
 <p align="center">
-  <h1 align="center">@vurb/n8n</h1>
+  <h1 align="center">@mcpfusion/n8n</h1>
   <p align="center">
-    <strong>MCP Tools from n8n Workflows — Vurb.ts</strong> — A framework for creating MCP servers from n8n automations<br/>
+    <strong>MCP Tools from n8n Workflows — MCP Fusion</strong> — A framework for creating MCP servers from n8n automations<br/>
     Auto-discover n8n workflows as MCP tools · Live hot-reload · Semantic inference · Zero-downtime sync
   </p>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vurb/n8n"><img src="https://img.shields.io/npm/v/@vurb/n8n?color=blue" alt="npm" /></a>
-  <a href="https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/@mcpfusion/n8n"><img src="https://img.shields.io/npm/v/@mcpfusion/n8n?color=blue" alt="npm" /></a>
+  <a href="https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node" />
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-compatible-purple" alt="MCP" /></a>
-  <a href="https://vurb.vinkius.com/"><img src="https://img.shields.io/badge/Vurb.ts-framework-0ea5e9" alt="Vurb.ts" /></a>
+  <a href="https://mcpfusion.vinkius.com/"><img src="https://img.shields.io/badge/mcpfusion-framework-0ea5e9" alt="MCP Fusion" /></a>
 </p>
 
 ---
 
-> **MCP Tools from n8n Workflows — Vurb.ts**, the Model Context Protocol framework for building production MCP servers. A bidirectional translation driver: **n8n REST API ↔ MCP In-Memory Objects**. Drop this package in and your entire n8n automation infrastructure becomes AI-native MCP tools.
+> **MCP Tools from n8n Workflows — MCP Fusion**, the Model Context Protocol framework for building production MCP servers. A bidirectional translation driver: **n8n REST API ↔ MCP In-Memory Objects**. Drop this package in and your entire n8n automation infrastructure becomes AI-native MCP tools.
 
 ## Quick Start
 
@@ -53,22 +53,22 @@ The perfect balance between the agility of low-code integrations and hardcore so
 ## Installation
 
 ```bash
-npm install @vurb/n8n vurb zod
+npm install @mcpfusion/n8n @mcpfusion/core zod
 ```
 
 ### Peer Dependencies
 
 | Package | Version |
 |---------|---------|
-| `vurb` | `^2.0.0` |
+| `@mcpfusion/core` | `^2.0.0` |
 | `zod` | `^3.25.1 \|\| ^4.0.0` |
 
 ## Requirements
 
 - **Node.js** ≥ 18.0.0
-- **Vurb.ts** ≥ 2.0.0 (peer dependency)
+- **MCP Fusion** ≥ 2.0.0 (peer dependency)
 - n8n instance with API access enabled
 
 ## License
 
-[Apache-2.0](https://github.com/vinkius-labs/vurb.ts/blob/main/LICENSE)
+[Apache-2.0](https://github.com/vinkius-labs/mcpfusion/blob/main/LICENSE)
