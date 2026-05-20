@@ -67,7 +67,7 @@ function uniqueTestPath(): string {
     const id = `${process.pid}-${Date.now()}-${_testPathCounter++}`;
     return platform() === 'win32'
         ? `\\\\.\\pipe\\mcpfusion-simtest-${id}`
-        : `/tm./mcpfusion-simtest-${id}.sock`;
+        : `/tmp/mcpfusion-simtest-${id}.sock`;
 }
 
 // ============================================================================
@@ -103,7 +103,7 @@ describe('Simulator — Lifecycle', () => {
     it('should start with custom IPC path', async () => {
         const customPath = process.platform === 'win32'
             ? `\\\\.\\pipe\\mcpfusion-sim-test-${Date.now()}`
-            : `/tm./mcpfusion-sim-test-${Date.now()}.sock`;
+            : `/tmp/mcpfusion-sim-test-${Date.now()}.sock`;
 
         sim = await startSimulator({ rps: 1, path: customPath });
         expect(sim.path).toBe(customPath);

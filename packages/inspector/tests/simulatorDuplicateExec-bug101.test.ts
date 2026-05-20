@@ -55,7 +55,7 @@ describe('Bug #101 — Simulator single execute event per pipeline', () => {
         const isWin = platform() === 'win32';
         const pipeName = isWin
             ? `\\\\.\\pipe\\mcpfusion-bug101-${Date.now()}`
-            : `/tm./mcpfusion-bug101-${Date.now()}.sock`;
+            : `/tmp/mcpfusion-bug101-${Date.now()}.sock`;
 
         const sim = await startSimulator({
             ipcPath: pipeName,

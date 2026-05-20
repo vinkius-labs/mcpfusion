@@ -76,7 +76,7 @@ function uniqueTestPath(): string {
     const id = `${process.pid}-${Date.now()}-${_testPathCounter++}`;
     return platform() === 'win32'
         ? `\\\\.\\pipe\\mcpfusion-e2etest-${id}`
-        : `/tm./mcpfusion-e2etest-${id}.sock`;
+        : `/tmp/mcpfusion-e2etest-${id}.sock`;
 }
 
 // ============================================================================

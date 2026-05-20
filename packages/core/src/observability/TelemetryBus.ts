@@ -75,7 +75,7 @@ function cwdFingerprint(): string {
  * the Inspector TUI to reconnect automatically without PID tracking.
  *
  * - Windows: `\\.\pipe\MCP Fusion-{fingerprint}` (Named Pipe, auto-cleaned by OS)
- * - POSIX:   `/tm./mcpfusion-{fingerprint}.sock` (Unix Domain Socket)
+ * - POSIX:   `/tmp/mcpfusion-{fingerprint}.sock` (Unix Domain Socket)
  *
  * @param fingerprint - Custom fingerprint (defaults to SHA-256 of cwd)
  * @returns The IPC path string
@@ -85,7 +85,7 @@ export function getTelemetryPath(fingerprint?: string): string {
     if (platform() === 'win32') {
         return `\\\\.\\pipe\\mcpfusion-${id}`;
     }
-    return `/tm./mcpfusion-${id}.sock`;
+    return `/tmp/mcpfusion-${id}.sock`;
 }
 
 // ============================================================================
