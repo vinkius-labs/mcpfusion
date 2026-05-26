@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.3] - 2026-05-26
+
+### Fixed
+
+#### `@mcpfusion/core` — Edge Sanitizer: Context-Aware `process.env` Replacement
+
+- **`sanitizeBundleForEdge()` corrupted string literals containing `process.env`** — The `process.env` → `process["env"]` regex replacement was applied globally across the minified bundle without distinguishing between real code references and occurrences inside string literals. When a tool's validation logic contained strings like `s.includes("process.env.")` or `"Implementation uses process.env directly"`, the naïve regex transformed the quoted `process.env` into `process["env"]` — producing `"process["env"]."`, which is invalid JavaScript (the `[` terminates the string unexpectedly). This caused `SyntaxError: missing ) after argument list` at V8 Isolate compile time (`<isolated-vm>:173:7641`), making the MCP server fail to initialize on Vinkius Edge with `Internal Server Error`.
+
+- **Fix** — Replaced the global regex with a context-aware callback that counts unescaped double quotes between the start of the current line and the match position. An odd count indicates the match is inside a string literal (esbuild minifier uses `"` for all strings), and the replacement is skipped. Applied to both `deploy.ts` (CLI sanitizer) and `sanitizer.ts` (runtime compiler sanitizer).
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.0.3`** — Ensures consistent resolution across the monorepo.
+
 ## [4.0.1] - 2026-05-20
 
 ### Fixed

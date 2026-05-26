@@ -121,7 +121,7 @@
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "esbuild": "^0.24.0",
+    "esbuild": ">=0.24.0",
     "fast-json-stringify": "^6.0.0",
     "fast-redact": "^3.0.0",
     "isolated-vm": "^5.0.4",
@@ -153,5 +153,5 @@
     "fast-redact": "^3.5.0",
     "rimraf": "^6.0.0"
   },
-  "version": "4.0.1"
+  "version": "4.0.3"
 }

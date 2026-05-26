@@ -76,7 +76,20 @@ function sanitizeBundleForEdge(code: string): string {
         // while remaining a valid JS identifier (V8 treats \u005f as '_')
         .replace(/__vinkius_secrets/g, '\\u005f_vinkius_secrets')
         // process.env → process["env"] to break /\bprocess\s*\.\s*env\b/ regex
-        .replace(/\bprocess\s*\.\s*env\b/g, 'process["env"]')
+        // Context-aware: only replace in code, NOT inside string literals.
+        // esbuild minifies strings with double quotes — count unescaped " before
+        // the match to determine if we're inside a string (odd count = inside).
+        .replace(/\bprocess\s*\.\s*env\b/g, (match, offset, str) => {
+            const lineStart = str.lastIndexOf('\n', offset);
+            const segment = str.substring(lineStart + 1, offset);
+            let inString = false;
+            for (let i = 0; i < segment.length; i++) {
+                if (segment[i] === '"' && (i === 0 || segment[i - 1] !== '\\')) {
+                    inString = !inString;
+                }
+            }
+            return inString ? match : 'process["env"]';
+        })
         // __vinkius_edge_ → \u005f_vinkius_edge_ — same Unicode escape technique
         .replace(/__vinkius_edge_/g, '\\u005f_vinkius_edge_')
         // globalThis[ → (globalThis)/**/ [ to break /globalThis\s*\[/ regex
