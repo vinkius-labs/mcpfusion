@@ -191,6 +191,8 @@ export interface InternalAction<TContext> {
     readonly actionName: string;
     /** Description */
     readonly description: string | undefined;
+    /** Compact description for FSM progressive disclosure (discovery-time) */
+    readonly compactDescription: string | undefined;
     /** Zod schema */
     readonly schema: ZodObject<ZodRawShape> | undefined;
     /** Whether this action is destructive */
@@ -288,6 +290,8 @@ export interface ActionConfig<TContext> {
     name: string;
     /** Human-readable description of what this action does */
     description?: string;
+    /** Compact description for FSM progressive disclosure */
+    compactDescription?: string;
     /** Zod schema for this action's specific parameters */
     schema?: ZodObject<ZodRawShape>;
     /**

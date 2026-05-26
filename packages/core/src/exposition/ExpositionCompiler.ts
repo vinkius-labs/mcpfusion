@@ -78,11 +78,12 @@ export function compileExposition<TContext>(
     exposition: ToolExposition = 'flat',
     separator: string = '_',
     onWarn?: ExpositionWarnFn,
+    fsmCompactMode = false,
 ): ExpositionResult<TContext> {
     if (exposition === 'grouped') {
         return compileGrouped(builders);
     }
-    return compileFlat(builders, separator, onWarn);
+    return compileFlat(builders, separator, onWarn, fsmCompactMode);
 }
 
 // ── Flat Strategy ────────────────────────────────────────
@@ -101,6 +102,7 @@ function compileFlat<TContext>(
     builders: Iterable<ToolBuilder<TContext>>,
     separator: string,
     onWarn?: ExpositionWarnFn,
+    fsmCompactMode = false,
 ): ExpositionResult<TContext> {
     const tools: McpTool[] = [];
     const routingMap = new Map<string, FlatRoute<TContext>>();
@@ -139,8 +141,8 @@ function compileFlat<TContext>(
             // ── Boundary Isolation (Annotations) ─────────────
             const annotations = buildAtomicAnnotations(action);
 
-            // ── Description ──────────────────────────────────
-            const description = buildAtomicDescription(action, toolName);
+            // ── Description ───────────────────────────────────────────
+            const description = buildAtomicDescription(action, toolName, fsmCompactMode);
 
             const tool: McpTool = {
                 name: flatName,
@@ -334,10 +336,14 @@ function buildAtomicAnnotations<TContext>(
 function buildAtomicDescription<TContext>(
     action: InternalAction<TContext>,
     toolName: string,
+    fsmCompactMode = false,
 ): string {
     const parts: string[] = [];
 
-    if (action.description) {
+    // FSM Progressive Disclosure: use compact description during discovery
+    if (fsmCompactMode && action.compactDescription) {
+        parts.push(action.compactDescription);
+    } else if (action.description) {
         parts.push(action.description);
     } else {
         // Generate a default description from the tool and action name

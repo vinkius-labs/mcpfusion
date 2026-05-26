@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2026-05-26
+
+### Added
+
+#### `@mcpfusion/core` — FSM Progressive Disclosure: Context Window Optimization
+
+MCP tool descriptions now support **two-phase progressive disclosure** via the FSM state machine — compact descriptions during discovery, full expert descriptions after first execution. Reduces initial `tools/list` token footprint by ~88% per prover without sacrificing reasoning quality.
+
+- **`.compactDescription(text)` on `FluentToolBuilder`** — New fluent method for specifying a brief (~200 char) discovery-time description alongside the full `.describe()` instructional content. Optional — tools without it behave identically to before.
+
+- **`ExpositionCompiler` compact mode** — `compileExposition()` and `buildAtomicDescription()` now accept a `fsmCompactMode` boolean. When `true` and `compactDescription` is set, the compiler emits the compact version. When `false`, the full description + instructions are served. Zero impact on tools without compact descriptions.
+
+- **`ServerAttachment` FSM-gated tool list** — `createToolListHandler()` determines compact mode by comparing `fsm.currentState === fsm.initialState`. On the first `tools/list` call (FSM in initial state), compact descriptions are served. After the first tool execution triggers an FSM transition, `notifyToolListChanged` forces the client to re-fetch, and the full expert descriptions are served. Cache invalidation via `cachedCompactMode` tracking ensures O(1) fast-path.
+
+- **`StateMachineGate.initialState` getter** — New public getter returning the FSM's initial state string, used by `ServerAttachment` for compact mode determination.
+
+- **`compactDescription` field propagation** — Added to `InternalAction`, `ActionConfig`, `FluentBuildConfig`, and `mapConfigToActionFields` to propagate compact descriptions through the full MVA pipeline without breaking existing contracts.
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.1.0`** — Ensures consistent resolution across the monorepo.
+
 ## [4.0.4] - 2026-05-26
 
 ### Fixed

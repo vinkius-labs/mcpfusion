@@ -332,6 +332,17 @@ export class StateMachineGate {
     }
 
     /**
+     * Get the initial FSM state (for progressive disclosure comparison).
+     *
+     * Used by ServerAttachment to determine compact mode:
+     * `currentState === initialState` → compact descriptions (discovery).
+     * Any other state → full expert descriptions.
+     */
+    get initialState(): string {
+        return this._config.initial;
+    }
+
+    /**
      * Check if a specific tool is allowed in the current FSM state.
      *
      * Tools **not** registered via `bindTool()` are always visible

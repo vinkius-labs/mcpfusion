@@ -493,7 +493,7 @@ interface HandlerContext<TContext> {
     readonly syncLayer?: StateSyncLayer;
     readonly toolExposition: ToolExposition;
     readonly actionSeparator: string;
-    readonly recompile: () => ExpositionResult<TContext>;
+    readonly recompile: (fsmCompactMode?: boolean) => ExpositionResult<TContext>;
     readonly isFlat: boolean;
     readonly fsm?: StateMachineGate;
     readonly fsmStore?: FsmStateStore;
@@ -624,7 +624,12 @@ function createToolListHandler<TContext>(hCtx: HandlerContext<TContext>) {
         let tools: McpTool[];
 
         if (hCtx.isFlat) {
-            const exposition = hCtx.recompile();
+            // FSM Progressive Disclosure: determine compact mode from FSM state.
+            // Initial state = compact descriptions. After first call triggers
+            // transition, FSM moves to a non-initial state = full expert descriptions.
+            // listChanged notification forces client re-fetch with new descriptions.
+            const fsmCompactMode = fsm ? fsm.currentState === fsm.initialState : false;
+            const exposition = hCtx.recompile(fsmCompactMode);
             tools = hCtx.filter
                 ? filterFlatTools(exposition.tools, exposition.routingMap, hCtx.filter)
                 : exposition.tools;
@@ -1226,20 +1231,24 @@ export async function attachToServer<TContext>(
         recompile: (() => {
             let cachedResult: ExpositionResult<TContext> | undefined;
             let cachedBuilderCount = -1;
-            return () => {
+            let cachedCompactMode: boolean | undefined;
+            return (fsmCompactMode?: boolean) => {
                 // O(1) size check: detect late-registered builders without iterating.
                 const currentCount = registry.size;
-                if (!_expositionDirty && cachedResult && currentCount === cachedBuilderCount) {
+                // Invalidate cache when FSM compact mode changes (progressive disclosure transition)
+                const compactModeChanged = fsmCompactMode !== cachedCompactMode;
+                if (!_expositionDirty && cachedResult && currentCount === cachedBuilderCount && !compactModeChanged) {
                     return cachedResult;
                 }
                 _expositionDirty = false;
                 cachedBuilderCount = currentCount;
+                cachedCompactMode = fsmCompactMode;
                 const builders = [...registry.getBuilders()];
                 // route diagnostic warnings through debug observer
                 const warnFn = debug
                     ? (msg: string) => debug({ type: 'error', tool: '', action: '', error: msg, step: 'route', timestamp: Date.now() })
                     : undefined;
-                cachedResult = compileExposition(builders, toolExposition, actionSeparator, warnFn);
+                cachedResult = compileExposition(builders, toolExposition, actionSeparator, warnFn, fsmCompactMode);
                 return cachedResult;
             };
         })(),

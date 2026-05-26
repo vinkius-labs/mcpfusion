@@ -30,6 +30,7 @@ import { type SemanticDefaults } from './SemanticDefaults.js';
 export interface FluentBuildConfig<TContext, TCtx> {
     name: string;
     description: string | undefined;
+    compactDescription: string | undefined;
     instructions: string | undefined;
     withParams: Record<string, ZodType>;
     inputSchema?: ZodObject<ZodRawShape>;
@@ -96,6 +97,10 @@ export function buildToolFromFluent<TContext, TCtx>(
         descParts.push(SANDBOX_SYSTEM_INSTRUCTION.trim());
     }
     const compiledDescription = descParts.length > 0 ? descParts.join('\n\n') : undefined;
+
+    // Compile compact description (FSM progressive disclosure)
+    // Compact description does NOT include instructions — they are deferred to expert state
+    const compiledCompactDescription = config.compactDescription ?? undefined;
 
     // Resolve semantic defaults + overrides
     const readOnly = config.readOnly ?? config.semanticDefaults.readOnly;
@@ -182,6 +187,7 @@ export function buildToolFromFluent<TContext, TCtx>(
     builder.action({
         name: actionName,
         ...(compiledDescription ? { description: compiledDescription } : {}),
+        ...(compiledCompactDescription ? { compactDescription: compiledCompactDescription } : {}),
         handler: wrappedHandler,
         ...(inputSchema ? { schema: inputSchema } : {}),
         ...(readOnly !== undefined ? { readOnly } : {}),

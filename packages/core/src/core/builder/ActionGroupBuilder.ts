@@ -74,12 +74,13 @@ export function mapConfigToActionFields<TContext>(
     config: ActionConfig<TContext>,
     omitCommonFields: string[] | undefined,
 ): Pick<InternalAction<TContext>,
-    'actionName' | 'description' | 'schema' | 'destructive' |
+    'actionName' | 'description' | 'compactDescription' | 'schema' | 'destructive' |
     'idempotent' | 'readOnly' | 'handler' | 'omitCommonFields' | 'returns'
 > {
     return {
         actionName: config.name,
         description: config.description ?? undefined,
+        compactDescription: config.compactDescription ?? undefined,
         schema: config.schema ?? undefined,
         destructive: config.destructive ?? undefined,
         idempotent: config.idempotent ?? undefined,

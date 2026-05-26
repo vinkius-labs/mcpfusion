@@ -124,6 +124,7 @@ export class FluentToolBuilder<
     /** @internal */ _fsmStates?: string[];
     /** @internal */ _fsmTransition?: string;
     /** @internal */ _interactive = false;
+    /** @internal */ _compactDescription?: string;
 
     /**
      * @param name - Tool name in `domain.action` format (e.g. `'users.list'`)
@@ -150,6 +151,22 @@ export class FluentToolBuilder<
      */
     describe(text: string): FluentToolBuilder<TContext, TInput, TCtx> {
         this._description = text;
+        return this;
+    }
+
+    /**
+     * Set a compact description for FSM progressive disclosure.
+     *
+     * This short description (~200 chars) is shown during `tools/list` discovery
+     * when the FSM is in 'compact' state. After the first successful call, the
+     * FSM transitions to 'expert' state and the full `.describe()` content is
+     * exposed via `listChanged` re-fetch.
+     *
+     * @param text - Short, functional description of what the tool does
+     * @returns `this` for chaining
+     */
+    compactDescription(text: string): FluentToolBuilder<TContext, TInput, TCtx> {
+        this._compactDescription = text;
         return this;
     }
 
@@ -1152,6 +1169,7 @@ export class FluentToolBuilder<
         return buildToolFromFluent({
             name: this._name,
             description: this._description,
+            compactDescription: this._compactDescription,
             instructions: this._instructions,
             withParams: this._withParams,
             tags: this._tags,
