@@ -11,7 +11,7 @@
 
 MCP Fusion is a TypeScript framework that enforces security at the architectural level of every MCP server. Raw data never reaches the LLM without passing through a typed egress firewall. Tools are physically removed from the agent's namespace when the workflow state forbids them. Every behavioral surface is hashed, locked, and auditable in version control.
 
-The framework ships with a [SKILL.md](.claude/skills/mcpfusion-development/SKILL.md) — a machine-readable architectural contract. AI coding agents read the Skill and produce correct, governed servers on the first pass.
+The framework ships with a [SKILL.md](https://github.com/vinkius-labs/mcpfusion/blob/main/.claude/skills/mcpfusion-development/SKILL.md) — a machine-readable architectural contract. AI coding agents read the Skill and produce correct, governed servers on the first pass.
 
 ---
 
@@ -27,7 +27,7 @@ The agent reads the Skill. It produces `defineModel()` declarations with `m.hidd
 
 The Skill is not documentation. It is the security contract. Every server the AI produces inherits the governance stack because the Skill encodes Presenters, state machines, and lockfile generation as mandatory structural patterns.
 
-> 📄 **[SKILL.md](.claude/skills/mcpfusion-development/SKILL.md)** · **[llms.txt](https://mcpfusion.vinkius.com/llms.txt)** *(complete API reference for LLM consumption)*
+> 📄 **[SKILL.md](https://github.com/vinkius-labs/mcpfusion/blob/main/.claude/skills/mcpfusion-development/SKILL.md)** · **[llms.txt](https://mcpfusion.vinkius.com/llms.txt)** *(complete API reference for LLM consumption)*
 
 ---
 
@@ -290,7 +290,7 @@ Every server runs inside V8 isolate sandboxes on AWS. Ed25519 signed audit chain
 
 ## Documentation
 
-**[mcpfusion.vinkius.com](https://mcpfusion.vinkius.com/)** · **[llms.txt](https://mcpfusion.vinkius.com/llms.txt)** · **[SKILL.md](.claude/skills/mcpfusion-development/SKILL.md)**
+**[mcpfusion.vinkius.com](https://mcpfusion.vinkius.com/)** · **[llms.txt](https://mcpfusion.vinkius.com/llms.txt)** · **[SKILL.md](https://github.com/vinkius-labs/mcpfusion/blob/main/.claude/skills/mcpfusion-development/SKILL.md)**
 
 ## Contributing
 

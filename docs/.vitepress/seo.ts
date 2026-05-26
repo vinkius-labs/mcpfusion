@@ -162,22 +162,6 @@ const pages: Record<string, PageSEO> = {
   },
 
   // ═══════════════════════════════════════════════════════
-  // MVA PATTERN
-  // ═══════════════════════════════════════════════════════
-  'mva-pattern.md': {
-    title: 'MVA Pattern: Model-View-Agent Architecture for AI Agents',
-    description: 'Learn the MVA (Model-View-Agent) pattern, the architecture behind MCP Fusion. Replaces MVC with a Presenter-based perception layer that shapes what AI agents see, know, and can do next.',
-    faqs: [
-      { q: 'What is the MVA pattern?', a: 'MVA (Model-View-Agent) is an architectural pattern for building AI agent backends. It replaces the browser-oriented View in MVC with a Presenter, a perception layer that controls what the AI agent sees, how it interprets data, and what actions are available. The Model defines domain data, the Presenter shapes perception with rules, affordances, and validation, and the Agent receives structured context instead of raw data.' },
-      { q: 'How is MVA different from MVC?', a: 'In MVC, the View renders HTML for a browser. In MVA, the View is a Presenter that renders structured context for an AI agent. The Presenter adds system rules, cognitive guardrails, PII redaction, and HATEOAS-style affordances. MVC Views are stateless templates. MVA Presenters are active perception layers that adapt to user role, tenant, and locale at runtime.' },
-      { q: 'What is a Presenter in MCP Fusion?', a: 'A Presenter is the View layer of MVA. Created with createPresenter(), it defines a Zod schema for validation, system rules that travel with the data, UI rendering hints, cognitive guardrails (array truncation), and suggested next actions (affordances). Every tool that returns an invoice uses the same InvoicePresenter, ensuring consistent perception across your entire API.' },
-      { q: 'What is Context Tree-Shaking in MCP Fusion?', a: 'Context Tree-Shaking means only the Presenter rules relevant to the current data are sent to the LLM. When the agent is working with invoices, it receives invoice rules. When it switches to users, invoice rules are not loaded. This reduces token waste and prevents rule conflicts across different domains.' },
-      { q: 'What are affordances in the MVA pattern?', a: 'Affordances are data-driven next actions attached to a Presenter via .suggest(). They tell the agent exactly which tools to call next based on the current state. For example, an overdue invoice suggests billing.escalate. This eliminates hallucinated tool names and ensures the agent follows your intended workflows.' },
-      { q: 'Can Presenters compose with each other?', a: 'Yes. Presenters compose like React components. You can embed a ClientPresenter inside an InvoicePresenter with .embed(). The child Presenter rules, UI blocks, and affordances merge into the parent automatically. Define a presenter once and reuse it across InvoicePresenter, OrderPresenter, and ContractPresenter.' },
-    ],
-  },
-
-  // ═══════════════════════════════════════════════════════
   // SECURITY & AUTH
   // ═══════════════════════════════════════════════════════
   'enterprise/security.md': {
