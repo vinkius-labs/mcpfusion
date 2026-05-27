@@ -63,6 +63,36 @@ export interface MarketplaceAuthentication {
     readonly docsUrl?: string;
 }
 
+/** A structured use case with title and description. */
+export interface MarketplaceUseCase {
+    readonly title: string;
+    readonly description: string;
+}
+
+/** An anti-pattern with name, example, and fix. */
+export interface MarketplaceAntiPattern {
+    readonly name: string;
+    readonly example: string;
+    readonly fix: string;
+}
+
+/**
+ * Structured SEO metadata for marketplace listing pages.
+ * All fields are optional — populated progressively to enrich page content.
+ */
+export interface MarketplaceSeoMetadata {
+    /** Key benefits this MCP provides (max 10, each max 500 chars). */
+    readonly benefits?: readonly string[];
+    /** Who should use this MCP — specific audience description. */
+    readonly targetAudience?: string;
+    /** Real-world scenarios where this MCP excels. */
+    readonly useCases?: readonly MarketplaceUseCase[];
+    /** Common mistakes to avoid when using this MCP. */
+    readonly antiPatterns?: readonly MarketplaceAntiPattern[];
+    /** When to use this MCP vs. alternatives — decision logic. */
+    readonly decisionFramework?: string;
+}
+
 /**
  * Marketplace manifest — listing metadata declared in code.
  *
@@ -157,6 +187,9 @@ export interface MarketplaceManifest {
 
     /** Authentication UI metadata */
     readonly authentication?: MarketplaceAuthentication;
+
+    /** Structured SEO metadata for marketplace listing pages. */
+    readonly seoMetadata?: MarketplaceSeoMetadata;
 }
 
 // ============================================================================
@@ -357,6 +390,28 @@ export function normalizeMarketplacePayload(
         }
         
         payload['authentication'] = auth;
+    }
+
+    // SEO metadata — camelCase → snake_case
+    if (manifest.seoMetadata) {
+        const seo: Record<string, unknown> = {};
+        if (manifest.seoMetadata.benefits) seo['benefits'] = manifest.seoMetadata.benefits;
+        if (manifest.seoMetadata.targetAudience) seo['target_audience'] = manifest.seoMetadata.targetAudience;
+        if (manifest.seoMetadata.useCases) {
+            seo['use_cases'] = manifest.seoMetadata.useCases.map(uc => ({
+                title: uc.title,
+                description: uc.description,
+            }));
+        }
+        if (manifest.seoMetadata.antiPatterns) {
+            seo['anti_patterns'] = manifest.seoMetadata.antiPatterns.map(ap => ({
+                name: ap.name,
+                example: ap.example,
+                fix: ap.fix,
+            }));
+        }
+        if (manifest.seoMetadata.decisionFramework) seo['decision_framework'] = manifest.seoMetadata.decisionFramework;
+        payload['seo_metadata'] = seo;
     }
 
     return payload;

@@ -1,6 +1,6 @@
 {
   "name": "@mcpfusion/a2a",
-  "description": "A2A Protocol Bridge for MCP Fusion — expose MCP servers as A2A-compliant agents with Agent Cards, task delegation, and structured message exchange.",
+  "description": "A2A Protocol Bridge for MCP Fusion â€” expose MCP servers as A2A-compliant agents with Agent Cards, task delegation, and structured message exchange.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -50,12 +50,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@mcpfusion/core": "^4.0.1"
+    "@mcpfusion/core": "^4.2.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "rimraf": "^6.0.0",
     "vitest": "^3.0.0"
   },
-  "version": "4.1.0"
+  "version": "4.2.0"
 }

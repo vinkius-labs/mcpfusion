@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2026-05-27
+
+### Added
+
+#### `@mcpfusion/core` — Marketplace SEO Metadata: Structured Product Intelligence
+
+Marketplace manifests now support a `seoMetadata` block for structured, AI-extractable product intelligence — improving listing page depth, search indexing, and conversion for MCP server pages.
+
+- **`MarketplaceSeoMetadata` interface** — New typed interface with 5 high-impact fields: `benefits` (string[]), `targetAudience` (string), `useCases` (MarketplaceUseCase[]), `antiPatterns` (MarketplaceAntiPattern[]), and `decisionFramework` (string). All fields are optional — populated progressively to enrich page content.
+
+- **`MarketplaceUseCase` interface** — Structured use case with `title` and `description` for scenario-specific landing content.
+
+- **`MarketplaceAntiPattern` interface** — Structured anti-pattern with `name`, `example`, and `fix` — enabling "what NOT to do" content that drives Information Gain over existing SERP results.
+
+- **`seoMetadata` field on `MarketplaceManifest`** — Optional field accepting a `MarketplaceSeoMetadata` object. Declared in `mcpfusion.marketplace.json` alongside existing listing metadata.
+
+- **Normalizer support** — `normalizeMarketplacePayload()` converts camelCase manifest keys (`targetAudience`, `useCases`, `antiPatterns`, `decisionFramework`) to snake_case API payload (`target_audience`, `use_cases`, `anti_patterns`, `decision_framework`), consistent with the existing authentication and integration normalization patterns.
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.2.0`** — Ensures consistent resolution across the monorepo.
+
 ## [4.1.0] - 2026-05-26
 
 ### Added

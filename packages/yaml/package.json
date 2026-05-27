@@ -1,6 +1,6 @@
 {
   "name": "@mcpfusion/yaml",
-  "description": "Declarative MCP Server Engine — define tools, resources, and prompts in mcpfusion.yaml. The docker-compose for MCP servers.",
+  "description": "Declarative MCP Server Engine â€” define tools, resources, and prompts in mcpfusion.yaml. The docker-compose for MCP servers.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -53,7 +53,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@mcpfusion/core": "^4.0.1",
+    "@mcpfusion/core": "^4.2.0",
     "yaml": "^2.7.0"
   },
   "peerDependencies": {
@@ -64,5 +64,5 @@
     "@types/node": "^25.3.0"
   },
   "license": "Apache-2.0",
-  "version": "4.1.0"
+  "version": "4.2.0"
 }
