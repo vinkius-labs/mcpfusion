@@ -216,14 +216,15 @@ export function readMarketplaceManifest(cwd: string): MarketplaceManifest | null
     if (!parsed.title || typeof parsed.title !== 'string') {
         throw new Error(`${MARKETPLACE_MANIFEST_FILE}: "title" is required and must be a string.`);
     }
-    if (!parsed.shortDescription) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime validation: JSON.parse output is untrusted
+    if (parsed.shortDescription == null) {
         throw new Error(`${MARKETPLACE_MANIFEST_FILE}: "shortDescription" is required.`);
     }
 
     // Resolve file: references in i18n fields
     const resolved: Record<string, unknown> = { ...parsed };
 
-    if (parsed.longDescription) {
+    if (parsed.longDescription != null) {
         resolved['longDescription'] = resolveI18nFileRefs(parsed.longDescription, cwd);
     }
     if (parsed.changelog) {
@@ -252,7 +253,7 @@ export function readMarketplaceManifest(cwd: string): MarketplaceManifest | null
     }
 
     // Resolve file: references in setup instructions
-    if (parsed.authentication?.setupInstructions) {
+    if (parsed.authentication?.setupInstructions != null) {
         (resolved['authentication'] as MarketplaceAuthentication) = {
             ...parsed.authentication,
             setupInstructions: resolveI18nFileRefs(parsed.authentication.setupInstructions, cwd)
@@ -278,7 +279,7 @@ export function normalizeMarketplacePayload(
     manifest: MarketplaceManifest,
 ): Record<string, unknown> {
     const { canonical: shortDesc, i18n: shortDescI18n } = extractI18n(manifest.shortDescription);
-    const { canonical: longDesc, i18n: longDescI18n } = manifest.longDescription
+    const { canonical: longDesc, i18n: longDescI18n } = manifest.longDescription != null
         ? extractI18n(manifest.longDescription)
         : { canonical: null, i18n: null };
 
@@ -355,7 +356,7 @@ export function normalizeMarketplacePayload(
         if (manifest.integration.logoUrl) {
             integration['logo_url'] = manifest.integration.logoUrl;
         }
-        if (manifest.integration.description) {
+        if (manifest.integration.description != null) {
             const { canonical: desc } = extractI18n(manifest.integration.description);
             integration['description'] = desc;
         }
@@ -370,7 +371,7 @@ export function normalizeMarketplacePayload(
     // Authentication
     if (manifest.authentication) {
         const auth: Record<string, unknown> = { ...manifest.authentication };
-        if (manifest.authentication.setupInstructions) {
+        if (manifest.authentication.setupInstructions != null) {
             const { canonical, i18n } = extractI18n(manifest.authentication.setupInstructions);
             auth['setup_instructions'] = canonical;
             if (i18n && Object.keys(i18n).length > 1) {
@@ -380,11 +381,11 @@ export function normalizeMarketplacePayload(
         }
         
         // map camelCase to snake_case
-        if (auth['redirectUri']) {
+        if (auth['redirectUri'] != null) {
             auth['redirect_uri'] = auth['redirectUri'];
             delete auth['redirectUri'];
         }
-        if (auth['docsUrl']) {
+        if (auth['docsUrl'] != null) {
             auth['docs_url'] = auth['docsUrl'];
             delete auth['docsUrl'];
         }

@@ -615,7 +615,7 @@ function createToolListHandler<TContext>(hCtx: HandlerContext<TContext>) {
         if (hCtx.swarmGateway) {
             const sessionId = resolveSessionId(extra, hCtx);
             const proxied = await hCtx.swarmGateway.proxyToolsList(sessionId);
-            if (proxied !== null && proxied !== undefined) {
+            if (proxied != null) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- McpTool shape
                 return { tools: proxied as any };
             }
@@ -777,7 +777,8 @@ function createToolCallHandler<TContext>(hCtx: HandlerContext<TContext>) {
 
         // ── Self-Healing: enrich validation errors with contract deltas ( fix) ──
         if (result.isError && hCtx.selfHealing) {
-            const text = result.content?.[0]?.type === 'text' ? (result.content[0] as { text: string }).text : '';
+            const firstContent = result.content[0];
+            const text = firstContent?.type === 'text' ? (firstContent as { text: string }).text : '';
             if (text) {
                 const healing = enrichValidationError(text, toolGroup, action, hCtx.selfHealing);
                 if (healing.injected) {
@@ -901,7 +902,7 @@ function registerPromptHandlers<TContext>(
     ) => {
         const params: { filter?: PromptFilter; cursor?: string } = {};
         if (filter) params.filter = filter as PromptFilter;
-        if (request?.params?.cursor) params.cursor = request.params.cursor;
+        if (request.params?.cursor) params.cursor = request.params.cursor;
         return await prompts.listPrompts(params);
     });
 

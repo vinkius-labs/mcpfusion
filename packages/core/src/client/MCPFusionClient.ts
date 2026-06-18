@@ -479,9 +479,11 @@ export function createMCPFusionClient<TRouter extends RouterMap>(
         const result = await dispatch(action, args);
 
         if (throwOnError && result.isError) {
-            const text = result.content
+            // Filter defensively — MCP responses may contain ImageContent or
+            // EmbeddedResource items at runtime, even though TS infers TextContent only.
+            const text = (result.content as Array<{ type: string; text?: string }>)
                 .filter(c => c.type === 'text')
-                .map(c => c.text)
+                .map(c => c.text ?? '')
                 .join('\n');
 
             const parsed = parseToolErrorXml(text);
@@ -564,8 +566,8 @@ function buildFluentProxy(
     execute: (action: string, args: Record<string, unknown>) => Promise<ToolResponse>,
     segments: string[] = [],
 ): unknown {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Proxy requires callable target for apply trap
-    return new Proxy(function () {} as any, {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function -- Proxy requires a callable target for the apply trap
+    return new Proxy(function () {} as (...a: unknown[]) => unknown, {
         get(_target: unknown, prop: string | symbol): unknown {
             if (typeof prop === 'symbol') {
                 // guard inspection symbols

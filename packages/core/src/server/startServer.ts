@@ -22,7 +22,7 @@ import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { attachToServer as _attachToServer, type AttachOptions, _missingContextProxy } from './ServerAttachment.js';
 import { createTelemetryBus, type TelemetryBusInstance } from '../observability/TelemetryBus.js';
 import { compileServerCard, SERVER_CARD_PATH } from '../introspection/ServerCard.js';
-import type { ServerCardConfig, ServerCardPayload } from '../introspection/types.js';
+import type { ServerCardConfig } from '../introspection/types.js';
 import type { PromptRegistry } from '../prompt/PromptRegistry.js';
 import type { ProgressSink } from '../core/execution/ProgressHelper.js';
 import type { CredentialsMap } from '../credentials/index.js';
@@ -420,9 +420,9 @@ export async function startServer<TContext>(
         // Serialize FSM config and tool bindings so the host can
         // implement state-gated tool visibility at edge.
         let fsmData: { config: unknown; bindings: Array<{ tool: string; states: string[]; event?: string }> } | undefined;
-        const fsmGate = (attach as Record<string, unknown>)?.['fsm'] as
+        const fsmGate = (attach as Record<string, unknown>)['fsm'] as
             { _config?: unknown; _bindings?: Map<string, { allowedStates: Set<string>; transitionEvent?: string }> } | undefined;
-        if (fsmGate?._config != null && fsmGate?._bindings != null) {
+        if (fsmGate != null && fsmGate._config != null && fsmGate._bindings != null) {
             const bindings: Array<{ tool: string; states: string[]; event?: string }> = [];
             for (const [toolName, binding] of fsmGate._bindings) {
                 bindings.push({
@@ -465,7 +465,7 @@ export async function startServer<TContext>(
                     isError: true,
                     content: [{
                         type: 'text',
-                        text: String(err?.stack || err?.message || e),
+                        text: String(err.stack ?? err.message ?? e),
                     }],
                 });
             }
@@ -490,7 +490,7 @@ export async function startServer<TContext>(
                             role: 'user',
                             content: {
                                 type: 'text',
-                                text: `[ERROR] ${String(err?.message || e)}`,
+                                text: `[ERROR] ${String(err.message ?? e)}`,
                             },
                         }],
                     };
@@ -522,7 +522,7 @@ export async function startServer<TContext>(
         }
 
         // Abort normal startup — no Server, no Transport ( fix)
-        return { server: null, close: async () => {} };
+        return { server: null, close: () => Promise.resolve() };
     }
 
     // ── CLI Introspection Mode ───────────────────────────────────────────
@@ -543,7 +543,7 @@ export async function startServer<TContext>(
             g.__MCPFUSION_INTROSPECT_resolve(introspectResult);
         }
 
-        return { server: null, close: async () => {} };
+        return { server: null, close: () => Promise.resolve() };
     }
 
     // ── Normal Server Startup ────────────────────────────────────────────
@@ -585,8 +585,9 @@ export async function startServer<TContext>(
     //    The SDK validates that setRequestHandler() is only called for
     //    capabilities that were declared here — missing declarations
     //    cause "Server does not support X" runtime errors.
-    const needsResources = !!(attach as Record<string, unknown>)?.['introspection']
-        || !!(attach as Record<string, unknown>)?.['resources'];
+    const attachRecord = attach as Record<string, unknown>;
+    const needsResources = attach.introspection != null
+        || attachRecord['resources'] != null;
     const server = new Server(
         { name, version },
         { capabilities: {
@@ -609,15 +610,15 @@ export async function startServer<TContext>(
         // ── Server Card Compilation (zero overhead when disabled) ─────────
         // Pre-compiled as a static JSON string at startup — no per-request cost.
         let serverCardJson: string | undefined;
-        if (serverCardOpt) {
+        if (serverCardOpt != null) {
             const cardConfig: ServerCardConfig = {
                 name,
                 version,
                 transport: 'streamable-http',
                 ...(serverCardOpt === true ? {} : serverCardOpt),
             };
-            const resources = (attach as Record<string, unknown>)?.['resources'];
-            const resourceList = resources && typeof (resources as { listResources?: unknown }).listResources === 'function'
+            const resources = attachRecord['resources'];
+            const resourceList = resources != null && typeof (resources as { listResources?: unknown }).listResources === 'function'
                 ? (resources as { listResources: () => Array<{ uri: string; name: string; description?: string; mimeType?: string }> }).listResources()
                 : undefined;
             const promptList = prompts && typeof prompts.getAllPrompts === 'function'

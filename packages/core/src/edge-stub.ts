@@ -36,7 +36,7 @@ export class Writable extends EventEmitter {}
 export class Duplex extends EventEmitter {}
 export class Transform extends EventEmitter {}
 export class PassThrough extends EventEmitter {}
-export class Server extends EventEmitter { listen(): void {} close(): void {} }
+export class Server extends EventEmitter { listen(): void { /* Tier 1 stub — dead code */ } close(): void { /* Tier 1 stub — dead code */ } }
 export class Socket extends EventEmitter {}
 export class IncomingMessage extends Readable {}
 export class ServerResponse extends Writable {}

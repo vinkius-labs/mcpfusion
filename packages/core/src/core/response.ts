@@ -446,12 +446,9 @@ export interface HandoffResponse {
  * without importing `@mcpfusion/swarm` (avoids circular dependency).
  */
 export function isHandoffResponse(v: unknown): v is HandoffResponse {
-    return (
-        typeof v === 'object' &&
-        v !== null &&
-        (v as HandoffResponse)._MCPFUSION_handoff === true &&
-        (v as HandoffResponse).isHandoff === true
-    );
+    if (typeof v !== 'object' || v === null) return false;
+    const r = v as Record<string, unknown>;
+    return r['_MCPFUSION_handoff'] === true && r['isHandoff'] === true;
 }
 
 /**

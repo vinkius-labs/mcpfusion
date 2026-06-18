@@ -791,7 +791,7 @@ export class FluentToolBuilder<
             | ((args: { ctx: TCtx; next: (enrichedCtx: TCtx & TDerived) => Promise<ToolResponse> }) => Promise<ToolResponse>),
     ): FluentToolBuilder<TContext, TInput, TCtx & TDerived> {
         // Handle MiddlewareDefinition from f.middleware()
-        if (typeof mw === 'object' && mw !== null && '__brand' in mw && (mw as { __brand: unknown }).__brand === 'MiddlewareDefinition') {
+        if (typeof mw !== 'function' && '__brand' in mw && (mw as { __brand: unknown }).__brand === 'MiddlewareDefinition') {
             const def = mw as MiddlewareDefinition<TCtx, TDerived>;
             this._middlewares.push(def.toMiddlewareFn() as unknown as MiddlewareFn<TContext>);
             return this as unknown as FluentToolBuilder<TContext, TInput, TCtx & TDerived>;

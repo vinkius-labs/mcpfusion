@@ -117,12 +117,12 @@ export function requireGatewayClearance(
  * with `toLowerCase()` ensures the token is found regardless of normalization.
  */
 function extractDelegationHeader(ctx: unknown): string | undefined {
-    if (!ctx || typeof ctx !== 'object') return undefined;
+    if (ctx == null || typeof ctx !== 'object') return undefined;
     const c = ctx as Record<string, unknown>;
 
     // MCP SDK extra: extra.requestInfo.headers['x-mcpfusion-delegation']
     const requestInfo = c['requestInfo'];
-    if (requestInfo && typeof requestInfo === 'object') {
+    if (requestInfo != null && typeof requestInfo === 'object') {
         const h = (requestInfo as Record<string, unknown>)['headers'];
         const val = findHeaderCaseInsensitive(h, 'x-mcpfusion-delegation');
         if (val !== undefined) return val;
@@ -143,7 +143,7 @@ function findHeaderCaseInsensitive(
     headers: unknown,
     headerName: string,
 ): string | undefined {
-    if (!headers || typeof headers !== 'object') return undefined;
+    if (headers == null || typeof headers !== 'object') return undefined;
     const h = headers as Record<string, unknown>;
     const lower = headerName.toLowerCase();
     // Fast path: exact key (most common — MCP SDK always uses lowercase)

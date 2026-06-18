@@ -27,6 +27,7 @@ async function getCrypto(): Promise<Crypto> {
     if (_resolvedCrypto) return _resolvedCrypto;
 
     // globalThis.crypto.subtle is available in Node >= 19, Deno, Bun, CF Workers
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cross-runtime: crypto.subtle may be absent in Workers/Deno edge cases
     if (typeof globalThis.crypto !== 'undefined' && globalThis.crypto.subtle != null) {
         _resolvedCrypto = globalThis.crypto;
         return _resolvedCrypto;
@@ -118,11 +119,10 @@ export class CursorCodec {
             const crypto = await getCrypto();
             this._hmacKey = await crypto.subtle.importKey(
                 'raw',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferSource compat across Node/browser
-                secret as any,
+                secret as BufferSource,
                 { name: 'HMAC', hash: 'SHA-256' },
                 false,
-                ['sign', 'verify']
+                ['sign', 'verify'],
             );
         }
         return this._hmacKey;
@@ -134,11 +134,10 @@ export class CursorCodec {
             const crypto = await getCrypto();
             this._aesKey = await crypto.subtle.importKey(
                 'raw',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferSource compat across Node/browser
-                secret as any,
+                secret as BufferSource,
                 'AES-GCM',
                 false,
-                ['encrypt', 'decrypt']
+                ['encrypt', 'decrypt'],
             );
         }
         return this._aesKey;
@@ -157,11 +156,9 @@ export class CursorCodec {
             const iv = crypto.getRandomValues(new Uint8Array(12));
             
             const encryptedBuf = await crypto.subtle.encrypt(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                { name: 'AES-GCM', iv: iv as any },
+                { name: 'AES-GCM', iv: iv as BufferSource },
                 aesKey,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                dataBuffer as any
+                dataBuffer as BufferSource,
             );
             
             // Web Crypto AES-GCM appends the 16-byte auth tag at the end of the ciphertext
@@ -173,8 +170,7 @@ export class CursorCodec {
             const signatureBuf = await cryptoApi.subtle.sign(
                 'HMAC',
                 hmacKey,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                dataBuffer as any
+                dataBuffer as BufferSource,
             );
             
             return `${base64UrlEncode(dataBuffer)}.${base64UrlEncode(signatureBuf)}`;
@@ -200,11 +196,9 @@ export class CursorCodec {
                 const aesKey = await this.getAesKey();
                 const cryptoApi = await getCrypto();
                 const decryptedBuf = await cryptoApi.subtle.decrypt(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                    { name: 'AES-GCM', iv: iv as any },
+                    { name: 'AES-GCM', iv: iv as BufferSource },
                     aesKey,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                    encrypted as any
+                    encrypted as BufferSource,
                 );
                 
                 const decrypted = new TextDecoder().decode(decryptedBuf);
@@ -227,10 +221,8 @@ export class CursorCodec {
                 const isValid = await cryptoApi2.subtle.verify(
                     'HMAC',
                     hmacKey,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                    signatureBuf as any,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Web Crypto BufferSource variance
-                    dataBuffer as any
+                    signatureBuf as BufferSource,
+                    dataBuffer as BufferSource,
                 );
                 
                 if (!isValid) return undefined;

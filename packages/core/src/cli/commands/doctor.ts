@@ -11,6 +11,8 @@ import { ansi, MCPFUSION_VERSION, VINKIUS_CLOUD_URL } from '../constants.js';
 import { readMCPFusionrc } from '../rc.js';
 import { inferServerEntry } from '../utils.js';
 import { scanInstalledFusionPackages, enrichWithLatest } from '../npm-registry.js';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // ─── Diagnostic Helpers ──────────────────────────────────────────
 
@@ -69,8 +71,6 @@ async function checkPackageVersions(cwd: string): Promise<CheckResult[]> {
 }
 
 function checkmcpfusionrc(cwd: string): CheckResult[] {
-    const { existsSync } = require('node:fs') as typeof import('node:fs');
-    const { resolve } = require('node:path') as typeof import('node:path');
     const rcPath = resolve(cwd, '.MCPFusionrc');
 
     if (!existsSync(rcPath)) {
@@ -120,11 +120,8 @@ function checkEntrypoint(cwd: string): CheckResult {
 
 function checkEsbuild(cwd: string): CheckResult {
     try {
-        const { resolve } = require('node:path') as typeof import('node:path');
-        const { existsSync } = require('node:fs') as typeof import('node:fs');
         const esbuildPkg = resolve(cwd, 'node_modules', 'esbuild', 'package.json');
         if (existsSync(esbuildPkg)) {
-            const { readFileSync } = require('node:fs') as typeof import('node:fs');
             const pkg = JSON.parse(readFileSync(esbuildPkg, 'utf-8'));
             return pass('esbuild', pkg.version);
         }
@@ -135,8 +132,6 @@ function checkEsbuild(cwd: string): CheckResult {
 }
 
 function checkLockfile(cwd: string): CheckResult {
-    const { existsSync } = require('node:fs') as typeof import('node:fs');
-    const { resolve } = require('node:path') as typeof import('node:path');
     if (existsSync(resolve(cwd, 'mcpfusion.lock'))) {
         return pass('mcpfusion.lock', 'present');
     }

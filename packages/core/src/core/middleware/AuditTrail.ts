@@ -225,7 +225,7 @@ function emitAudit(
 ): void {
     // Extract action from args using the configured field name
     const actionField = config.actionField ?? 'action';
-    const action = typeof args?.[actionField] === 'string' ? args[actionField] as string : 'unknown';
+    const action = typeof args[actionField] === 'string' ? args[actionField] as string : 'unknown';
     const tool = config.toolName ?? 'unknown';
 
     try {

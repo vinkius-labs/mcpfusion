@@ -32,6 +32,7 @@ function isAsyncGeneratorFunction(fn: unknown): boolean {
     if (typeof fn !== 'function') return false;
     // Symbol.toStringTag is set by the engine on async generator functions
     if ((fn as { [Symbol.toStringTag]?: string })[Symbol.toStringTag] === 'AsyncGeneratorFunction') return true;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- defensive: exotic or proxy functions may lack .constructor
     if (fn.constructor?.name === 'AsyncGeneratorFunction') return true;
     // Duck-type fallback for transpiled code: check the prototype
     if (typeof fn.prototype === 'object' && fn.prototype !== null

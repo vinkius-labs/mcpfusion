@@ -13,7 +13,7 @@
  */
 import { type ToolResponse } from '../types.js';
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
-import { type TelemetrySink } from '../../observability/TelemetryEvent.js';
+import { type TelemetrySink, type ExecuteWithRecoveryEvent } from '../../observability/TelemetryEvent.js';
 import { type MCPFusionTracer, SpanStatusCode } from '../../observability/Tracing.js';
 import { computeResponseSize, type PipelineHooks } from '../execution/PipelineHooks.js';
 import { toErrorMessage } from '../ErrorUtils.js';
@@ -176,16 +176,13 @@ export function buildTelemetryHooks(emit: TelemetrySink, ctx: HookContext): Pipe
 
     return {
         onValidateError: (action, durationMs) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
-            emit({ type: 'validate', tool: toolName, action, valid: false, error: 'Validation failed', durationMs, timestamp: Date.now() } as any);
+            emit({ type: 'validate', tool: toolName, action, valid: false, error: 'Validation failed', durationMs, timestamp: Date.now() });
         },
         onValidateOk: (action, durationMs) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
-            emit({ type: 'validate', tool: toolName, action, valid: true, durationMs, timestamp: Date.now() } as any);
+            emit({ type: 'validate', tool: toolName, action, valid: true, durationMs, timestamp: Date.now() });
         },
         onMiddleware: (action, chainLength) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
-            emit({ type: 'middleware', tool: toolName, action, chainLength, timestamp: Date.now() } as any);
+            emit({ type: 'middleware', tool: toolName, action, chainLength, timestamp: Date.now() });
         },
         onExecuteOk: (action, response) => {
             const isErr = response.isError === true;
@@ -199,25 +196,27 @@ export function buildTelemetryHooks(emit: TelemetrySink, ctx: HookContext): Pipe
                 recoveryActions = extractXmlActions(text);
             }
 
-            emit({
+            const event: ExecuteWithRecoveryEvent = {
                 type: 'execute', tool: toolName, action,
                 durationMs: Date.now() - startTime,
                 isError: isErr,
                 ...(recovery ? { recovery } : {}),
                 ...(recoveryActions && recoveryActions.length > 0 ? { recoveryActions } : {}),
                 timestamp: Date.now(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
-            } as any);
+            };
+            emit(event);
         },
         onExecuteError: (action, err) => {
             const message = toErrorMessage(err);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TelemetrySink accepts extensible event shapes
-            emit({ type: 'error', tool: toolName, action, error: message, step: 'execute', timestamp: Date.now() } as any);
+            emit({ type: 'error', tool: toolName, action, error: message, step: 'execute', timestamp: Date.now() });
         },
     };
 }
 
 // ── XML Extraction Helpers (Telemetry) ───────────────────
+
+/** Cached regex for `extractXmlTag` — avoids re-compilation per call */
+const xmlTagCache = new Map<string, RegExp>();
 
 /**
  * Extract content from a simple XML tag.
@@ -225,10 +224,19 @@ export function buildTelemetryHooks(emit: TelemetrySink, ctx: HookContext): Pipe
  * @internal
  */
 function extractXmlTag(text: string, tag: string): string | undefined {
-    const re = new RegExp(`<${tag}>(.*?)</${tag}>`, 's');
+    let re = xmlTagCache.get(tag);
+    if (!re) {
+        re = new RegExp(`<${tag}>(.*?)</${tag}>`, 's');
+        xmlTagCache.set(tag, re);
+    }
     const m = re.exec(text);
+    // Reset lastIndex for stateless re-use (no /g flag, but defensive)
+    re.lastIndex = 0;
     return m?.[1]?.trim() || undefined;
 }
+
+/** Cached regex for extracting `<action>` elements */
+const ACTION_TAG_RE = /<action>(.*?)<\/action>/gs;
 
 /**
  * Extract `<action>` elements from `<available_actions>` block.
@@ -238,9 +246,9 @@ function extractXmlActions(text: string): string[] | undefined {
     const block = extractXmlTag(text, 'available_actions');
     if (!block) return undefined;
     const actions: string[] = [];
-    const re = /<action>(.*?)<\/action>/gs;
+    ACTION_TAG_RE.lastIndex = 0;
     let m: RegExpExecArray | null;
-    while ((m = re.exec(block)) !== null) {
+    while ((m = ACTION_TAG_RE.exec(block)) !== null) {
         const v = m[1]?.trim();
         if (v) actions.push(v);
     }

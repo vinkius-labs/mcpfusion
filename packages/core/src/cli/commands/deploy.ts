@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import type { CliArgs } from '../args.js';
 import { ProgressTracker } from '../progress.js';
 import { ansi, VINKIUS_CLOUD_URL } from '../constants.js';
-import { ask, inferServerEntry } from '../utils.js';
+import { ask as _ask, inferServerEntry } from '../utils.js';
 import { loadEnv, readMCPFusionrc } from '../rc.js';
 import { readMarketplaceManifest, normalizeMarketplacePayload } from '../MarketplaceManifest.js';
 import type * as EsbuildNS from 'esbuild';
@@ -64,7 +64,7 @@ function sanitizeBundleForEdge(code: string): string {
         // Function.constructor → Function["constructor"] — bracket notation
         .replace(/Function\s*\.\s*constructor\b/g, 'Function["constructor"]')
         // Function('string → (0,Function)('string — indirect
-        .replace(/Function\s*\(\s*['\"]/g, (m) => `(0,Function)(${m.slice(m.indexOf('(') + 1)}`)
+        .replace(/Function\s*\(\s*["']/g, (m) => `(0,Function)(${m.slice(m.indexOf('(') + 1)}`)
         // Object.setPrototypeOf( → Object["setPrototypeOf"](
         .replace(/Object\.setPrototypeOf\s*\(/g, 'Object["setPrototypeOf"](')
         // Reflect.setPrototypeOf( → Reflect["setPrototypeOf"](
@@ -443,7 +443,7 @@ export async function commandDeploy(args: CliArgs): Promise<void> {
                     toolNames.push({
                         name: `${namespace}.${actionKey}`,
                         description: action.description ?? contract.surface.description ?? '',
-                        readOnly: action.readOnly ?? false,
+                        readOnly: action.readOnly,
                     });
                 }
             }

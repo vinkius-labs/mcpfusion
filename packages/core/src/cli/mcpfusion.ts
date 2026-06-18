@@ -82,7 +82,7 @@ async function main(): Promise<void> {
             break;
         }
         case 'version':
-            await commandVersion(args);
+            commandVersion(args);
             break;
         case 'update':
             await commandUpdate(args);

@@ -33,6 +33,7 @@ import type { ServerDigest } from './BehaviorDigest.js';
 let _subtle: SubtleCrypto | undefined;
 async function getSubtle(): Promise<SubtleCrypto> {
     if (_subtle) return _subtle;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- defensive: globalThis.crypto.subtle may not exist in all runtimes (Workers, Deno, older Node.js)
     _subtle = globalThis.crypto?.subtle
         ?? (await import('node:crypto')).webcrypto.subtle as SubtleCrypto;
     return _subtle;

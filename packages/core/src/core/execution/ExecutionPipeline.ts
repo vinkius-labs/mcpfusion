@@ -19,6 +19,9 @@ import { type CompiledChain } from './MiddlewareCompiler.js';
 import { type ProgressSink, isProgressEvent } from './ProgressHelper.js';
 import { postProcessResult, type PostProcessTelemetry } from '../../presenter/PostProcessor.js';
 
+/** Intentional no-op — used to suppress unhandled rejection warnings on best-effort cleanup. */
+const noop = (): void => { /* intentional */ };
+
 // ── Types ────────────────────────────────────────────────
 
 /** Pre-built runtime context needed for execution */
@@ -247,7 +250,7 @@ async function drainGenerator(
         })
         : undefined;
     // Suppress unhandled rejection if the generator finishes before abort fires
-    abortPromise?.catch(() => {});
+    abortPromise?.catch(noop);
 
     let result = await gen.next();
 
@@ -271,7 +274,7 @@ async function drainGenerator(
                 if (err instanceof DOMException && err.name === 'AbortError') {
                     // Fire-and-forget cleanup — gen.return() may also block
                     // if the generator is stuck on slow I/O, so don't await it.
-                    gen.return(error('Request cancelled.')).catch(() => {});
+                    gen.return(error('Request cancelled.')).catch(noop);
                     return error('Request cancelled.');
                 }
                 throw err;

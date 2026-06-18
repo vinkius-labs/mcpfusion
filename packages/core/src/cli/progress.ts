@@ -57,6 +57,7 @@ export function createDefaultReporter(): ProgressReporter {
         render();
         spinnerTimer = setInterval(render, SPINNER_INTERVAL_MS);
         // Don't let the spinner timer prevent process exit (important in tests)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- defensive: setInterval returns number in browsers, object in Node.js
         if (typeof spinnerTimer === 'object' && spinnerTimer !== null && 'unref' in spinnerTimer) {
             spinnerTimer.unref();
         }

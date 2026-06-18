@@ -410,6 +410,7 @@ export class SandboxEngine {
         } catch (err: unknown) {
             // If the abort listener disposed the isolate, classify as ABORTED
             // (not MEMORY — the user disconnected, not an OOM condition)
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- false positive: `aborted` is mutated by the onAbort event listener closure (L334)
             if (aborted) {
                 const result: SandboxResult<T> = {
                     ok: false,

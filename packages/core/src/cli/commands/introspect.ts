@@ -46,6 +46,7 @@ export interface IntrospectionReport {
  * 3. Transitive discovery — find esbuild nested inside tsx, vite, or vitest.
  * 4. Auto-install fallback — `npm install -D esbuild --legacy-peer-deps`.
  */
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- typeof import() needed: runtime namespace import used as return type
 export async function resolveEsbuild(projectRoot: string): Promise<typeof import('esbuild')> {
     // Strategy 1: standard ESM import
     try {

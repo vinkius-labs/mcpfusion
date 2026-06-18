@@ -135,6 +135,7 @@ export function toStandardValidator<T>(
             // produce { success: false, issues: undefined } because
             // 'value' in Promise is false. Detect and throw early. ( fix)
              
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- defensive: Standard Schema implementations may violate sync contract
             if (result != null && typeof (result as { then?: unknown }).then === 'function') {
                 throw new Error(
                     `[mcpfusion] Schema validator "${spec.vendor}" returned a Promise. ` +
@@ -184,7 +185,7 @@ export function fromZodSchema<T>(schema: ZodSchemaLike<T>): MCPFusionValidator<T
             }
 
             // Map Zod errors to StandardSchemaIssue
-            const issues: StandardSchemaIssue[] = (result.error?.issues ?? []).map(
+            const issues: StandardSchemaIssue[] = (result.error.issues).map(
                 (issue: { message: string; path?: (string | number)[] }) => {
                     const mapped: StandardSchemaIssue = { message: issue.message };
                     if (issue.path) {
@@ -208,15 +209,10 @@ export function fromZodSchema<T>(schema: ZodSchemaLike<T>): MCPFusionValidator<T
  * @returns `true` if the value has a valid `~standard` property
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
-    return (
-        typeof value === 'object' &&
-        value !== null &&
-        '~standard' in value &&
-        typeof (value as StandardSchemaV1)['~standard'] === 'object' &&
-        (value as StandardSchemaV1)['~standard'] !== null &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        (value as StandardSchemaV1)['~standard'].version === 1
-    );
+    if (typeof value !== 'object' || value === null) return false;
+    if (!('~standard' in value)) return false;
+    const std = (value as Record<string, unknown>)['~standard'];
+    return typeof std === 'object' && std !== null && (std as Record<string, unknown>)['version'] === 1;
 }
 
 /**

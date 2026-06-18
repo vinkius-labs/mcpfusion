@@ -90,7 +90,7 @@ export async function resolveRegistry(serverPath: string): Promise<{ registry: R
             const pr = extractPrompts(def as Record<string, unknown>);
             return {
                 registry: def.registry as RegistryLike,
-                name: (def.serverName as string) ?? 'mcpfusion-server',
+                name: (def.serverName as string | undefined) ?? 'mcpfusion-server',
                 ...(pr ? { promptRegistry: pr } : {}),
             };
         }

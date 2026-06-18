@@ -55,7 +55,7 @@ export function zodToJson(schema: unknown): JsonSchemaResult {
             const result = zAny['toJSONSchema'](schema) as JsonSchemaResult;
 
             // Strip $schema metadata — consumers only need properties/required/type
-            const { $schema, ...rest } = result;
+            const { $schema: _$schema, ...rest } = result;
 
             return rest;
         } catch {

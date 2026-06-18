@@ -6,7 +6,7 @@ import type { CliArgs } from '../args.js';
 import { ansi, MCPFUSION_VERSION } from '../constants.js';
 import { scanInstalledFusionPackages } from '../npm-registry.js';
 
-export async function commandVersion(args: CliArgs): Promise<void> {
+export function commandVersion(args: CliArgs): void {
     const cwd = args.cwd;
 
     // ── Runtime info ──

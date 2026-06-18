@@ -125,7 +125,7 @@ export function buildToolFromFluent<TContext, TCtx>(
         // removed because domain objects that coincidentally match the ToolResponse shape
         // would be returned as-is instead of being serialized — a silent data loss bug.
         // Always use the framework helpers; never construct ToolResponse manually.
-        if (typeof result === 'object' && result !== null) {
+        if (typeof result === 'object') {
             // Brand check — reliable, no false positives ()
             if (TOOL_RESPONSE_BRAND in result) {
                 return result as unknown as ToolResponse;

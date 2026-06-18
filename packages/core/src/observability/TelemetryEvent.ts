@@ -210,6 +210,28 @@ export interface SecurityRateLimitEvent {
 }
 
 /**
+ * Enriched execute event emitted by telemetry hooks.
+ *
+ * Extends the core {@link ExecuteEvent} with optional self-healing
+ * recovery metadata extracted from error responses. The IPC sink
+ * serializes all fields — the Inspector TUI renders recovery
+ * suggestions in the tool detail panel.
+ */
+export interface ExecuteWithRecoveryEvent {
+    readonly type: 'execute';
+    readonly tool: string;
+    readonly action: string;
+    readonly durationMs: number;
+    readonly isError: boolean;
+    readonly traceId?: string;
+    /** Self-healing recovery hint extracted from `<recovery>` XML tag */
+    readonly recovery?: string;
+    /** Available recovery actions extracted from `<available_actions>` XML block */
+    readonly recoveryActions?: readonly string[];
+    readonly timestamp: number;
+}
+
+/**
  * All possible telemetry events that flow through the Shadow Socket.
  *
  * This is a superset of {@link DebugEvent} — the core pipeline events
@@ -221,7 +243,7 @@ export interface SecurityRateLimitEvent {
  *     switch (event.type) {
  *         case 'route':           // DebugEvent
  *         case 'validate':        // DebugEvent
- *         case 'execute':         // DebugEvent
+ *         case 'execute':         // DebugEvent | ExecuteWithRecoveryEvent
  *         case 'error':           // DebugEvent
  *         case 'middleware':       // DebugEvent
  *         case 'governance':      // DebugEvent
@@ -241,6 +263,7 @@ export interface SecurityRateLimitEvent {
  */
 export type TelemetryEvent =
     | DebugEvent
+    | ExecuteWithRecoveryEvent
     | DlpRedactEvent
     | PresenterSliceEvent
     | PresenterRulesEvent

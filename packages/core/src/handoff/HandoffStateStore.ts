@@ -39,26 +39,27 @@ interface StoreEntry {
 export class InMemoryHandoffStateStore implements HandoffStateStore {
     private readonly _store = new Map<string, StoreEntry>();
 
-    async set(stateId: string, state: Record<string, unknown>, ttlSeconds: number): Promise<void> {
+    set(stateId: string, state: Record<string, unknown>, ttlSeconds: number): Promise<void> {
         this._store.set(stateId, {
             state,
             expiresAt: Date.now() + ttlSeconds * 1000,
         });
+        return Promise.resolve();
     }
 
-    async getAndDelete(stateId: string): Promise<Record<string, unknown> | undefined> {
+    getAndDelete(stateId: string): Promise<Record<string, unknown> | undefined> {
         const entry = this._store.get(stateId);
-        if (!entry) return undefined;
+        if (!entry) return Promise.resolve(undefined);
 
         // Check TTL BEFORE deleting: if an entry is expired it was never valid for use,
         // so we clean it up and return undefined. Lazy cleanup — no background timer needed.
         if (Date.now() > entry.expiresAt) {
             this._store.delete(stateId); // lazy TTL cleanup — no background timer
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         this._store.delete(stateId);
-        return entry.state;
+        return Promise.resolve(entry.state);
     }
 
     /**
@@ -70,19 +71,20 @@ export class InMemoryHandoffStateStore implements HandoffStateStore {
      * in the Map indefinitely if `get()` was called but the data was already expired
      * (e.g. a slow upstream that delayed token verification past the TTL window).
      */
-    async get(stateId: string): Promise<Record<string, unknown> | undefined> {
+    get(stateId: string): Promise<Record<string, unknown> | undefined> {
         const entry = this._store.get(stateId);
-        if (!entry) return undefined;
+        if (!entry) return Promise.resolve(undefined);
         if (Date.now() > entry.expiresAt) {
             this._store.delete(stateId); // lazy TTL cleanup — consistent with getAndDelete
-            return undefined;
+            return Promise.resolve(undefined);
         }
-        return entry.state;
+        return Promise.resolve(entry.state);
     }
 
     /** delete without reading. No-op if the key does not exist. */
-    async delete(stateId: string): Promise<void> {
+    delete(stateId: string): Promise<void> {
         this._store.delete(stateId);
+        return Promise.resolve();
     }
 
     /** Current number of entries in the store (useful for testing). */

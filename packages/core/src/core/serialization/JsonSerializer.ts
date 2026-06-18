@@ -161,6 +161,7 @@ function transformForFjs(jsonSchema: Record<string, unknown>): Record<string, un
     for (const combiner of ['anyOf', 'oneOf', 'allOf'] as const) {
         if (Array.isArray(schema[combiner])) {
             schema[combiner] = (schema[combiner] as Record<string, unknown>[])
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime: anyOf entries may be null/primitive in real-world JSON Schemas
                 .map(s => (s != null && typeof s === 'object' ? transformForFjs(s) : s));
         }
     }

@@ -5,6 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] - 2026-06-18
+
+### Fixed
+
+#### `@mcpfusion/core` — Architecture Audit: Type Safety, Security & Edge Hardening
+
+Deep-dive audit of 31 core files. Zero new features — pure hardening for type safety, runtime security, and Edge compatibility.
+
+#### Type Safety
+
+- **Eliminated all `no-explicit-any` casts** — Replaced `as any` with precise types across `BuildPipeline`, `FluentToolBuilder`, `ServerAttachment`, `CursorCodec`, `MCPFusionClient`, and `HandoffStateStore`. Every `as BufferSource`, `as Record<string, unknown>`, or narrowed union replaces a previous escape hatch.
+
+- **Removed unnecessary `no-unnecessary-condition` suppressions** — Tightened null/undefined checks in `MarketplaceManifest`, `registry`, `response.ts`, `createGroup`, and `middleware.ts`. Defensive checks are now structurally validated rather than linted away.
+
+- **`ZodCompat` unused binding** — Renamed destructured variable to `_` in `zodToJson()` to signal intentionally unused schema result field.
+
+#### Security
+
+- **Prototype pollution guard in `FluentToolBuilder` context enrichment** — Middleware `enrichedCtx` merging now explicitly filters `__proto__`, `constructor`, and `prototype` keys via `Object.hasOwn()` before spreading into the handler context. Prevents upstream middleware from injecting poisoned prototype chains.
+
+- **`SandboxEngine` AsyncGeneratorFunction constructor guard** — Added defensive `typeof` check before accessing `AsyncGeneratorFunction.constructor` in `MiddlewareCompiler`, preventing `TypeError` in constrained runtimes where generator constructors are not exposed.
+
+- **`CursorCodec` crypto availability guards** — All `globalThis.crypto.subtle` usages now check for `subtle` availability before calling `encrypt`/`decrypt`/`digest`, with actionable error messages for Edge runtimes lacking Web Crypto.
+
+#### Edge Runtime Compatibility
+
+- **`CryptoAttestation` and `canonicalize` defensive crypto checks** — Both modules now verify `globalThis.crypto?.subtle` before calling `subtle.digest()`, preventing silent failures in V8 Isolates without full Web Crypto support.
+
+- **`deploy.ts` bundle sanitizer string interpolation fix** — Fixed template literal in `sanitizeBundleForEdge()` where the `readOnly` field assignment used incorrect string escaping for the Unicode dot replacement pattern.
+
+- **`startServer` deterministic Promise returns** — Replaced `async () => {}` patterns with explicit `Promise.resolve()` returns for `resources` and `prompts` capability stubs, ensuring predictable event-loop behavior in Edge runtimes.
+
+- **`HandoffStateStore` explicit Promise wrapping** — Converted synchronous `InMemoryStore` methods to return `Promise.resolve()` instead of relying on `async` function implicit wrapping, ensuring consistent microtask scheduling.
+
+#### Observability
+
+- **`ExecuteWithRecoveryEvent` telemetry** — New event type in the `TelemetryEvent` union for tracking tool executions that triggered recovery middleware. Includes `recoveryStrategy`, `originalError`, and `recoveredResult` fields.
+
+- **`ObservabilityHooks` cached regex** — XML tag extraction regex in the IPC telemetry sink is now compiled once and cached, with `lastIndex = 0` reset before each use to prevent stateful `/g` flag bugs across invocations.
+
+- **`ObservabilityHooks` typed event emission** — Telemetry emit calls now use specific event type constructors (`ExecuteEvent`, `ExecuteWithRecoveryEvent`) instead of inline object literals, improving type narrowing for downstream consumers.
+
+#### Code Quality
+
+- **`ExecutionPipeline` empty catch blocks** — Replaced 3 empty `catch {}` blocks with `catch { /* noop — suppress unhandled rejection */ }` for explicit intent documentation.
+
+- **`progress.ts` timer safety** — Added `typeof spinnerTimer?.unref === 'function'` guard before calling `.unref()`, preventing crashes in environments where `Timer.unref` is not available.
+
+- **`version.ts` synchronous conversion** — `commandVersion()` is now synchronous (no I/O), removing unnecessary `async`/`await` overhead in CLI hot path.
+
+- **`introspect.ts` ESLint directive** — Added `consistent-type-imports` disable for `resolveEsbuild()` dynamic import, which cannot use `import type` syntax.
+
+- **`AuditTrail` simplified property access** — Replaced nested optional chain with direct property validation for action field checks.
+
+- **`JsonSerializer` defensive combiner check** — Added null guard for `combiner.elements` access in AOT serialization, preventing crash on malformed combiner schemas.
+
+- **`ZodDescriptionExtractor` null property handling** — Updated description extraction to gracefully handle Zod schema nodes with null/undefined `description` properties.
+
+- **`ServerAttachment` tool list and call handler refinements** — Tightened null-coalescing and type narrowing in tool registration, call dispatch, and validation error injection paths.
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.3.0`** — Ensures consistent resolution across the monorepo.
+
 ## [4.2.0] - 2026-05-27
 
 ### Added

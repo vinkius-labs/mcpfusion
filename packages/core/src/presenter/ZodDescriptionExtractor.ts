@@ -85,7 +85,7 @@ function getShape(node: ZodNode): Record<string, ZodNode> | undefined {
         return def.shape();
     }
 
-    if (typeof def.shape === 'object' && def.shape !== null) {
+    if (def.shape != null) {
         return def.shape;
     }
 
