@@ -39,19 +39,12 @@ export function loadEnv(cwd: string): void {
 
 // ─── .gitignore ──────────────────────────────────────────────────
 
-/** Ensure .MCPFusionrc is listed in .gitignore. */
-export function ensureGitignore(cwd: string): void {
-    const gitignorePath = resolve(cwd, '.gitignore');
-    try {
-        const content = existsSync(gitignorePath)
-            ? readFileSync(gitignorePath, 'utf-8')
-            : '';
-        if (!content.split('\n').some(l => l.trim() === mcpfusionrc)) {
-            const nl = content.length > 0 && !content.endsWith('\n') ? '\n' : '';
-            writeFileSync(gitignorePath, `${content}${nl}${mcpfusionrc}\n`);
-            process.stderr.write(`  ${ansi.yellow('⚠')} Added ${mcpfusionrc} to .gitignore\n`);
-        }
-    } catch { /* No git project — skip silently */ }
+/**
+ * Previously auto-added .MCPFusionrc to .gitignore.
+ * Removed: .MCPFusionrc must persist in the repo for deploy workflows.
+ */
+ export function ensureGitignore(_cwd: string): void {
+    // no-op — kept for backward compatibility
 }
 
 // ─── Read / Write ────────────────────────────────────────────────
@@ -67,7 +60,7 @@ export function readMCPFusionrc(cwd: string): Partial<RemoteConfig> {
     }
 }
 
-/** Write .MCPFusionrc and ensure .gitignore coverage. */
+/** Write .MCPFusionrc. */
 export function writeMCPFusionrc(cwd: string, config: Partial<RemoteConfig>): void {
     const existing = readMCPFusionrc(cwd);
     const merged = { ...existing, ...config };
@@ -76,5 +69,4 @@ export function writeMCPFusionrc(cwd: string, config: Partial<RemoteConfig>): vo
         if (merged[key] === undefined) delete merged[key];
     }
     writeFileSync(resolve(cwd, mcpfusionrc), JSON.stringify(merged, null, 2) + '\n');
-    ensureGitignore(cwd);
 }

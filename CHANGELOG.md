@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.1] - 2026-06-25
+
+### Fixed
+
+#### `@mcpfusion/core` — Removed Auto-Gitignore on `.MCPFusionrc`
+
+- **`writeMCPFusionrc()` no longer auto-adds `.MCPFusionrc` to `.gitignore`** — The `ensureGitignore()` function was automatically appending `.MCPFusionrc` to the project's `.gitignore` every time `mcpfusion remote` was executed. This prevented the RC file from being committed to the repository, breaking bulk-deploy workflows that depend on reading `serverId` and `token` from the persisted `.MCPFusionrc`. The `ensureGitignore()` function is now a no-op, preserved only for backward compatibility. Projects that require `.MCPFusionrc` to be ignored should add it manually.
+
+### Changed
+
+- **All `@mcpfusion/*` cross-dependencies updated to `^4.3.1`** — Ensures consistent resolution across the monorepo.
+
 ## [4.3.0] - 2026-06-18
 
 ### Fixed
