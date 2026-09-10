@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.9] - 2026-09-10
+
+### Fixed — `global → globalThis` edge shim corrupted string literals
+
+#### `@mcpfusion/core` — deploy bundle rewrite broke routes and copy (P1)
+
+- **`sanitizeBundleForEdge()`**: the final naive `/\bglobal\b(?!This|Middleware|Mw)/g` replace over the bundle text matched inside string literals, corrupting them in every deployed server. A route literal `'/global'` became `'/globalThis'` and 404'd in production (coinpaprika-mcp), and tool copy like "global cryptocurrency market" became "globalThis cryptocurrency market". Local runs never reproduced it — only the deployed V8-isolate bundle was affected.
+- Replaced with **`replaceBareGlobal()`**, a character scanner that rewrites the bare identifier only in live code (strings, template text, regex literals and comments are walked, not matched). Inside strings/templates/regexes the word is escaped as `globa\u006C` — identical parsed content, but the raw text no longer carries the bare word, the same Unicode-escape technique already used for `process\u002Eenv` and `\u005f_vinkius_secrets`.
+- Template-literal interpolation zones (`${ ... }`) are tracked with a brace-depth stack, so `global` inside `${global.crypto}` is still rewritten to `globalThis`.
+- Added `tests/cli/deployGlobalStringLiterals.test.ts` pinning: code rewriting, string/template/regex escaping with parsed-content equality, comment passthrough, regex-vs-division heuristics, and the identifier-boundary match set (`globalThis`, `globalMarket`, `global_market`, `getGlobalMarket` never match).
+
 ## [5.0.8] - 2026-08-10
 
 ### Fixed — AbortSignal lifecycle bugs in execution pipeline

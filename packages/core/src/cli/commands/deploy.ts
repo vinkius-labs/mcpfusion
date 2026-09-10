@@ -46,6 +46,130 @@ const BUILTIN_FILTER = new RegExp(
     `^(node:)?(${BUILTIN_ROOTS.join('|')})(/.*)?$`,
 );
 
+// ── Bare-global Shim (string-aware) ──────────────────────────────────────────
+// global → globalThis — Node.js packages (e.g. @hono/node-server) use
+// `typeof global.crypto` which throws "global is not defined" in a V8
+// isolate (browser platform). Replace bare `global` (not globalThis,
+// globalMiddleware, globalMw) with globalThis — semantically identical
+// in both Node.js and browser/isolate runtimes.
+//
+// The naive /\bglobal\b/g replace over the bundle text also matched inside
+// string literals, corrupting them: a route literal '/global' became
+// '/globalThis' and 404'd in production (coinpaprika-mcp), and copy like
+// "global cryptocurrency market" became "globalThis cryptocurrency market".
+// This scanner walks the bundle character by character and:
+//   - code:   `global` → `globalThis` (same match set as /\bglobal\b/ —
+//             identifier boundaries on both sides, so globalThis,
+//             globalMarket, global_market and getGlobalMarket never match)
+//   - strings & template text: `global` → `globa\u006C` — parses to the
+//     identical string content, but the raw text no longer carries the bare
+//     word (same Unicode-escape technique as \u002E / \u005f above)
+//   - regex literals: `global` → `globa\u006C` (\u006C is a valid regex
+//     escape matching the same character)
+//   - comments: left verbatim (never executed)
+const REGEX_KEYWORDS = new Set([
+    'return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void',
+    'case', 'do', 'else', 'yield', 'await', 'throw',
+]);
+
+function isRegexStart(code: string, i: number): boolean {
+    let j = i - 1;
+    while (j >= 0 && /\s/.test(code[j]!)) j--;
+    if (j < 0) return true;
+    const prev = code[j]!;
+    // After a value (identifier, number, `)`, `]`, string end) a `/` is
+    // division — unless the identifier is a keyword (`return /re/`).
+    if (/[A-Za-z0-9_$)\]'"`]/.test(prev)) {
+        const tail = /[A-Za-z0-9_$]+$/.exec(code.slice(0, j + 1));
+        return tail !== null && REGEX_KEYWORDS.has(tail[0]);
+    }
+    return true;
+}
+
+export function replaceBareGlobal(code: string): string {
+    let out = '';
+    let i = 0;
+    // Zone stack: 'code' is live code (file scope or a ${...} interpolation);
+    // 'tpl' is template-literal text. Each code zone counts its own braces so
+    // a `}` closes an interpolation back into its template instead of a block.
+    const zones: Array<'code' | 'tpl'> = ['code'];
+    const depths: number[] = [0];
+
+    const isWordChar = (ch: string | undefined) =>
+        ch !== undefined && /[A-Za-z0-9_$]/.test(ch);
+    // `global` with identifier boundaries on both sides — same match set as
+    // the previous /\bglobal\b(?!This|Middleware|Mw)/ regex.
+    const atWord = (pos: number) =>
+        code.startsWith('global', pos) &&
+        !isWordChar(pos > 0 ? code[pos - 1] : undefined) &&
+        !isWordChar(code[pos + 6]);
+
+    while (i < code.length) {
+        const zone = zones[zones.length - 1]!;
+        const c = code[i]!;
+
+        if (zone === 'tpl') {
+            if (c === '\\') { out += code.slice(i, i + 2); i += 2; continue; }
+            if (c === '`') { zones.pop(); depths.pop(); out += c; i++; continue; }
+            if (c === '$' && code[i + 1] === '{') {
+                zones.push('code'); depths.push(0);
+                out += '${'; i += 2; continue;
+            }
+            if (atWord(i)) { out += 'globa\\u006C'; i += 6; continue; }
+            out += c; i++; continue;
+        }
+
+        // ── code zone ──
+        if (c === '\'' || c === '"') {
+            const quote = c;
+            out += c; i++;
+            while (i < code.length) {
+                const ch = code[i]!;
+                if (ch === '\\') { out += code.slice(i, i + 2); i += 2; continue; }
+                if (atWord(i)) { out += 'globa\\u006C'; i += 6; continue; }
+                out += ch; i++;
+                if (ch === quote || ch === '\n') break;
+            }
+            continue;
+        }
+        if (c === '`') { zones.push('tpl'); depths.push(0); out += c; i++; continue; }
+        if (c === '/' && code[i + 1] === '/') {
+            const end = code.indexOf('\n', i);
+            const stop = end === -1 ? code.length : end;
+            out += code.slice(i, stop); i = stop; continue;
+        }
+        if (c === '/' && code[i + 1] === '*') {
+            const end = code.indexOf('*/', i + 2);
+            const stop = end === -1 ? code.length : end + 2;
+            out += code.slice(i, stop); i = stop; continue;
+        }
+        if (c === '/' && isRegexStart(code, i)) {
+            out += '/'; i++;
+            let inClass = false;
+            while (i < code.length) {
+                const ch = code[i]!;
+                if (ch === '\\') { out += code.slice(i, i + 2); i += 2; continue; }
+                if (ch === '[') { inClass = true; out += ch; i++; continue; }
+                if (ch === ']') { inClass = false; out += ch; i++; continue; }
+                if (ch === '\n') { out += ch; i++; break; } // not a regex — bail per line
+                if (ch === '/' && !inClass) { out += '/'; i++; break; }
+                if (atWord(i)) { out += 'globa\\u006C'; i += 6; continue; }
+                out += ch; i++;
+            }
+            continue;
+        }
+        if (atWord(i)) { out += 'globalThis'; i += 6; continue; }
+        if (c === '{') { depths[depths.length - 1]!++; out += c; i++; continue; }
+        if (c === '}') {
+            if (depths[depths.length - 1]! > 0) depths[depths.length - 1]!--;
+            else if (zones.length > 1) { zones.pop(); depths.pop(); } // close ${ }
+            out += c; i++; continue;
+        }
+        out += c; i++;
+    }
+    return out;
+}
+
 // ── Bundle Sanitizer ─────────────────────────────────────────────────────────
 // The deploy server runs static analysis to reject dangerous patterns.
 // esbuild and third-party SDKs emit these legitimately (CJS interop,
@@ -56,7 +180,7 @@ const BUILTIN_FILTER = new RegExp(
 // NOTE: Credential security scanning is intentionally server-side only.
 // Any client-side check can be bypassed by modifying this open-source file.
 function sanitizeBundleForEdge(code: string): string {
-    return code
+    return replaceBareGlobal(code
         // eval( → (0,eval)( — indirect eval, same semantics, no \b word boundary match
         .replace(/\beval\s*\(/g, '(0,eval)(')
         // new Function( → new (0,Function)( — same semantics
@@ -96,13 +220,7 @@ function sanitizeBundleForEdge(code: string): string {
         // __vinkius_edge_ → \u005f_vinkius_edge_ — same Unicode escape technique
         .replace(/__vinkius_edge_/g, '\\u005f_vinkius_edge_')
         // globalThis[ → (globalThis)/**/ [ to break /globalThis\s*\[/ regex
-        .replace(/globalThis\s*\[/g, '(globalThis)/**/[')
-        // global → globalThis — Node.js packages (e.g. @hono/node-server) use
-        // `typeof global.crypto` which throws "global is not defined" in a V8
-        // isolate (browser platform). Replace bare `global` (not globalThis,
-        // globalMiddleware, globalMw) with globalThis — semantically identical
-        // in both Node.js and browser/isolate runtimes.
-        .replace(/\bglobal\b(?!This|Middleware|Mw)/g, 'globalThis');
+        .replace(/globalThis\s*\[/g, '(globalThis)/**/['));
 }
 
 function edgeStubPlugin(cwd: string): EsbuildNS.Plugin {
