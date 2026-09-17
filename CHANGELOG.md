@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.10] - 2026-09-17
+
 ### Fixed — grouped tool descriptions echoed the tool summary and under-reported required fields
 
 #### `@mcpfusion/core` — description contamination under `toolExposition: 'grouped'` (P2)
