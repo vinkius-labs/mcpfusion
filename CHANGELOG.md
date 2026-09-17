@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wire-visible but non-breaking: no API, type, or schema shape changed — the two new parameters (`commonSchema` on `getActionRequiredFields`/`generateDescription`/`generateToonDescription`) are optional. For grouped exposition the description only shrinks; flat exposition is byte-for-byte unchanged.
 - Added `packages/core/tests/core/DescriptionInheritance-bug152-153.test.ts` pinning: echo suppression (markdown + TOON, flat and hierarchical), preservation of action-specific descriptions, common-schema requirements incl. `omitCommon`, introspection parity, and flat-mode invariance.
 
+### Fixed — thrown classified responses were flattened into INTERNAL_ERROR
+
+#### `@mcpfusion/core` — `runChain()` catch block (P2)
+
+- The taught error idiom is `throw toolError('NOT_FOUND', {...})` / `throw error('Unauthorized')` — handlers and middleware may raise an already-classified response instead of returning it (see `cli/templates/middleware.ts` and `FluentToolBuilder`). The `runChain()` catch block only recognised a plain `ToolResponse`, so a thrown response lost its error code, recovery guidance, and warning-vs-error severity and was re-wrapped as a generic `INTERNAL_ERROR`.
+- Two shapes were worse than merely lost: a thrown `HandoffResponse` carries the `TOOL_RESPONSE_BRAND` but has no `content` array, so the `isToolResponse()`-only check forwarded it to code that indexes `content` — a crash on the federated-handoff path; and a thrown `ResponseBuilder` was discarded instead of built, losing every composed content block.
+- The catch block now mirrors `postProcessResult()`'s priority ordering — `isHandoffResponse` → `isResponseBuilder` → `isToolResponse` — and only the genuinely unexpected remainder becomes `INTERNAL_ERROR`. That fallback no longer claims the failure is transient (a permanent failure — bad id, missing resource, expired auth — would otherwise send the agent into a retry loop with identical parameters); it reports the `[tool/action]` origin and tells the agent to inspect the message rather than blindly retry.
+- Added `packages/core/tests/core/ThrownResponseRecovery.test.ts` pinning: recovery of thrown `toolError` (incl. warning severity staying non-fatal), `error`, `handoff`, `ResponseBuilder` and `success`; plain-`Error` and non-`Error` throwables becoming `INTERNAL_ERROR` with the new guidance; and the `rethrow: true` traced path propagating the original exception unchanged.
+
 ## [5.0.9] - 2026-09-10
 
 ### Fixed — `global → globalThis` edge shim corrupted string literals

@@ -10,14 +10,15 @@
  * Pipeline: ensureBuilt → parseDiscriminator → resolveAction → validateArgs → runChain
  */
 import { type ZodObject, type ZodRawShape } from 'zod';
-import { type ToolResponse, error, escapeXml, toolError } from '../response.js';
+import { type ToolResponse, error, escapeXml, toolError, isHandoffResponse } from '../response.js';
 import { toErrorMessage } from '../ErrorUtils.js';
 import { formatValidationError } from './ValidationErrorFormatter.js';
 import { type Result, succeed, fail } from '../result.js';
 import { type InternalAction } from '../types.js';
 import { type CompiledChain } from './MiddlewareCompiler.js';
 import { type ProgressSink, isProgressEvent } from './ProgressHelper.js';
-import { postProcessResult, type PostProcessTelemetry } from '../../presenter/PostProcessor.js';
+import { postProcessResult, isToolResponse, type PostProcessTelemetry } from '../../presenter/PostProcessor.js';
+import { isResponseBuilder, type ResponseBuilder } from '../../presenter/ResponseBuilder.js';
 
 /** Intentional no-op — used to suppress unhandled rejection warnings on best-effort cleanup. */
 const noop = (): void => { /* intentional */ };
@@ -189,10 +190,32 @@ export async function runChain<TContext>(
         return postProcessResult(result, resolved.action.returns, ctx, selectFields, telemetry);
     } catch (err) {
         if (rethrow) throw err;
+
+        // A handler (or middleware) may throw an already-classified response
+        // instead of returning it — e.g. `throw toolError('NOT_FOUND', {...})`
+        // or `throw error('Unauthorized')`. Recover it intact so its code and
+        // recovery guidance survive, instead of flattening it into a generic
+        // INTERNAL_ERROR. The ordering mirrors postProcessResult(): handoff and
+        // builder first, since both carry the tool-response brand but need
+        // distinct handling before the plain ToolResponse check.
+        if (isHandoffResponse(err)) {
+            return err as unknown as ToolResponse;
+        }
+        if (isResponseBuilder(err)) {
+            return (err as ResponseBuilder).build();
+        }
+        if (isToolResponse(err)) {
+            return err;
+        }
+
+        // Genuinely unexpected exception. Do NOT claim it is transient: a
+        // permanent failure (bad id, missing resource, auth) would otherwise
+        // send the agent into a retry loop with identical parameters. Report it
+        // as unknown and let the agent decide, rather than prescribing a retry.
         const message = toErrorMessage(err);
         return toolError('INTERNAL_ERROR', {
             message: `[${execCtx.toolName}/${resolved.discriminatorValue}] ${message}`,
-            suggestion: 'This may be a transient error. Retry the same call with identical parameters.',
+            suggestion: 'The tool raised an unexpected error. Do not blindly retry with identical parameters; inspect the message, correct the inputs, or try a different action.',
             severity: 'error',
         });
     }
