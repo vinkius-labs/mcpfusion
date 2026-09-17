@@ -63,8 +63,10 @@ describe('GroupedToolBuilder — Flat Mode', () => {
         const tool = builder.buildToolDefinition();
 
         expect(tool.description).toContain("- 'create': Create a new label. Requires: title, color");
-        // 'list' inherits builder description → appears in workflow
-        expect(tool.description).toContain("- 'list': Labels");
+        // 'list' inherits the builder summary, which leads Layer 1 — it must
+        // not be echoed into its Workflow line (bug 152).
+        expect(tool.description).toContain('Labels. Select operation');
+        expect(tool.description).not.toContain("- 'list': Labels");
     });
 
     it('should reject action names containing dots', () => {
@@ -825,7 +827,8 @@ describe('Scenario — File System Tool (Grouped)', () => {
 describe('Scenario — E-Commerce Tool', () => {
     it('should inherit builder description for actions without their own', () => {
         // Action has required fields but no description — inherits builder description.
-        // Workflow shows "Description. Requires: X" instead of just "Requires: X".
+        // The inherited summary must NOT be echoed into the Workflow line:
+        // it already leads Layer 1, so only the required fields are shown.
         const builder = new GroupedToolBuilder('orders')
             .description('Order management')
             .action({
@@ -845,8 +848,11 @@ describe('Scenario — E-Commerce Tool', () => {
 
         const tool = builder.buildToolDefinition();
 
-        // Inherited description + required fields
-        expect(tool.description).toContain("- 'create': Order management. Requires: product_id, quantity");
+        // Layer 1 still carries the tool summary...
+        expect(tool.description).toContain('Order management');
+        // ...Layer 2 shows only required fields, without echoing the summary
+        expect(tool.description).toContain("- 'create': Requires: product_id, quantity");
+        expect(tool.description).not.toContain('Order management. Requires');
     });
 
     it('should expose action names via getActionNames()', () => {
@@ -965,7 +971,10 @@ describe('GroupedToolBuilder — Description Inheritance', () => {
             .action({ name: 'suggest', handler: dummyHandler });
 
         const tool = builder.buildToolDefinition();
-        expect(tool.description).toContain("'query': Search the knowledge base");
+        // The inherited summary leads Layer 1 (and serves flat exposition);
+        // it must not be echoed per action in the Workflow block (bug 152).
+        expect(tool.description).toContain('Search the knowledge base. Select operation');
+        expect(tool.description).not.toContain("'query': Search the knowledge base");
     });
 
     it('should NOT override action description when action has its own', () => {
@@ -987,7 +996,9 @@ describe('GroupedToolBuilder — Description Inheritance', () => {
             });
 
         const tool = builder.buildToolDefinition();
-        expect(tool.description).toContain("'users.list': Platform management");
+        // Inherited summary leads Layer 1; the Workflow line stays clean.
+        expect(tool.description).toContain('Platform management. Select operation');
+        expect(tool.description).not.toContain("'users.list': Platform management");
     });
 
     it('should NOT override grouped action description when action has its own', () => {

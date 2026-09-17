@@ -31,19 +31,46 @@ export function isZodSchema(value: unknown): value is ZodObject<ZodRawShape> {
 // ── Schema Inspection ────────────────────────────────────
 
 /**
- * Get the list of required field names from an action's Zod schema.
- * Returns an empty array if the action has no schema.
+ * Get the list of required field names for an action.
+ *
+ * Inspects both the action's own schema and the tool-level `commonSchema`,
+ * respecting per-action `omitCommonFields`. This mirrors the merged schema
+ * that `buildValidationSchema()` compiles and enforces at runtime, so the
+ * "Requires:" hint shown to the LLM can never under-report a field that
+ * validation will reject.
+ *
+ * @param action - The action to inspect
+ * @param commonSchema - Optional tool-level schema shared by all actions
+ * @returns Deduplicated required field names (common first, then per-action)
  */
-export function getActionRequiredFields<TContext>(action: InternalAction<TContext>): string[] {
-    if (!action.schema) return [];
-    const shape = action.schema.shape;
+export function getActionRequiredFields<TContext>(
+    action: InternalAction<TContext>,
+    commonSchema?: ZodObject<ZodRawShape>,
+): string[] {
     const required: string[] = [];
-    for (const [key, fieldSchema] of Object.entries(shape)) {
-        if (!(fieldSchema as ZodTypeAny).isOptional()) {
-            required.push(key);
+    const omitted = new Set(action.omitCommonFields ?? []);
+
+    // Common fields first (respecting omitCommon) — they lead "Requires:"
+    if (commonSchema) {
+        for (const [key, fieldSchema] of Object.entries(commonSchema.shape)) {
+            if (omitted.has(key)) continue;
+            if (!(fieldSchema as ZodTypeAny).isOptional()) {
+                required.push(key);
+            }
         }
     }
-    return required;
+
+    if (action.schema) {
+        for (const [key, fieldSchema] of Object.entries(action.schema.shape)) {
+            if (!(fieldSchema as ZodTypeAny).isOptional()) {
+                required.push(key);
+            }
+        }
+    }
+
+    // Deduplicate preserving insertion order (guards against a field
+    // appearing in both common and per-action shapes).
+    return [...new Set(required)];
 }
 
 // ── Schema Compatibility ─────────────────────────────────

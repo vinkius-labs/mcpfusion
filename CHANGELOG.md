@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — grouped tool descriptions echoed the tool summary and under-reported required fields
+
+#### `@mcpfusion/core` — description contamination under `toolExposition: 'grouped'` (P2)
+
+- **Bug 152 — inherited description echoed once per action.** When a builder had `.description()` but its actions did not, the summary was inherited into `action.description` (correct — the flat exposition relies on that fallback) and then echoed once per action in the `Workflow:` block and in the TOON `desc:` column. The summary already leads Layer 1, so it was repeated `1 + N` times with no new information for the LLM. The generators now treat a description equal to the tool-level summary as "not action-specific" and omit it from Layer 2, keeping action-specific descriptions intact. `DescriptionGenerator.generateWorkflowLines()`, `ToonDescriptionGenerator.buildActionRow()`.
+- **Bug 153 — `Requires:` ignored `commonSchema`.** `getActionRequiredFields()` only inspected the per-action schema, never the tool-level `commonSchema` (and did not apply `omitCommonFields`). A required `workspace_id` declared via `.commonSchema()` appeared in `inputSchema.required` but never in the `Requires:` hint, so the LLM omitted a field that validation would reject — a needless self-healing bounce. The hint now reflects the same merged schema that `buildValidationSchema()` enforces, and `getActionMetadata().requiredFields` (which feeds lockfiles, governance, and dashboards) reports the complete set.
+- Wire-visible but non-breaking: no API, type, or schema shape changed — the two new parameters (`commonSchema` on `getActionRequiredFields`/`generateDescription`/`generateToonDescription`) are optional. For grouped exposition the description only shrinks; flat exposition is byte-for-byte unchanged.
+- Added `packages/core/tests/core/DescriptionInheritance-bug152-153.test.ts` pinning: echo suppression (markdown + TOON, flat and hierarchical), preservation of action-specific descriptions, common-schema requirements incl. `omitCommon`, introspection parity, and flat-mode invariance.
+
 ## [5.0.9] - 2026-09-10
 
 ### Fixed — `global → globalThis` edge shim corrupted string literals

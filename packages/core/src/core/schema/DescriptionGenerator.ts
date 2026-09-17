@@ -7,6 +7,7 @@
  *
  * Pure-function module: no state, no side effects.
  */
+import { type ZodObject, type ZodRawShape } from 'zod';
 import { type InternalAction } from '../types.js';
 import { getActionRequiredFields } from './SchemaUtils.js';
 
@@ -18,6 +19,7 @@ export function generateDescription<TContext>(
     description: string | undefined,
     hasGroup: boolean,
     discriminator = 'action',
+    commonSchema?: ZodObject<ZodRawShape>,
 ): string {
     const lines: string[] = [];
 
@@ -47,7 +49,7 @@ export function generateDescription<TContext>(
     // nothing to dispatch between, so the per-action Workflow block is
     // redundant and is omitted.
     if (hasGroup || actions.length >= 2) {
-        const workflowLines = generateWorkflowLines(actions);
+        const workflowLines = generateWorkflowLines(actions, description, commonSchema);
         if (workflowLines.length > 0) {
             lines.push('');
             lines.push('Workflow:');
@@ -62,22 +64,30 @@ export function generateDescription<TContext>(
 
 function generateWorkflowLines<TContext>(
     actions: readonly InternalAction<TContext>[],
+    toolDescription: string | undefined,
+    commonSchema?: ZodObject<ZodRawShape>,
 ): string[] {
     const lines: string[] = [];
     for (const action of actions) {
-        const requiredFields = getActionRequiredFields(action);
+        const requiredFields = getActionRequiredFields(action, commonSchema);
         const isDestructive = action.destructive === true;
 
-        if (!action.description && requiredFields.length === 0 && !isDestructive) {
+        // An action that inherits the builder-level description has no
+        // action-specific documentation — that summary already leads Layer 1.
+        // Treating the inheritance as "no description" prevents the tool
+        // summary from being echoed once per action in the Workflow block.
+        const hasOwnDescription = !!action.description && action.description !== toolDescription;
+
+        if (!hasOwnDescription && requiredFields.length === 0 && !isDestructive) {
             continue;
         }
 
         let line = `- '${action.key}': `;
-        if (action.description) {
+        if (hasOwnDescription) {
             line += action.description;
         }
         if (requiredFields.length > 0) {
-            line += action.description ? '. Requires: ' : 'Requires: ';
+            line += hasOwnDescription ? '. Requires: ' : 'Requires: ';
             line += requiredFields.join(', ');
         }
         if (isDestructive) {

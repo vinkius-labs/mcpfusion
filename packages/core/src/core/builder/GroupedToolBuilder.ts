@@ -1493,7 +1493,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
                 destructive: a.destructive ?? false,
                 idempotent: a.idempotent ?? false,
                 readOnly: a.readOnly ?? false,
-                requiredFields: getActionRequiredFields(a),
+                requiredFields: getActionRequiredFields(a, this._commonSchema),
                 hasMiddleware: (a.middlewares?.length ?? 0) > 0,
                 // Presenter metadata (introspection)
                 presenterName: presenter?.name,

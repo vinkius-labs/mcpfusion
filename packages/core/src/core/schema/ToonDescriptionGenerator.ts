@@ -10,6 +10,7 @@
  * Pure-function module: no state, no side effects.
  */
 import { encode } from '@toon-format/toon';
+import { type ZodObject, type ZodRawShape } from 'zod';
 import { type InternalAction } from '../types.js';
 import { getActionRequiredFields } from './SchemaUtils.js';
 
@@ -21,6 +22,7 @@ export function generateToonDescription<TContext>(
     description: string | undefined,
     hasGroup: boolean,
     discriminator = 'action',
+    commonSchema?: ZodObject<ZodRawShape>,
 ): string {
     const lines: string[] = [];
 
@@ -34,7 +36,11 @@ export function generateToonDescription<TContext>(
     // omitted — parity with the markdown DescriptionGenerator's Workflow rule.
     if (hasGroup || actions.length >= 2) {
         lines.push('');
-        lines.push(hasGroup ? encodeGroupedActions(actions) : encodeFlatActions(actions));
+        lines.push(
+            hasGroup
+                ? encodeGroupedActions(actions, description, commonSchema)
+                : encodeFlatActions(actions, description, commonSchema),
+        );
     }
 
     return lines.join('\n');
@@ -51,13 +57,17 @@ interface ActionRow {
 
 function encodeFlatActions<TContext>(
     actions: readonly InternalAction<TContext>[],
+    toolDescription: string | undefined,
+    commonSchema?: ZodObject<ZodRawShape>,
 ): string {
-    const rows = actions.map(a => buildActionRow(a.key, a));
+    const rows = actions.map(a => buildActionRow(a.key, a, toolDescription, commonSchema));
     return encode(rows, { delimiter: '|' });
 }
 
 function encodeGroupedActions<TContext>(
     actions: readonly InternalAction<TContext>[],
+    toolDescription: string | undefined,
+    commonSchema?: ZodObject<ZodRawShape>,
 ): string {
     // Group actions by their groupName
     const groups = new Map<string, InternalAction<TContext>[]>();
@@ -75,7 +85,7 @@ function encodeGroupedActions<TContext>(
     const groupData: Record<string, ActionRow[]> = {};
     for (const [groupName, groupActions] of groups) {
         groupData[groupName] = groupActions.map(a =>
-            buildActionRow(a.actionName, a),
+            buildActionRow(a.actionName, a, toolDescription, commonSchema),
         );
     }
 
@@ -85,11 +95,18 @@ function encodeGroupedActions<TContext>(
 function buildActionRow<TContext>(
     key: string,
     action: InternalAction<TContext>,
+    toolDescription: string | undefined,
+    commonSchema?: ZodObject<ZodRawShape>,
 ): ActionRow {
-    const required = getActionRequiredFields(action);
+    // An inherited builder description is not action-specific documentation —
+    // it already leads Layer 1. Emitting it here would repeat the tool summary
+    // once per row, inflating tokens with no new information for the LLM.
+    const hasOwnDescription = !!action.description && action.description !== toolDescription;
+
+    const required = getActionRequiredFields(action, commonSchema);
     const row: ActionRow = {
         action: key,
-        desc: action.description || '',
+        desc: hasOwnDescription ? action.description! : '',
         required: required.join(','),
     };
 

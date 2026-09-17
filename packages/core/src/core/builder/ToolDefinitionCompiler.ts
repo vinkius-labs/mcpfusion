@@ -81,7 +81,7 @@ export function compileToolDefinition<TContext>(
 
     // ── Build-time strategies ────────────────────────────
     const descriptionFn = input.toonMode ? generateToonDescription : generateDescription;
-    const description = descriptionFn(actions, name, input.description, input.hasGroup, discriminator);
+    const description = descriptionFn(actions, name, input.description, input.hasGroup, discriminator, commonSchema);
     const inputSchema = generateInputSchema(actions, discriminator, input.hasGroup, commonSchema, input.selectEnabled);
     const annotations = aggregateAnnotations(actions, explicitAnnotations);
 

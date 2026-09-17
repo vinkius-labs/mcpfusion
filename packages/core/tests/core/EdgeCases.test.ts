@@ -527,10 +527,14 @@ describe('GroupedToolBuilder — Description Edge Cases', () => {
             .action({ name: 'other', handler: dummyHandler });
 
         const tool = builder.buildToolDefinition();
-        // Action inherits builder-level description → workflow line is generated
-        // (Workflow section requires 2+ actions.)
-        expect(tool.description).toContain('Workflow:');
-        expect(tool.description).toContain("'simple': Test tool");
+        // Actions with no description, required fields, or destructive flag
+        // have nothing action-specific to report. The inherited summary leads
+        // Layer 1 and must not be echoed into a Workflow line (bug 152) —
+        // so no Workflow section is emitted at all.
+        expect(tool.description).toContain('Test tool. Select operation');
+        expect(tool.description).toContain('Actions: simple, other');
+        expect(tool.description).not.toContain('Workflow:');
+        expect(tool.description).not.toContain("'simple': Test tool");
     });
 
     it('should show workflow for action with only description (no required, not destructive)', () => {
