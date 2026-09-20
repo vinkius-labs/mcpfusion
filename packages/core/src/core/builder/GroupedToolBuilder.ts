@@ -59,7 +59,7 @@ import {
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
 import { type TelemetrySink } from '../../observability/TelemetryEvent.js';
 import { type MiddlewareDefinition, resolveMiddleware } from '../middleware/ContextDerivation.js';
-import { type MCPFusionTracer } from '../../observability/Tracing.js';
+import { type MCPFusionTracer, readMcpTraceContext } from '../../observability/Tracing.js';
 import { getActionRequiredFields } from '../schema/SchemaUtils.js';
 import {
     parseDiscriminator, resolveAction, validateArgs, runChain,
@@ -1132,7 +1132,7 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
 
         // Traced path: wrap in try/catch for system error → graceful response
         if (this._tracer) {
-            const hooks = mergeHooks(this._buildTracedHooks(), telemetryHooks);
+            const hooks = mergeHooks(this._buildTracedHooks(ctx), telemetryHooks);
             try {
                 return await this._executePipeline(execCtx, ctx, args, progressSink, hooks, signal);
             } catch (err) {
@@ -1259,8 +1259,15 @@ export class GroupedToolBuilder<TContext = void, TCommon extends Record<string, 
      * Uses wrapResponse for leak-proof span closure.
      * AI errors → UNSET, system errors → ERROR.
      */
-    private _buildTracedHooks(): PipelineHooks {
-        return buildTracedHooks(this._tracer!, this._hookContext());
+    private _buildTracedHooks(ctx?: TContext): PipelineHooks {
+        // G1 — automatic W3C correlation. The host's per-request contextFactory
+        // may carry an extracted parent span context on the conventional
+        // `mcpTraceContext` key (same duck-typed convention as
+        // `ctx.handoffTraceparent` in handoff). When present the tool span
+        // parents to the caller's trace; otherwise it is a fresh root. The
+        // guarded read means the missing-context proxy never throws here.
+        const parentContext = readMcpTraceContext(ctx);
+        return buildTracedHooks(this._tracer!, this._hookContext(), parentContext);
     }
 
     /**

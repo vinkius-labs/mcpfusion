@@ -13,8 +13,22 @@ export type {
 } from './DebugObserver.js';
 
 // ── Tracing (OpenTelemetry-compatible) ───────────────────
-export { SpanStatusCode } from './Tracing.js';
-export type { MCPFusionSpan, MCPFusionTracer, MCPFusionAttributeValue } from './Tracing.js';
+export {
+    SpanStatusCode,
+    W3CFlagSampled,
+    newTraceId,
+    newSpanId,
+    generateTraceparent,
+    parseTraceparent,
+    parseTracestate,
+    parseBaggage,
+    extractW3CContext,
+    readMcpTraceContext,
+} from './Tracing.js';
+export type {
+    MCPFusionSpan, MCPFusionTracer, MCPFusionAttributeValue,
+    MCPFusionSpanContext, W3CContextInput,
+} from './Tracing.js';
 
 // ── Telemetry (Shadow Socket Out-of-Band Transport) ──────
 export { createTelemetryBus, getTelemetryPath, discoverSockets } from './TelemetryBus.js';

@@ -121,7 +121,19 @@ export type { MCPFusionClient, MCPFusionTransport, RouterMap, InferRouter, Typed
 
 // ── Observability (Debug + Tracing) ──────────────────────
 /** @category Observability */
-export { createDebugObserver, SpanStatusCode } from './observability/index.js';
+export {
+    createDebugObserver,
+    SpanStatusCode,
+    W3CFlagSampled,
+    newTraceId,
+    newSpanId,
+    generateTraceparent,
+    parseTraceparent,
+    parseTracestate,
+    parseBaggage,
+    extractW3CContext,
+    readMcpTraceContext,
+} from './observability/index.js';
 /** @category Observability */
 export { createTelemetryBus, getTelemetryPath, discoverSockets } from './observability/index.js';
 /** @category Observability */
@@ -130,6 +142,7 @@ export type {
     RouteEvent, ValidateEvent, MiddlewareEvent, ExecuteEvent, ErrorEvent,
     GovernanceEvent, GovernanceOperation,
     MCPFusionSpan, MCPFusionTracer, MCPFusionAttributeValue,
+    MCPFusionSpanContext, W3CContextInput,
     TelemetryEvent, TelemetrySink,
     TelemetryBusConfig, TelemetryBusInstance,
     DlpRedactEvent, PresenterSliceEvent, PresenterRulesEvent,

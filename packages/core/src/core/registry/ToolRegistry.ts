@@ -33,7 +33,7 @@ import { type ToolResponse, toolError } from '../response.js';
 import { type ToolBuilder } from '../types.js';
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
 import { type TelemetrySink } from '../../observability/TelemetryEvent.js';
-import { type MCPFusionTracer, SpanStatusCode } from '../../observability/Tracing.js';
+import { type MCPFusionTracer, readMcpTraceContext, SpanStatusCode } from '../../observability/Tracing.js';
 import { filterTools, type ToolFilter } from './ToolFilterEngine.js';
 import {
     attachToServer as attachToServerStrategy,
@@ -222,9 +222,20 @@ export class ToolRegistry<TContext = void> {
         const builder = this._builders.get(name);
         if (!builder) {
             if (this._tracer) {
+                const parentContext = readMcpTraceContext(ctx);
+                // G2 — same dual-convention tags as a successful tool span so a
+                // failed routing attempt still appears in backend queries
+                // filtered by `openinference.span.kind=TOOL` / `tools/call`.
                 const span = this._tracer.startSpan(`mcp.tool.${name}`, {
-                    attributes: { 'mcp.system': 'mcpfusion', 'mcp.tool': name, 'mcp.error_type': 'unknown_tool' },
-                });
+                    attributes: {
+                        'mcp.system': 'mcpfusion',
+                        'mcp.tool': name,
+                        'mcp.error_type': 'unknown_tool',
+                        'openinference.span.kind': 'TOOL',
+                        'gen_ai.operation.name': 'tools/call',
+                        'tool.name': name,
+                    },
+                }, parentContext);
                 span.setStatus({ code: SpanStatusCode.UNSET, message: `Unknown tool: "${name}"` });
                 span.end();
             }

@@ -14,7 +14,7 @@
 import { type ToolResponse } from '../types.js';
 import { type DebugObserverFn } from '../../observability/DebugObserver.js';
 import { type TelemetrySink, type ExecuteWithRecoveryEvent } from '../../observability/TelemetryEvent.js';
-import { type MCPFusionTracer, SpanStatusCode } from '../../observability/Tracing.js';
+import { type MCPFusionTracer, type MCPFusionSpanContext, SpanStatusCode } from '../../observability/Tracing.js';
 import { computeResponseSize, type PipelineHooks } from '../execution/PipelineHooks.js';
 import { toErrorMessage } from '../ErrorUtils.js';
 
@@ -84,10 +84,21 @@ export function buildDebugHooks(debug: DebugObserverFn, ctx: HookContext): Pipel
  * Uses wrapResponse for leak-proof span closure.
  * AI errors → UNSET, system errors → ERROR.
  *
+ * Dual-convention emission (G2): the span carries both `mcp.*` and the
+ * `gen_ai.*` / `openinference.*` / `tool.*` tags so it is portable across
+ * Datadog, Arize and Phoenix without the backend understanding `mcp.*`.
+ *
  * @param tracer - A {@link MCPFusionTracer} instance (or OTel Tracer)
  * @param ctx - Tool metadata
+ * @param parentContext - Optional parent span context (e.g. an extracted W3C
+ *   remote parent). Forwarded to `startSpan` so the tool span correlates into
+ *   the caller's trace instead of minting a new root.
  */
-export function buildTracedHooks(tracer: MCPFusionTracer, ctx: HookContext): PipelineHooks {
+export function buildTracedHooks(
+    tracer: MCPFusionTracer,
+    ctx: HookContext,
+    parentContext?: MCPFusionSpanContext,
+): PipelineHooks {
     const startAttrs: Record<string, string | number | boolean | ReadonlyArray<string>> = {
         'mcp.system': 'mcpfusion',
         'mcp.tool': ctx.name,
@@ -95,7 +106,13 @@ export function buildTracedHooks(tracer: MCPFusionTracer, ctx: HookContext): Pip
     if (ctx.tags.length > 0) startAttrs['mcp.tags'] = ctx.tags;
     if (ctx.description) startAttrs['mcp.description'] = ctx.description;
 
-    const span = tracer.startSpan(`mcp.tool.${ctx.name}`, { attributes: startAttrs });
+    // G2 — dual-convention tags. No token/cost attributes here: those live on
+    // the agent-side LLM span, not at the tool-execution boundary.
+    startAttrs['openinference.span.kind'] = 'TOOL';
+    startAttrs['gen_ai.operation.name'] = 'tools/call';
+    startAttrs['tool.name'] = ctx.name;
+
+    const span = tracer.startSpan(`mcp.tool.${ctx.name}`, { attributes: startAttrs }, parentContext);
     const startTime = Date.now();
     let statusCode: number = SpanStatusCode.UNSET;
     let statusMessage: string | undefined;

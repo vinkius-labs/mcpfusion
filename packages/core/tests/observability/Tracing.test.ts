@@ -20,10 +20,19 @@ import { z } from 'zod';
 import { createTool } from '../../src/core/builder/GroupedToolBuilder.js';
 import { defineTool } from '../../src/core/builder/defineTool.js';
 import { createDebugObserver } from '../../src/observability/DebugObserver.js';
-import { SpanStatusCode } from '../../src/observability/Tracing.js';
+import {
+    SpanStatusCode,
+    W3CFlagSampled,
+    newTraceId, newSpanId, generateTraceparent,
+    parseTraceparent, parseTracestate, parseBaggage,
+    extractW3CContext, readMcpTraceContext,
+} from '../../src/observability/Tracing.js';
 import { ToolRegistry } from '../../src/core/registry/ToolRegistry.js';
 import { success, error as errorResponse } from '../../src/core/response.js';
-import type { MCPFusionTracer, MCPFusionSpan, MCPFusionAttributeValue } from '../../src/observability/Tracing.js';
+import type {
+    MCPFusionTracer, MCPFusionSpan, MCPFusionAttributeValue,
+    MCPFusionSpanContext,
+} from '../../src/observability/Tracing.js';
 import type { DebugEvent } from '../../src/observability/DebugObserver.js';
 
 // ============================================================================
@@ -37,13 +46,15 @@ interface MockSpanData {
     status: { code: number; message?: string } | null;
     exceptions: Array<Error | string>;
     ended: boolean;
+    /** The parent span context (3rd arg) passed to `startSpan`, if any. */
+    context: MCPFusionSpanContext | undefined;
 }
 
 function createMockTracer(): { tracer: MCPFusionTracer; spans: MockSpanData[] } {
     const spans: MockSpanData[] = [];
 
     const tracer: MCPFusionTracer = {
-        startSpan(name, options) {
+        startSpan(name, options, context) {
             const data: MockSpanData = {
                 name,
                 attributes: new Map(Object.entries(options?.attributes ?? {})),
@@ -51,6 +62,7 @@ function createMockTracer(): { tracer: MCPFusionTracer; spans: MockSpanData[] } 
                 status: null,
                 exceptions: [],
                 ended: false,
+                context,
             };
 
             const span: MCPFusionSpan = {
@@ -804,5 +816,220 @@ describe('Server attachment — tracing option', () => {
         expect(spans).toHaveLength(1);
         expect(spans[0]!.name).toBe('mcp.tool.server-test');
         expect(spans[0]!.status!.code).toBe(SpanStatusCode.OK);
+    });
+});
+
+// ============================================================================
+// 14. G2 — dual-convention emission
+// ============================================================================
+
+describe('G2 — dual-convention emission', () => {
+    it('should tag the tool span with OpenInference + GenAI attributes', async () => {
+        const { tracer, spans } = createMockTracer();
+        const tool = createTool<void>('billing')
+            .tracing(tracer)
+            .action({ name: 'charge', handler: async () => success('ok') });
+
+        await tool.execute(undefined, { action: 'charge' });
+
+        const attrs = spans[0]!.attributes;
+        expect(attrs.get('openinference.span.kind')).toBe('TOOL');
+        expect(attrs.get('gen_ai.operation.name')).toBe('tools/call');
+        expect(attrs.get('tool.name')).toBe('billing');
+        // still carries the native mcp.* namespace
+        expect(attrs.get('mcp.system')).toBe('mcpfusion');
+        expect(attrs.get('mcp.tool')).toBe('billing');
+    });
+});
+
+// ============================================================================
+// 15. G1 — W3C Trace Context helpers
+// ============================================================================
+
+describe('G1 — W3C helpers', () => {
+    it('newTraceId() returns 32 non-zero lowercase hex chars', () => {
+        const id = newTraceId();
+        expect(id).toMatch(/^[0-9a-f]{32}$/);
+        expect(id).not.toBe('0'.repeat(32));
+    });
+
+    it('newSpanId() returns 16 non-zero lowercase hex chars', () => {
+        const id = newSpanId();
+        expect(id).toMatch(/^[0-9a-f]{16}$/);
+        expect(id).not.toBe('0'.repeat(16));
+    });
+
+    it('generateTraceparent() produces a valid parseable header', () => {
+        const parsed = parseTraceparent(generateTraceparent());
+        expect(parsed).toBeDefined();
+        expect(parsed!.flags).toBe(W3CFlagSampled);
+    });
+
+    it('generateTraceparent(false) sets flags to 00', () => {
+        const header = generateTraceparent(false);
+        expect(header.endsWith('-00')).toBe(true);
+        expect(parseTraceparent(header)!.flags).toBe(0);
+    });
+
+    it('parseTraceparent accepts a well-formed header', () => {
+        const parsed = parseTraceparent('00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01');
+        expect(parsed).toEqual({
+            traceId: '0af7651916cd43dd8448eb211c80319c',
+            spanId: 'b7ad6b7169203331',
+            flags: 1,
+        });
+    });
+
+    it('parseTraceparent rejects a malformed header', () => {
+        expect(parseTraceparent('00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331')).toBeUndefined();
+        expect(parseTraceparent('01-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01')).toBeUndefined();
+        expect(parseTraceparent('00-00000000000000000000000000000000-b7ad6b7169203331-01')).toBeUndefined();
+        expect(parseTraceparent('00-0af7651916cd43dd8448eb211c80319c-0000000000000000-01')).toBeUndefined();
+        expect(parseTraceparent('00-ABC-DEF-01')).toBeUndefined();
+        expect(parseTraceparent(undefined)).toBeUndefined();
+    });
+
+    it('parseTraceparent tolerates surrounding whitespace', () => {
+        const parsed = parseTraceparent('  00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01  \n');
+        expect(parsed).toEqual({
+            traceId: '0af7651916cd43dd8448eb211c80319c',
+            spanId: 'b7ad6b7169203331',
+            flags: 1,
+        });
+    });
+
+    it('parseTracestate passes through a valid list and drops an oversized one', () => {
+        expect(parseTracestate('foo=1,bar=2')).toBe('foo=1,bar=2');
+        expect(parseTracestate('')).toBeUndefined();
+        expect(parseTracestate('a'.repeat(513))).toBeUndefined();
+    });
+
+    it('parseBaggage passes through a valid list and drops an oversized one', () => {
+        expect(parseBaggage('tenant=abc')).toBe('tenant=abc');
+        // empty → no baggage
+        expect(parseBaggage('')).toBeUndefined();
+        // exactly at the 8192-byte W3C cap → still accepted
+        expect(parseBaggage('a'.repeat(8192))).toBe('a'.repeat(8192));
+        // one byte over the cap → dropped
+        expect(parseBaggage('a'.repeat(8193))).toBeUndefined();
+    });
+
+    it('extractW3CContext returns a remote context from valid input', () => {
+        const ctx = extractW3CContext({
+            traceparent: '00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
+            tracestate: 'foo=1',
+            baggage: 'tenant=abc',
+        });
+        expect(ctx).toMatchObject({
+            traceId: '0af7651916cd43dd8448eb211c80319c',
+            spanId: 'b7ad6b7169203331',
+            flags: 1,
+            remote: true,
+            traceState: 'foo=1',
+            baggage: 'tenant=abc',
+        });
+    });
+
+    it('extractW3CContext returns undefined without a valid traceparent', () => {
+        expect(extractW3CContext({})).toBeUndefined();
+        expect(extractW3CContext({ traceparent: 'garbage' })).toBeUndefined();
+        expect(extractW3CContext(undefined)).toBeUndefined();
+    });
+});
+
+// ============================================================================
+// 16. G1 — readMcpTraceContext (per-request parent pickup, guard-proxy safe)
+// ============================================================================
+
+describe('G1 — readMcpTraceContext', () => {
+    it('reads the conventional key from a real context', () => {
+        const ctx = { mcpTraceContext: { traceId: 'a'.repeat(32), spanId: 'b'.repeat(16) } };
+        expect(readMcpTraceContext(ctx)).toBe(ctx.mcpTraceContext);
+    });
+
+    it('returns undefined when the key is absent (no parent → fresh root)', () => {
+        expect(readMcpTraceContext({ other: 1 })).toBeUndefined();
+    });
+
+    it('returns undefined for null / undefined / primitive contexts', () => {
+        expect(readMcpTraceContext(undefined)).toBeUndefined();
+        expect(readMcpTraceContext(null)).toBeUndefined();
+        expect(readMcpTraceContext('nope')).toBeUndefined();
+    });
+
+    it('tolerates the missing-context guard proxy that throws on any property get', () => {
+        // attachToServer() substitutes this proxy when no contextFactory is
+        // provided; enabling tracing alone must never force a contextFactory
+        // to exist. Absence of a trace context is "fresh root", not an error.
+        const guardProxy = new Proxy({}, {
+            get() { throw new Error('Attempted to access ctx but no contextFactory was provided'); },
+        });
+        expect(readMcpTraceContext(guardProxy)).toBeUndefined();
+    });
+});
+
+// ============================================================================
+// 17. G1 — parent context propagation into the tool span
+// ============================================================================
+
+describe('G1 — parent context propagation', () => {
+    it('passes ctx.mcpTraceContext to startSpan as the parent', async () => {
+        const { tracer, spans } = createMockTracer();
+        const parent = extractW3CContext({
+            traceparent: '00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
+        })!;
+
+        const tool = createTool<{ mcpTraceContext?: MCPFusionSpanContext }>('users')
+            .tracing(tracer)
+            .action({ name: 'list', handler: async () => success('ok') });
+
+        await tool.execute({ mcpTraceContext: parent }, { action: 'list' });
+
+        expect(spans).toHaveLength(1);
+        expect(spans[0]!.context).toBe(parent);
+        expect(spans[0]!.context!.traceId).toBe('0af7651916cd43dd8448eb211c80319c');
+        expect(spans[0]!.context!.remote).toBe(true);
+    });
+
+    it('leaves the span a fresh root when ctx has no trace context', async () => {
+        const { tracer, spans } = createMockTracer();
+        const tool = createTool<{ mcpTraceContext?: MCPFusionSpanContext }>('users')
+            .tracing(tracer)
+            .action({ name: 'list', handler: async () => success('ok') });
+
+        await tool.execute({}, { action: 'list' });
+
+        expect(spans[0]!.context).toBeUndefined();
+    });
+
+    it('unknown-tool registry span also threads the parent context', async () => {
+        const { tracer, spans } = createMockTracer();
+        const parent = extractW3CContext({
+            traceparent: '00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
+        })!;
+
+        const registry = new ToolRegistry<{ mcpTraceContext?: MCPFusionSpanContext }>();
+        registry.enableTracing(tracer);
+
+        await registry.routeCall({ mcpTraceContext: parent }, 'nonexistent', { action: 'x' });
+
+        const errorSpan = spans.find(s => s.name === 'mcp.tool.nonexistent');
+        expect(errorSpan).toBeDefined();
+        expect(errorSpan!.context).toBe(parent);
+    });
+
+    it('unknown-tool span carries the same dual-convention tags as a tool span', async () => {
+        const { tracer, spans } = createMockTracer();
+
+        const registry = new ToolRegistry();
+        registry.enableTracing(tracer);
+
+        await registry.routeCall({}, 'nonexistent', { action: 'x' });
+
+        const attrs = spans.find(s => s.name === 'mcp.tool.nonexistent')!.attributes;
+        expect(attrs.get('openinference.span.kind')).toBe('TOOL');
+        expect(attrs.get('gen_ai.operation.name')).toBe('tools/call');
+        expect(attrs.get('tool.name')).toBe('nonexistent');
+        expect(attrs.get('mcp.error_type')).toBe('unknown_tool');
     });
 });
