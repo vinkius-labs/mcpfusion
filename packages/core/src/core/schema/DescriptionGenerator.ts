@@ -9,7 +9,7 @@
  */
 import { type ZodObject, type ZodRawShape } from 'zod';
 import { type InternalAction } from '../types.js';
-import { getActionRequiredFields } from './SchemaUtils.js';
+import { getActionRequiredFields, soleActionOf } from './SchemaUtils.js';
 
 // ── Public API ───────────────────────────────────────────
 
@@ -22,6 +22,10 @@ export function generateDescription<TContext>(
     commonSchema?: ZodObject<ZodRawShape>,
 ): string {
     const lines: string[] = [];
+
+    // A single ungrouped action has no operation to select: the tool's own
+    // description is the whole story (see soleActionOf).
+    if (soleActionOf(actions, hasGroup)) return description || name;
 
     // Layer 1: Tool description + action/module summary + dispatch instruction
     if (hasGroup) {
@@ -43,18 +47,13 @@ export function generateDescription<TContext>(
         );
     }
 
-    // Layer 2: Workflow section.
-    // Emitted for grouped tools (a grouping is inherently multi-operation) and
-    // for flat tools with 2+ actions. A flat tool with a single action has
-    // nothing to dispatch between, so the per-action Workflow block is
-    // redundant and is omitted.
-    if (hasGroup || actions.length >= 2) {
-        const workflowLines = generateWorkflowLines(actions, description, commonSchema);
-        if (workflowLines.length > 0) {
-            lines.push('');
-            lines.push('Workflow:');
-            lines.push(...workflowLines);
-        }
+    // Layer 2: Workflow section (a sole action returned above, so there is
+    // always more than one operation to document here).
+    const workflowLines = generateWorkflowLines(actions, description, commonSchema);
+    if (workflowLines.length > 0) {
+        lines.push('');
+        lines.push('Workflow:');
+        lines.push(...workflowLines);
     }
 
     return lines.join('\n');

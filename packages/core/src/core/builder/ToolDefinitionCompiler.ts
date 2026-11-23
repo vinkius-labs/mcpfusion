@@ -15,6 +15,7 @@ import { type CompiledChain, compileMiddlewareChains } from '../execution/Middle
 import { generateDescription } from '../schema/DescriptionGenerator.js';
 import { generateToonDescription } from '../schema/ToonDescriptionGenerator.js';
 import { generateInputSchema } from '../schema/SchemaGenerator.js';
+import { soleActionOf } from '../schema/SchemaUtils.js';
 import { aggregateAnnotations } from '../schema/AnnotationAggregator.js';
 
 // ── Types ────────────────────────────────────────────────
@@ -125,6 +126,7 @@ export function compileToolDefinition<TContext>(
     const executionContext: ExecutionContext<TContext> = {
         actionMap, compiledChain, validationSchemaCache,
         actionKeysString, discriminator, toolName: name,
+        soleActionKey: soleActionOf(actions, input.hasGroup)?.key,
     };
 
     return { tool, executionContext, compiledChain, actionMap, validationSchemaCache };

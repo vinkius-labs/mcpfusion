@@ -640,9 +640,11 @@ describe('Tool Definition Compilation', () => {
         expect(def.description).toContain('[INSTRUCTIONS]');
         expect(def.description).toContain('Generate daily report');
         expect(def.inputSchema).toBeDefined();
-        expect(def.inputSchema.properties).toHaveProperty('action');
+        // Sole action: no discriminator; the required `date` is declared in `required`.
+        expect(def.inputSchema.properties).not.toHaveProperty('action');
         expect(def.inputSchema.properties).toHaveProperty('date');
         expect(def.inputSchema.properties).toHaveProperty('format');
+        expect(def.inputSchema.required).toEqual(['date']);
     });
 
     it('router tool should produce valid MCP tool definition', () => {

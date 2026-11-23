@@ -395,7 +395,8 @@ describe('Error classification', () => {
         const { tracer, spans } = createMockTracer();
         const tool = createTool<void>('status')
             .tracing(tracer)
-            .action({ name: 'list', handler: async () => success('ok') });
+            .action({ name: 'list', handler: async () => success('ok') })
+            .action({ name: 'get', handler: async () => success('ok') });
 
         await tool.execute(undefined, {});
 
@@ -408,7 +409,8 @@ describe('Error classification', () => {
         const { tracer, spans } = createMockTracer();
         const tool = createTool<void>('status')
             .tracing(tracer)
-            .action({ name: 'list', handler: async () => success('ok') });
+            .action({ name: 'list', handler: async () => success('ok') })
+            .action({ name: 'get', handler: async () => success('ok') });
 
         await tool.execute(undefined, { action: 'nonexistent' });
 

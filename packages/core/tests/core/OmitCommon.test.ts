@@ -378,7 +378,9 @@ describe('omitCommon — Edge Cases', () => {
 
         const tool = builder.buildToolDefinition();
         expect(tool.name).toBe('nocommon');
-        expect(tool.inputSchema.required).toEqual(['action']);
+        // Sole action without fields: nothing is required (no discriminator).
+        expect(tool.inputSchema.required ?? []).toEqual([]);
+        expect(tool.inputSchema.properties).not.toHaveProperty('workspace_id');
     });
 
     it('should work with empty omitCommon array', () => {

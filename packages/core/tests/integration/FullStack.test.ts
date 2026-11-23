@@ -1027,10 +1027,15 @@ describe('Integration Sad Path: Routing Failures', () => {
     it('should return error when action discriminator is missing', async () => {
         const registry = new ToolRegistry<void>();
         registry.register(
-            createTool<void>('tasks').action({
-                name: 'list',
-                handler: async () => success('ok'),
-            }),
+            createTool<void>('tasks')
+                .action({
+                    name: 'list',
+                    handler: async () => success('ok'),
+                })
+                .action({
+                    name: 'create',
+                    handler: async () => success('ok'),
+                }),
         );
 
         const server = createMockServer();

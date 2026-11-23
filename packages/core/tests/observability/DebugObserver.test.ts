@@ -245,7 +245,8 @@ describe('Error paths', () => {
         const events: DebugEvent[] = [];
         const tool = createTool<void>('users')
             .debug(createDebugObserver((e) => events.push(e)))
-            .action({ name: 'list', handler: async () => success('ok') });
+            .action({ name: 'list', handler: async () => success('ok') })
+            .action({ name: 'get', handler: async () => success('ok') });
 
         await tool.execute(undefined, {});
 
@@ -262,7 +263,8 @@ describe('Error paths', () => {
         const events: DebugEvent[] = [];
         const tool = createTool<void>('users')
             .debug(createDebugObserver((e) => events.push(e)))
-            .action({ name: 'list', handler: async () => success('ok') });
+            .action({ name: 'list', handler: async () => success('ok') })
+            .action({ name: 'get', handler: async () => success('ok') });
 
         await tool.execute(undefined, { action: 'nonexistent' });
 
@@ -393,7 +395,8 @@ describe('Custom handlers', () => {
                 name: 'run',
                 schema: z.object({ x: z.number() }),
                 handler: async () => success('ok'),
-            });
+            })
+            .action({ name: 'stop', handler: async () => success('ok') });
 
         // Valid call — no errors
         await tool.execute(undefined, { action: 'run', x: 1 });
@@ -967,7 +970,8 @@ describe('Adversarial & edge cases', () => {
 
         const tool = createTool<void>('empty')
             .debug(createDebugObserver((e) => events.push(e)))
-            .action({ name: 'run', handler: async () => success('ok') });
+            .action({ name: 'run', handler: async () => success('ok') })
+            .action({ name: 'stop', handler: async () => success('ok') });
 
         const result = await tool.execute(undefined, {});
 

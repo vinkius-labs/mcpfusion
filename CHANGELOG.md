@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.1] - 2026-11-23
+
+Monorepo-wide patch release: all 16 packages move from `5.1.0` to `5.1.1` in lockstep. Only `@mcpfusion/core` carries code changes; the other 15 packages keep their `^5.0.0` core range, which `5.1.1` satisfies.
+
+### Fixed - single-action tools published a meaningless `action` discriminator
+
+#### `@mcpfusion/core` - schema, descriptions and dispatch for a sole ungrouped action
+
+- **The problem.** Every standalone `f.query` / `f.mutation` / `f.action` is a builder with one action whose key is `'default'`. The flat exposition already hid it, but `buildToolDefinition()` (used by edge deploy, introspection, manifests and `ToolFilterEngine`) always published `action: { enum: ["default"] }` as `required`, and the description said "Select operation via the `action` parameter. Actions: default". LLM callers were asked to choose from one value and echoed the internal key `"default"` back to users. Because the discriminator was the only top-level requirement, the action's real required fields only appeared in prose ("Required for: default").
+- **One rule, one place.** New `soleActionOf(actions, hasGroup)` in `SchemaUtils.ts` decides the case (exactly one action, no groups). The input schema, both description strategies and the execution router all use it, so the published contract and the dispatch cannot disagree. Grouped builders keep the discriminator even with one action, because `module.action` is their addressing scheme.
+- **Schema** (`SchemaGenerator.ts`): no discriminator property and no discriminator in `required`. Fields the action requires are promoted to the top-level `required` list instead of being annotated per action.
+- **Descriptions** (`DescriptionGenerator.ts`, `ToonDescriptionGenerator.ts`): the tool's own description (or its name) is returned as-is, without the dispatch instruction or the action list.
+- **Dispatch** (`ExecutionPipeline.ts`, `ToolDefinitionCompiler.ts`): `ExecutionContext.soleActionKey` routes every call to the sole action. A caller that still sends `action: "default"` (from an older published schema) keeps working, and any other value it sends does not change the route.
+- **Handler args.** On the no-schema path the handler now receives the *resolved* discriminator value, never the caller's raw string, matching the with-schema path. The prototype-pollution guard on the discriminator name now runs before either path writes it.
+- **Unchanged:** tools with two or more actions and all grouped tools.
+- **Wire-visible:** the published `inputSchema` and description of single-action tools change, so their lockfile contract hash changes once. Already-deployed servers keep the old schema until they are rebuilt and republished.
+- Added `packages/core/tests/core/SoleActionContract.test.ts` (schema shape, promoted required fields incl. `commonSchema`, both description formats, routing with and without a legacy `action` value, resolved value on the no-schema path). Tests that exercised discriminator errors now use a two-action fixture, since a sole action no longer has a discriminator to get wrong.
+
+### Tests
+
+- `tests/core/MutationSerializer.test.ts` (C1 regression): the test awaited the first call before attaching a handler to the second, which rejects ~40ms earlier, so the run reported an unhandled rejection and exited non-zero. Both expectations now attach together. Test-only; `MutationSerializer` is unchanged.
+
 ## [5.1.0] - 2026-09-20
 
 Monorepo-wide release: all 16 packages move from `5.0.10` to `5.1.0` in lockstep (uniform workspace + npm registry). Only `@mcpfusion/core` carries code changes; the other 15 packages are otherwise untouched — their `@mcpfusion/core` dependency range is already `^5.0.0`, which `5.1.0` satisfies.

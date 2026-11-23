@@ -262,7 +262,10 @@ describe('BuildPipeline — Input Schema', () => {
 
         expect(def.inputSchema.properties).toHaveProperty('name');
         expect(def.inputSchema.properties).toHaveProperty('limit');
-        expect(def.inputSchema.properties).toHaveProperty('action');
+        // A fluent tool has a sole action: no discriminator, real fields required.
+        expect(def.inputSchema.properties).not.toHaveProperty('action');
+        expect(def.inputSchema.required).toEqual(expect.arrayContaining(['name', 'limit']));
+        expect(def.inputSchema.required).not.toContain('action');
     });
 
     it('should not fail with empty params', () => {
@@ -270,6 +273,8 @@ describe('BuildPipeline — Input Schema', () => {
         const builder = buildToolFromFluent(config);
         const def = builder.buildToolDefinition();
 
-        expect(def.inputSchema.properties).toHaveProperty('action');
+        expect(def.inputSchema.type).toBe('object');
+        expect(def.inputSchema.properties).toEqual({});
+        expect(def.inputSchema.required ?? []).toEqual([]);
     });
 });

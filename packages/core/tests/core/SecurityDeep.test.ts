@@ -994,7 +994,8 @@ describe('Security: JSON Special Values', () => {
 
     it('should handle extremely long action name in input (not in definition)', async () => {
         const builder = new GroupedToolBuilder('long_action_input')
-            .action({ name: 'valid', handler: async () => success('ok') });
+            .action({ name: 'valid', handler: async () => success('ok') })
+            .action({ name: 'other', handler: async () => success('ok') });
         builder.buildToolDefinition();
 
         const result = await builder.execute(undefined as any, {
