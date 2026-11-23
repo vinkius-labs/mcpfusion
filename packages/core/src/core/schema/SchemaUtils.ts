@@ -73,6 +73,33 @@ export function getActionRequiredFields<TContext>(
     return [...new Set(required)];
 }
 
+// ── Dispatch Shape ───────────────────────────────────────
+
+/**
+ * The builder's only action when the discriminator has nothing to choose.
+ *
+ * A builder with exactly one action and no groups (every standalone
+ * `f.query` / `f.mutation` / `f.action`, whose key is `'default'`) routes
+ * every call to that action. Publishing the discriminator anyway, as an
+ * `enum` of one value that is also `required`, hands the caller a field
+ * that carries no information and an internal key (`"default"`) to echo;
+ * it also forced the action's real required fields down to prose
+ * ("Required for: default") because the only top-level requirement was the
+ * discriminator itself.
+ *
+ * The single source for that decision: the input schema, both description
+ * strategies and the execution router all ask this, so the published
+ * contract and the dispatch can never disagree. Grouped builders keep the
+ * discriminator even with one action, because `module.action` is their
+ * declared addressing scheme.
+ */
+export function soleActionOf<TContext>(
+    actions: readonly InternalAction<TContext>[],
+    hasGroup: boolean,
+): InternalAction<TContext> | undefined {
+    return !hasGroup && actions.length === 1 ? actions[0] : undefined;
+}
+
 // ── Schema Compatibility ─────────────────────────────────
 
 /**

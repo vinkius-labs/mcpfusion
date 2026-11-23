@@ -295,6 +295,7 @@ describe('defineTool()', () => {
         const tool = defineTool('strict', {
             actions: {
                 only: { handler: async () => success('ok') },
+                other: { handler: async () => success('ok') },
             },
         });
 

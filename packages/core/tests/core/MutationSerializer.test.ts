@@ -454,9 +454,13 @@ describe('MutationSerializer: unhandled rejection when prev rejects (C1 regressi
         setTimeout(() => controller.abort(), 10);
         const p2 = serializer.serialize('action', async () => 'second', controller.signal);
 
-        // p1 rejects, p2 was aborted while queued
-        await expect(p1).rejects.toThrow('first call failed');
-        await expect(p2).rejects.toThrow('cancelled');
+        // p1 rejects, p2 was aborted while queued. Both expectations attach
+        // their handlers now: p2 rejects at ~10ms, long before p1 settles, so
+        // awaiting p1 first would leave p2's rejection unobserved meanwhile.
+        await Promise.all([
+            expect(p1).rejects.toThrow('first call failed'),
+            expect(p2).rejects.toThrow('cancelled'),
+        ]);
 
         // Chain should be clean — subsequent calls work
         const p3 = serializer.serialize('action', async () => 'third');

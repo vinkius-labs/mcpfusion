@@ -92,7 +92,8 @@ describe('GroupedToolBuilder — Flat Mode', () => {
     it('should support custom discriminator', () => {
         const builder = new GroupedToolBuilder('report')
             .discriminator('method')
-            .action({ name: 'generate', handler: dummyHandler });
+            .action({ name: 'generate', handler: dummyHandler })
+            .action({ name: 'schedule', handler: dummyHandler });
 
         const tool = builder.buildToolDefinition();
 
@@ -270,7 +271,8 @@ describe('GroupedToolBuilder — Defense Chain', () => {
 
     it('should error when discriminator is missing', async () => {
         const builder = new GroupedToolBuilder('test')
-            .action({ name: 'list', handler: dummyHandler });
+            .action({ name: 'list', handler: dummyHandler })
+            .action({ name: 'create', handler: dummyHandler });
 
         builder.buildToolDefinition();
         const result = await builder.execute(undefined as any, {});
@@ -874,8 +876,8 @@ describe('Scenario — E-Commerce Tool', () => {
         const tool = builder.buildToolDefinition();
 
         // Should use name "orders" as fallback since no .description() was set
-        expect(tool.description).toContain('orders');
-        expect(tool.description).toContain('Actions: list');
+        // (a sole action publishes just that, no "Actions:" dispatch line).
+        expect(tool.description).toBe('orders');
     });
 });
 

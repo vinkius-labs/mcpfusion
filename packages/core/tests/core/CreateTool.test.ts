@@ -133,6 +133,10 @@ describe('createTool()', () => {
             .action({
                 name: 'only_this',
                 handler: async () => success('ok'),
+            })
+            .action({
+                name: 'and_this',
+                handler: async () => success('ok'),
             });
 
         const result = await builder.execute(undefined, { action: 'nonexistent' });

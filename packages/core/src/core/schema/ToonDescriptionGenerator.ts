@@ -12,7 +12,7 @@
 import { encode } from '@toon-format/toon';
 import { type ZodObject, type ZodRawShape } from 'zod';
 import { type InternalAction } from '../types.js';
-import { getActionRequiredFields } from './SchemaUtils.js';
+import { getActionRequiredFields, soleActionOf } from './SchemaUtils.js';
 
 // ── Public API ───────────────────────────────────────────
 
@@ -26,22 +26,20 @@ export function generateToonDescription<TContext>(
 ): string {
     const lines: string[] = [];
 
+    // A single ungrouped action has no operation to select (see soleActionOf).
+    if (soleActionOf(actions, hasGroup)) return description || name;
+
     // Layer 1: Tool summary + dispatch instruction (always human-readable)
     lines.push(`${description || name}. Select operation via the \`${discriminator}\` parameter.`);
 
-    // Layer 2: Action metadata in TOON tabular format.
-    // Emitted for grouped tools (a grouping is inherently multi-operation) and
-    // for flat tools with 2+ actions. A flat tool with a single action has
-    // nothing to dispatch between, so the per-action table is redundant and is
-    // omitted — parity with the markdown DescriptionGenerator's Workflow rule.
-    if (hasGroup || actions.length >= 2) {
-        lines.push('');
-        lines.push(
-            hasGroup
-                ? encodeGroupedActions(actions, description, commonSchema)
-                : encodeFlatActions(actions, description, commonSchema),
-        );
-    }
+    // Layer 2: Action metadata in TOON tabular format (a sole action returned
+    // above — parity with the markdown DescriptionGenerator).
+    lines.push('');
+    lines.push(
+        hasGroup
+            ? encodeGroupedActions(actions, description, commonSchema)
+            : encodeFlatActions(actions, description, commonSchema),
+    );
 
     return lines.join('\n');
 }

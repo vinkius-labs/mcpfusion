@@ -33,6 +33,13 @@ export interface ExecutionContext<TContext> {
     readonly actionKeysString: string;
     readonly discriminator: string;
     readonly toolName: string;
+    /**
+     * The only action when the published schema has no discriminator
+     * (see `soleActionOf`). Every call routes here; a discriminator a caller
+     * still sends (an older schema's `"default"`) is not part of the contract
+     * and does not change the route.
+     */
+    readonly soleActionKey?: string | undefined;
 }
 
 /** Resolved action with its discriminator value */
@@ -48,6 +55,7 @@ export function parseDiscriminator<TContext>(
     execCtx: ExecutionContext<TContext>,
     args: Record<string, unknown>,
 ): Result<string> {
+    if (execCtx.soleActionKey !== undefined) return succeed(execCtx.soleActionKey);
     const raw = args[execCtx.discriminator];
     // distinguish missing from wrong-type discriminator.
     if (raw !== undefined && typeof raw !== 'string') {
@@ -108,10 +116,23 @@ export function validateArgs<TContext>(
         ? rawSelect as string[]
         : undefined;
 
+    // Guard against prototype-pollution via poisoned discriminator names
+    // before either path writes the discriminator into the handler's args.
+    const disc = execCtx.discriminator;
+    if (disc === '__proto__' || disc === 'constructor' || disc === 'prototype') {
+        return fail({
+            content: [{ type: 'text', text: `Invalid discriminator name: "${disc}".` }],
+            isError: true,
+        });
+    }
+
     if (!validationSchema) {
-        // No schema — strip _select (framework field) but preserve discriminator
-        // (handlers rely on it). Re-inject with resolved value like the with-schema path.
+        // No schema — strip _select (framework field) and re-inject the
+        // RESOLVED discriminator (handlers rely on it), like the with-schema
+        // path. The caller's raw value is never forwarded: for a sole action it
+        // may be any string the caller guessed.
         const { _select: _sel, ...cleaned } = args;
+        cleaned[disc] = resolved.discriminatorValue;
         return succeed({ validated: cleaned, selectFields });
     }
 
@@ -131,14 +152,6 @@ export function validateArgs<TContext>(
 
     // Mutate directly — zero-copy re-injection of discriminator
     const validated = result.data as Record<string, unknown>;
-    // Guard against prototype-pollution via poisoned discriminator names
-    const disc = execCtx.discriminator;
-    if (disc === '__proto__' || disc === 'constructor' || disc === 'prototype') {
-        return fail({
-            content: [{ type: 'text', text: `Invalid discriminator name: "${disc}".` }],
-            isError: true,
-        });
-    }
     validated[disc] = resolved.discriminatorValue;
     return succeed({ validated, selectFields });
 }

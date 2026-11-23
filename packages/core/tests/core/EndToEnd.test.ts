@@ -731,7 +731,10 @@ describe('E2E: Registry error boundaries', () => {
 
     it('should handle missing action param gracefully', async () => {
         const tool = defineTool('needs_action', {
-            actions: { run: { handler: async () => success('ok') } },
+            actions: {
+                run: { handler: async () => success('ok') },
+                stop: { handler: async () => success('ok') },
+            },
         });
 
         const registry = new ToolRegistry();
@@ -739,6 +742,7 @@ describe('E2E: Registry error boundaries', () => {
 
         const result = await registry.routeCall(undefined, 'needs_action', {});
         expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('MISSING_DISCRIMINATOR');
     });
 
     it('should clear registry and reject calls to removed tools', async () => {

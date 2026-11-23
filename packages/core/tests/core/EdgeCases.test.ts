@@ -478,7 +478,8 @@ describe('GroupedToolBuilder — Custom Discriminator', () => {
     it('should error when custom discriminator is missing', async () => {
         const builder = new GroupedToolBuilder('test')
             .discriminator('operation')
-            .action({ name: 'list', handler: dummyHandler });
+            .action({ name: 'list', handler: dummyHandler })
+            .action({ name: 'get', handler: dummyHandler });
 
         builder.buildToolDefinition();
         const result = await builder.execute(undefined, { action: 'list' });
@@ -570,8 +571,10 @@ describe('GroupedToolBuilder — Description Edge Cases', () => {
             .action({ name: 'simple', handler: dummyHandler });
 
         const tool = builder.buildToolDefinition();
-        // Single action → no dispatch to document → no Workflow section.
+        // Single action → nothing to dispatch → the description is the tool's own.
         expect(tool.description).not.toContain('Workflow:');
-        expect(tool.description).toContain('Actions: simple');
+        expect(tool.description).not.toContain('Actions:');
+        expect(tool.description).not.toContain('Select operation');
+        expect(tool.description).toBe('Test tool');
     });
 });

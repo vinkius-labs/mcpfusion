@@ -228,13 +228,14 @@ describe('GroupedToolBuilder .toonDescription()', () => {
     it('uses default description when toonDescription() is NOT called', () => {
         const builder = new GroupedToolBuilder<void>('test_tool')
             .description('A test tool')
-            .action({ name: 'list', description: 'List items', handler: noopHandler });
+            .action({ name: 'list', description: 'List items', handler: noopHandler })
+            .action({ name: 'create', description: 'Create item', handler: noopHandler });
 
         const tool = builder.buildToolDefinition();
 
         // Default format: markdown-style
         expect(tool.description).toContain('A test tool');
-        expect(tool.description).toContain('Actions: list');
+        expect(tool.description).toContain('Actions: list, create');
     });
 
     it('uses TOON description when toonDescription() IS called', () => {

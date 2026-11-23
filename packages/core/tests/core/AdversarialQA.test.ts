@@ -397,8 +397,10 @@ describe('QA: Discriminator Abuse', () => {
     let builder: GroupedToolBuilder;
 
     beforeAll(() => {
+        // Two actions: a sole action has no discriminator to abuse (see SoleActionContract).
         builder = new GroupedToolBuilder('disc_abuse')
-            .action({ name: 'valid', handler: async () => success('ok') });
+            .action({ name: 'valid', handler: async () => success('ok') })
+            .action({ name: 'other', handler: async () => success('ok') });
         builder.buildToolDefinition();
     });
 
@@ -477,7 +479,8 @@ describe('QA: Build Idempotency', () => {
                 schema: z.object({ id: z.string() }),
                 readOnly: true,
                 handler: async () => success('ok'),
-            });
+            })
+            .action({ name: 'list', handler: async () => success('ok') });
 
         const def = b.buildToolDefinition();
         expect(def.name).toBe('structural');
@@ -712,6 +715,10 @@ describe('QA: Schema Field Annotations', () => {
             .action({
                 name: 'list',
                 handler: async () => success('ok'),
+            })
+            .action({
+                name: 'count',
+                handler: async () => success('ok'),
             });
 
         const def = b.buildToolDefinition();
@@ -747,6 +754,10 @@ describe('QA: Schema Field Annotations', () => {
                     filter: z.string().optional().describe('Search filter'),
                 }),
                 handler: async () => success('ok'),
+            })
+            .action({
+                name: 'count',
+                handler: async () => success('ok'),
             });
 
         const def = b.buildToolDefinition();
@@ -763,7 +774,8 @@ describe('QA: Custom Discriminator', () => {
     it('should use custom discriminator field name', async () => {
         const b = new GroupedToolBuilder('custom_disc')
             .discriminator('operation')
-            .action({ name: 'ping', handler: async () => success('pong') });
+            .action({ name: 'ping', handler: async () => success('pong') })
+            .action({ name: 'status', handler: async () => success('up') });
 
         const def = b.buildToolDefinition();
         expect(def.inputSchema.properties).toHaveProperty('operation');
@@ -778,7 +790,8 @@ describe('QA: Custom Discriminator', () => {
     it('should reject when custom discriminator is missing', async () => {
         const b = new GroupedToolBuilder('disc_missing')
             .discriminator('cmd')
-            .action({ name: 'run', handler: async () => success('ok') });
+            .action({ name: 'run', handler: async () => success('ok') })
+            .action({ name: 'stop', handler: async () => success('ok') });
 
         b.buildToolDefinition();
 

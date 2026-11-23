@@ -12,7 +12,7 @@ import { type ZodObject, type ZodRawShape } from 'zod';
 import { zodToJson } from './ZodCompat.js';
 import type { Tool as McpTool } from "@modelcontextprotocol/server";
 import { type InternalAction } from '../types.js';
-import { assertFieldCompatibility } from './SchemaUtils.js';
+import { assertFieldCompatibility, soleActionOf } from './SchemaUtils.js';
 import { isPresenter } from '../../presenter/Presenter.js';
 
 /** Shape of an object-level JSON Schema emitted by zod-to-json-schema */
@@ -38,17 +38,24 @@ export function generateInputSchema<TContext>(
 ): McpTool['inputSchema'] {
     const actionKeys = actions.map(a => a.key);
     const properties: Record<string, object> = {};
-    const topLevelRequired: string[] = [discriminator];
+    const sole = soleActionOf(actions, hasGroup);
+    const topLevelRequired: string[] = sole ? [] : [discriminator];
     const fieldActions = new Map<string, FieldTracking>();
 
-    addDiscriminatorProperty(properties, discriminator, actionKeys, hasGroup);
+    if (!sole) addDiscriminatorProperty(properties, discriminator, actionKeys, hasGroup);
 
     const omitSets = buildOmitSets(actions);
     const commonRequiredFields = collectCommonFields(
         commonSchema, actionKeys, omitSets, properties, topLevelRequired, fieldActions,
     );
     collectActionFields(actions, properties, fieldActions);
-    applyAnnotations(fieldActions, commonRequiredFields, actionKeys, properties);
+    if (sole) {
+        // One action: a field it requires IS required by the tool, so it is
+        // declared in `required` rather than annotated per action.
+        promoteSoleActionRequired(fieldActions, topLevelRequired);
+    } else {
+        applyAnnotations(fieldActions, commonRequiredFields, actionKeys, properties);
+    }
 
     // ── _select Reflection (opt-in) ──────────────────────
     if (selectEnabled) {
@@ -182,6 +189,18 @@ function collectActionFields<TContext>(
             if (requiredSet.has(key)) {
                 tracking.requiredIn.push(action.key);
             }
+        }
+    }
+}
+
+/** Step 4 (single action): every field the action requires is tool-required */
+function promoteSoleActionRequired(
+    fieldActions: Map<string, FieldTracking>,
+    topLevelRequired: string[],
+): void {
+    for (const [key, tracking] of fieldActions.entries()) {
+        if (tracking.requiredIn.length > 0 && !topLevelRequired.includes(key)) {
+            topLevelRequired.push(key);
         }
     }
 }
